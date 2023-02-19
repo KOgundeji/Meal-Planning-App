@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.kunle.aisle9b.screens.ListScreen
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,27 +18,20 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Aisle9bTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("Android")
-                }
+                Aisle9App()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+private fun Aisle9App() {
+    ListScreen()
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    Aisle9bTheme {
-        Greeting("Android")
-    }
+    Aisle9App()
 }
