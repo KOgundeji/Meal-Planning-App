@@ -61,13 +61,13 @@ fun ListItem9(food: Food, onCheckBoxClick: (Long) -> Unit = {}) {
                 withStyle(style = SpanStyle(color = OrangeTintDark, fontSize = 16.sp)) {
                     append(" (${food.quantity})")
                 }
-            })
-            Spacer(modifier = Modifier.width(180.dp))
+            }, modifier = Modifier.weight(1f))
             Icon(
                 modifier = Modifier.size(36.dp),
                 imageVector = Icons.Filled.Edit,
                 contentDescription = "Edit Icon",
             )
+            Spacer(modifier = Modifier.width(5.dp))
         }
     }
 }
