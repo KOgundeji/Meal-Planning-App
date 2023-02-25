@@ -1,11 +1,13 @@
 package com.kunle.aisle9b.navigation
 
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kunle.aisle9b.screens.ListScreen
 import com.kunle.aisle9b.screens.MealScreen
+import com.kunle.aisle9b.screens.SettingsScreen
 
 @Composable
 fun Aisle9Navigation() {
@@ -18,7 +20,9 @@ fun Aisle9Navigation() {
             MealScreen()
 //            MealScreen(navController = navController)
         }
-        composable(route = GroceryScreens.SettingsScreen.name) {}
+        composable(route = GroceryScreens.SettingsScreen.name) {
+            SettingsScreen()
+        }
     }
 
 }

@@ -18,11 +18,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.ui.theme.BaseOrange
-import com.kunle.aisle9b.ui.theme.OrangeShade
-import com.kunle.aisle9b.ui.theme.OrangeTintDark
 import com.kunle.aisle9b.ui.theme.OrangeTintLight
 
 @Composable

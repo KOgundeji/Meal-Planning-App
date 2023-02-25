@@ -1,7 +1,5 @@
 package com.kunle.aisle9b.screens
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,27 +14,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.templates.MealItem9
 import com.kunle.aisle9b.ui.theme.BaseOrange
-import com.kunle.aisle9b.ui.theme.OrangeShade
+import com.kunle.aisle9b.ui.theme.OrangeTintDark
 
 @Composable
 fun MealScreen() {
     Scaffold(topBar = {
         TopAppBar(
-            backgroundColor = BaseOrange,
+            backgroundColor = OrangeTintDark,
             elevation = 5.dp,
         ) {
             Row(horizontalArrangement = Arrangement.Start) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back arrow",
+                    tint = Color.Black,
                     modifier = Modifier
                         .size(36.dp)
                         .align(Alignment.CenterVertically),
@@ -46,6 +43,7 @@ fun MealScreen() {
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
+                    color = Color.Black,
                     modifier = Modifier.padding(start = 10.dp)
                 )
             }
