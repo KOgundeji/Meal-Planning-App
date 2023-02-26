@@ -23,41 +23,13 @@ import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.OrangeTintDark
 
 @Composable
-fun MealScreen() {
-    Scaffold(topBar = {
-        TopAppBar(
-            backgroundColor = OrangeTintDark,
-            elevation = 5.dp,
-        ) {
-            Row(horizontalArrangement = Arrangement.Start) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back arrow",
-                    tint = Color.Black,
-                    modifier = Modifier
-                        .size(36.dp)
-                        .align(Alignment.CenterVertically),
-                )
-                Text(
-                    text = "Meals",
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Italic,
-                    color = Color.Black,
-                    modifier = Modifier.padding(start = 10.dp)
-                )
-            }
-        }
-    }) {
-        Surface(modifier = Modifier.padding(it)) {
-            Column {
-                AddDeleteBar()
-                MealListContent()
-            }
-
+fun MealScreen(modifier: Modifier = Modifier) {
+    Surface(modifier = modifier.fillMaxSize()){
+        Column {
+            AddDeleteBar()
+            MealListContent()
         }
     }
-
 }
 
 val fakeMealList: List<Meal> = listOf(

@@ -8,8 +8,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 
 @Composable
-fun ListScreen(navController: NavController) {
-    Surface(modifier = Modifier.fillMaxSize(1f)) {
+fun ListScreen(modifier: Modifier = Modifier) {
+    Surface(modifier = modifier.fillMaxSize(1f)) {
     }
 }
 

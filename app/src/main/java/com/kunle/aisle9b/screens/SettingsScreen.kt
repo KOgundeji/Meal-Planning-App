@@ -20,28 +20,29 @@ import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.OrangeTintLight
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(modifier: Modifier = Modifier) {
     val darkMode = remember { mutableStateOf(false) }
     val screenPermOn = remember { mutableStateOf(false) }
     val categories = remember { mutableStateOf(true) }
 
-    Surface(modifier = Modifier.padding(10.dp)) {
+    Surface(modifier = modifier) {
         Column {
             Spacer(modifier = Modifier.height(15.dp))
             Text(
                 text = "General",
                 fontWeight = FontWeight.Bold,
                 color = BaseOrange,
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                modifier = Modifier.padding(start = 10.dp, bottom = 5.dp)
             )
             Row {
                 Text(
                     text = "Dark Mode",
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     modifier = Modifier
-                        .padding(5.dp)
+                        .padding(start = 15.dp, top = 5.dp, bottom = 5.dp)
                         .weight(.8f)
                 )
                 Checkbox(
@@ -64,9 +65,9 @@ fun SettingsScreen() {
                     text = "Keep Screen on",
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     modifier = Modifier
-                        .padding(5.dp)
+                        .padding(start = 15.dp, top = 5.dp, bottom = 5.dp)
                         .weight(.8f)
                 )
                 Checkbox(
@@ -89,9 +90,9 @@ fun SettingsScreen() {
                     text = "Remove Categories from Grocery List",
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     modifier = Modifier
-                        .padding(5.dp)
+                        .padding(start = 15.dp, top = 5.dp, bottom = 5.dp)
                         .weight(.8f)
                 )
                 Checkbox(
@@ -117,27 +118,29 @@ fun SettingsScreen() {
                     fontWeight = FontWeight.Bold,
                     color = BaseOrange,
                     fontSize = 16.sp,
+                    modifier = Modifier
+                        .padding(start = 10.dp)
                 )
                 Text(
                     text = "Created by Kunle Ogundeji",
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 5.dp, top = 4.dp, bottom = 1.dp)
+                    modifier = Modifier.padding(start = 15.dp, top = 4.dp, bottom = 1.dp)
                 )
                 Text(
                     text = "Sun King Studios",
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 5.dp, bottom = 1.dp)
+                    modifier = Modifier.padding(start = 15.dp, bottom = 1.dp)
                 )
                 Text(
                     text = "Version 1.1.0",
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 5.dp, bottom = 1.dp)
+                    modifier = Modifier.padding(start = 15.dp, bottom = 5.dp)
                 )
             }
         }
