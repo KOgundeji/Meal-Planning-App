@@ -6,14 +6,15 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.BottomNavItem
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.repository.ShoppingRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepository) :
@@ -72,51 +73,57 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
     fun deleteFood(food: Food) = viewModelScope.launch { repository.deleteFood(food) }
     fun updateFood(food: Food) = viewModelScope.launch { repository.updateFood(food) }
     fun deleteAllFood() = viewModelScope.launch { repository.deleteAllFood() }
-    fun getFood(name: String): Flow<Food> {
-        return flow<Food> { viewModelScope.launch { repository.getFood(name).collect() } }
+    suspend fun getFood(name: String): Food {
+        return viewModelScope.async {
+            repository.getFood(name)
+        }.await()
     }
 
-    suspend fun insertMeal(meal: Meal) = viewModelScope.launch { repository.insertMeal(meal) }
-    suspend fun deleteMeal(meal: Meal) = viewModelScope.launch { repository.deleteMeal(meal) }
-    suspend fun updateMeal(meal: Meal) = viewModelScope.launch { repository.updateMeal(meal) }
-    suspend fun deleteAllMeals() = viewModelScope.launch { repository.deleteAllMeals() }
-    suspend fun getMeal(name: String): Flow<Meal> {
-        return flow { viewModelScope.launch { repository.getMeal(name) } }
+    fun insertMeal(meal: Meal) = viewModelScope.launch { repository.insertMeal(meal) }
+    fun deleteMeal(meal: Meal) = viewModelScope.launch { repository.deleteMeal(meal) }
+    fun updateMeal(meal: Meal) = viewModelScope.launch { repository.updateMeal(meal) }
+    fun deleteAllMeals() = viewModelScope.launch { repository.deleteAllMeals() }
+    suspend fun getMeal(name: String): Meal {
+        return viewModelScope.async {
+            repository.getMeal(name)
+        }.await()
     }
 
-    suspend fun insertSettings(settings: Settings) =
+    fun insertSettings(settings: Settings) =
         viewModelScope.launch { repository.insertSettings(settings) }
 
-    suspend fun deleteSettings(settings: Settings) =
+    fun deleteSettings(settings: Settings) =
         viewModelScope.launch { repository.deleteSettings(settings) }
 
-    suspend fun updateSettings(settings: Settings) =
+    fun updateSettings(settings: Settings) =
         viewModelScope.launch { repository.updateSettings(settings) }
 
-    suspend fun deleteAllSettings() = viewModelScope.launch { repository.deleteAllSettings() }
-    suspend fun checkSetting(name: String): Flow<Int> {
-        return flow { viewModelScope.launch { repository.checkSetting(name) } }
+    fun deleteAllSettings() = viewModelScope.launch { repository.deleteAllSettings() }
+    suspend fun checkSetting(name: String): Int {
+        return viewModelScope.async {
+            repository.checkSetting(name)
+        }.await()
     }
 
-    suspend fun insertPair(crossRef: MealFoodMap) =
+    fun insertPair(crossRef: MealFoodMap) =
         viewModelScope.launch { repository.insertPair(crossRef) }
 
-    suspend fun deletePair(crossRef: MealFoodMap) =
+    fun deletePair(crossRef: MealFoodMap) =
         viewModelScope.launch { repository.deletePair(crossRef) }
 
-    suspend fun updatePair(crossRef: MealFoodMap) =
+    fun updatePair(crossRef: MealFoodMap) =
         viewModelScope.launch { repository.updatePair(crossRef) }
 
-    suspend fun deleteSpecificMealIngredients(mealId: Long) =
+    fun deleteSpecificMealIngredients(mealId: Long) =
         viewModelScope.launch { repository.deleteSpecificMealIngredients(mealId) }
 
-    suspend fun deleteAllMealWithIngredients() =
+    fun deleteAllMealWithIngredients() =
         viewModelScope.launch { repository.deleteAllMealWithIngredients() }
 
-    suspend fun getSpecificMealWithIngredients(mealId: Long): Flow<MealWithIngredients> {
-        return flow {
-            viewModelScope.launch { repository.getSpecificMealWithIngredients(mealId) }
-        }
+    suspend fun getSpecificMealWithIngredients(mealId: Long): MealWithIngredients {
+        return viewModelScope.async {
+            repository.getSpecificMealWithIngredients(mealId)
+        }.await()
     }
 
 

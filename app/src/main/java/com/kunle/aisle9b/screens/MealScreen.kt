@@ -33,9 +33,9 @@ fun MealScreen(modifier: Modifier = Modifier) {
 }
 
 val fakeMealList: List<Meal> = listOf(
-    Meal(mealId = 1, name = "Pumpkin Pie"),
-    Meal(mealId = 2, name = "Risotto"),
-    Meal(mealId = 3, name = "Meat Lasagna")
+    Meal(name = "Pumpkin Pie"),
+    Meal(name = "Risotto"),
+    Meal(name = "Meat Lasagna")
 )
 
 @Composable

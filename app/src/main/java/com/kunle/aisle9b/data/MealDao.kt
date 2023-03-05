@@ -20,7 +20,7 @@ interface MealDao {
     suspend fun deleteAllMeals()
 
     @Query("SELECT * FROM meal_table WHERE name = :name")
-    suspend fun getMeal(name: String): Flow<Meal>
+    suspend fun getMeal(name: String): Meal
 
     @Query("SELECT * FROM meal_table")
     fun getAllMeals(): Flow<List<Meal>>

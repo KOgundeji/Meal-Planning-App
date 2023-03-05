@@ -20,7 +20,7 @@ interface FoodDao {
     suspend fun deleteAllFood()
 
     @Query("SELECT * FROM food_table WHERE name = :name LIMIT 1")
-    suspend fun getFood(name: String): Flow<Food>
+    suspend fun getFood(name: String): Food
 
     @Query("SELECT * FROM food_table WHERE grocery_list")
     fun getAllGroceries(): Flow<List<Food>>
