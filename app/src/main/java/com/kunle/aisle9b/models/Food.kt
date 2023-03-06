@@ -14,7 +14,7 @@ data class Food(
     @ColumnInfo
     var quantity: String,
     @ColumnInfo
-    var category: String,
+    var category: String = "",
     @ColumnInfo
     var isInGroceryList: Boolean
 ) {}

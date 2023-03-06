@@ -17,13 +17,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.templates.MealItem9
 import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.OrangeTintDark
 
 @Composable
-fun MealScreen(modifier: Modifier = Modifier) {
+fun MealScreen(shoppingViewModel: ShoppingViewModel, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize()){
         Column {
             AddDeleteBar()
@@ -95,7 +96,7 @@ fun MealListContent() {
 @Preview
 @Composable
 fun MealPreview() {
-    MealScreen()
+//    MealScreen()
 }
 
 

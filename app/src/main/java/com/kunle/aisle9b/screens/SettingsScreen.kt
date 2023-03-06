@@ -16,11 +16,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.OrangeTintLight
 
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier) {
+fun SettingsScreen(shoppingViewModel: ShoppingViewModel, modifier: Modifier = Modifier) {
     val darkMode = remember { mutableStateOf(false) }
     val screenPermOn = remember { mutableStateOf(false) }
     val categories = remember { mutableStateOf(true) }
@@ -150,7 +151,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun SettingsPreview() {
-    SettingsScreen()
+//    SettingsScreen()
 }
 
 

@@ -21,9 +21,10 @@ import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.OrangeTintLight
+import java.util.UUID
 
 @Composable
-fun MealItem9(meal: Meal, onCheckBoxClick: (Long) -> Unit = {}) {
+fun MealItem9(meal: Meal, onCheckBoxClick: (UUID) -> Unit = {}) {
     //move to ViewModel later
     val isChecked = remember { mutableStateOf(false) }
     Card(
@@ -73,5 +74,5 @@ fun MealItem9(meal: Meal, onCheckBoxClick: (Long) -> Unit = {}) {
 @Composable
 @Preview
 fun MealPreview() {
-    MealItem9(Meal(mealId = 10, name = "Delicious Example"))
+    MealItem9(Meal(name = "Delicious Example"))
 }

@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.ui.theme.BaseOrange
-import com.kunle.aisle9b.ui.theme.OrangeShade
 import com.kunle.aisle9b.ui.theme.OrangeTintDark
 import com.kunle.aisle9b.ui.theme.OrangeTintLight
+import java.util.*
 
 @Composable
-fun ListItem9(food: Food, onCheckBoxClick: (Long) -> Unit = {}) {
+fun ListItem9(food: Food, onCheckBoxClick: (UUID) -> Unit = {}) {
     //move to ViewModel later
     val isChecked = remember { mutableStateOf(false) }
     Card(
@@ -76,5 +76,5 @@ fun ListItem9(food: Food, onCheckBoxClick: (Long) -> Unit = {}) {
 @Composable
 @Preview
 fun Preview() {
-    ListItem9(Food(3, "Hot Dog", "3", "NA", true))
+    ListItem9(Food(name = "Hot Dog", quantity = "3", category =  "NA", isInGroceryList = true))
 }

@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(it.route)
                             })
                     }) {
-                    Aisle9Navigation(navController, Modifier.padding(it))
+                    Aisle9Navigation(navController, shoppingViewModel, Modifier.padding(it))
                 }
             }
         }

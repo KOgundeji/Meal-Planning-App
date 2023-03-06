@@ -18,14 +18,34 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.kunle.aisle9b.screens.ListScreen
 import com.kunle.aisle9b.screens.MealScreen
 import com.kunle.aisle9b.screens.SettingsScreen
+import com.kunle.aisle9b.screens.ShoppingViewModel
 import com.kunle.aisle9b.ui.theme.BaseOrange
 
 @Composable
-fun Aisle9Navigation(navController: NavHostController, modifier: Modifier = Modifier) {
+fun Aisle9Navigation(
+    navController: NavHostController,
+    shoppingViewModel: ShoppingViewModel,
+    modifier: Modifier = Modifier
+) {
     NavHost(navController = navController, startDestination = GroceryScreens.MealScreen.name) {
-        composable(route = GroceryScreens.GroceryScreen.name) { ListScreen(modifier) }
-        composable(route = GroceryScreens.MealScreen.name) { MealScreen(modifier) }
-        composable(route = GroceryScreens.SettingsScreen.name) { SettingsScreen(modifier) }
+        composable(route = GroceryScreens.GroceryScreen.name) {
+            ListScreen(
+                shoppingViewModel = shoppingViewModel,
+                modifier = modifier
+            )
+        }
+        composable(route = GroceryScreens.MealScreen.name) {
+            MealScreen(
+                shoppingViewModel = shoppingViewModel,
+                modifier = modifier
+            )
+        }
+        composable(route = GroceryScreens.SettingsScreen.name) {
+            SettingsScreen(
+                shoppingViewModel = shoppingViewModel,
+                modifier = modifier
+            )
+        }
     }
 }
 

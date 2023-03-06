@@ -22,7 +22,7 @@ interface FoodDao {
     @Query("SELECT * FROM food_table WHERE name = :name LIMIT 1")
     suspend fun getFood(name: String): Food
 
-    @Query("SELECT * FROM food_table WHERE grocery_list")
+    @Query("SELECT * FROM food_table WHERE isInGroceryList")
     fun getAllGroceries(): Flow<List<Food>>
 
     @Query(value = "SELECT * FROM food_table")
