@@ -12,13 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
+import com.kunle.aisle9b.models.Settings
+import com.kunle.aisle9b.models.SettingsEnum
 import com.kunle.aisle9b.ui.theme.BaseOrange
-import com.kunle.aisle9b.ui.theme.OrangeTintLight
 
 @Composable
 fun SettingsScreen(shoppingViewModel: ShoppingViewModel, modifier: Modifier = Modifier) {
@@ -48,7 +47,15 @@ fun SettingsScreen(shoppingViewModel: ShoppingViewModel, modifier: Modifier = Mo
                 )
                 Checkbox(
                     checked = darkMode.value,
-                    onCheckedChange = {},
+                    onCheckedChange = {
+                        darkMode.value = it
+                        shoppingViewModel.updateSettings(
+                            Settings(
+                                settingsName = SettingsEnum.DarkMode.name,
+                                value = it
+                            )
+                        )
+                    },
                     enabled = true,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
@@ -73,7 +80,15 @@ fun SettingsScreen(shoppingViewModel: ShoppingViewModel, modifier: Modifier = Mo
                 )
                 Checkbox(
                     checked = screenPermOn.value,
-                    onCheckedChange = {},
+                    onCheckedChange = {
+                        screenPermOn.value = it
+                        shoppingViewModel.updateSettings(
+                            Settings(
+                                settingsName = SettingsEnum.ScreenPermOn.name,
+                                value = it
+                            )
+                        )
+                    },
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .weight(.2f)
@@ -98,7 +113,15 @@ fun SettingsScreen(shoppingViewModel: ShoppingViewModel, modifier: Modifier = Mo
                 )
                 Checkbox(
                     checked = categories.value,
-                    onCheckedChange = {},
+                    onCheckedChange = {
+                        categories.value = it
+                        shoppingViewModel.updateSettings(
+                            Settings(
+                                settingsName = SettingsEnum.Categories.name,
+                                value = it
+                            )
+                        )
+                    },
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .weight(.2f)

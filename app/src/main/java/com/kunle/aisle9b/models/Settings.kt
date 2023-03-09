@@ -11,7 +11,7 @@ data class Settings(
     @PrimaryKey
     val settingsName: String,
     @ColumnInfo
-    val value: Int) {}
+    val value: Boolean) {}
 
 enum class SettingsEnum {
     DarkMode,

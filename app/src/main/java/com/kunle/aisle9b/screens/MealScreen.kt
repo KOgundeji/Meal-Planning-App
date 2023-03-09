@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,10 +27,19 @@ import com.kunle.aisle9b.ui.theme.OrangeTintDark
 
 @Composable
 fun MealScreen(shoppingViewModel: ShoppingViewModel, modifier: Modifier = Modifier) {
-    Surface(modifier = modifier.fillMaxSize()){
+    Surface(modifier = modifier.fillMaxSize()) {
         Column {
-            AddDeleteBar()
-            MealListContent()
+            AddDeleteBar(
+                onAddClick = {  },
+                onDeleteClick = {
+                    shoppingViewModel.deleteEnabled.value = !shoppingViewModel.deleteEnabled.value
+                })
+            MealListContent(
+                mealList = fakeMealList,
+                deleteEnabled = shoppingViewModel.deleteEnabled
+            ) {
+                shoppingViewModel.updateMeal(it)
+            }
         }
     }
 }
@@ -40,7 +51,7 @@ val fakeMealList: List<Meal> = listOf(
 )
 
 @Composable
-fun AddDeleteBar() {
+fun AddDeleteBar(onAddClick: () -> Unit, onDeleteClick: () -> Unit) {
     Surface(
         modifier = Modifier
             .padding(top = 20.dp, bottom = 20.dp)
@@ -53,7 +64,9 @@ fun AddDeleteBar() {
             Icon(
                 imageVector = Icons.Filled.AddCircle,
                 contentDescription = "Add button",
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable { onAddClick },
                 tint = BaseOrange
             )
             Spacer(modifier = Modifier.width(2.dp))
@@ -67,7 +80,9 @@ fun AddDeleteBar() {
             Icon(
                 imageVector = Icons.Filled.Delete,
                 contentDescription = "Delete button",
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable { onDeleteClick },
                 tint = BaseOrange
             )
             Spacer(modifier = Modifier.width(2.dp))
@@ -83,11 +98,17 @@ fun AddDeleteBar() {
 }
 
 @Composable
-fun MealListContent() {
+fun MealListContent(
+    mealList: List<Meal>,
+    deleteEnabled: MutableState<Boolean>,
+    onMealEditClick: (Meal) -> Unit
+) {
     Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp)) {
         LazyColumn {
-            items(items = fakeMealList) {
-                MealItem9(meal = it)
+            items(items = mealList) {
+                MealItem9(meal = it, deleteEnabled = deleteEnabled.value) { meal ->
+                    onMealEditClick(meal)
+                }
             }
         }
     }

@@ -25,7 +25,7 @@ import com.kunle.aisle9b.ui.theme.OrangeTintLight
 import java.util.*
 
 @Composable
-fun ListItem9(food: Food, onCheckBoxClick: (UUID) -> Unit = {}) {
+fun ListItem9(food: Food, checkBoxEnabled: Boolean = true, onCheckBoxClick: (Food) -> Unit) {
     //move to ViewModel later
     val isChecked = remember { mutableStateOf(false) }
     Card(
@@ -43,10 +43,10 @@ fun ListItem9(food: Food, onCheckBoxClick: (UUID) -> Unit = {}) {
             Checkbox(
                 checked = isChecked.value,
                 onCheckedChange = {
-                    isChecked.value = it
-                    onCheckBoxClick(food.foodId)
+                    isChecked.value = true
+                    onCheckBoxClick(food)
                 },
-                enabled = true,
+                enabled = checkBoxEnabled,
                 colors = CheckboxDefaults.colors(
                     checkedColor = OrangeTintLight,
                     uncheckedColor = OrangeTintLight,
@@ -73,8 +73,8 @@ fun ListItem9(food: Food, onCheckBoxClick: (UUID) -> Unit = {}) {
 }
 
 
-@Composable
-@Preview
-fun Preview() {
-    ListItem9(Food(name = "Hot Dog", quantity = "3", category =  "NA", isInGroceryList = true))
-}
+//@Composable
+//@Preview
+//fun Preview() {
+//    ListItem9(Food(name = "Hot Dog", quantity = "3", category =  "NA", isInGroceryList = true))
+//}
