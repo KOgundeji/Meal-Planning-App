@@ -1,17 +1,23 @@
 package com.kunle.aisle9b.navigation
 
 enum class GroceryScreens {
-    GroceryScreen,
+    ListScreen,
     MealScreen,
-    SettingsScreen;
+    SettingsScreen,
+    AddMealScreen,
+    EditIngredientsScreen,
+    EditMealScreen;
 
     companion object {
         fun fromRoute(route:String?): GroceryScreens
         = when(route?.substringBefore("/")) {
-            GroceryScreen.name -> GroceryScreen
+            ListScreen.name -> ListScreen
             MealScreen.name -> MealScreen
             SettingsScreen.name -> SettingsScreen
-            null -> GroceryScreen
+            AddMealScreen.name -> AddMealScreen
+            EditIngredientsScreen.name -> EditIngredientsScreen
+            EditMealScreen.name -> EditMealScreen
+            null -> ListScreen
             else -> throw java.lang.IllegalArgumentException("Route $route is not recognized")
         }
     }

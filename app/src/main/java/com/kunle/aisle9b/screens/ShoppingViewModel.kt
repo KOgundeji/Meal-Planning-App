@@ -5,23 +5,23 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.BottomNavItem
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.repository.ShoppingRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+@HiltViewModel
 class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepository) :
     ViewModel() {
-
-    var deleteEnabled = mutableStateOf(false)
+    var mealDeleteEnabled = mutableStateOf(false)
+    val tempFoodList = mutableListOf<Food>()
 
     private var _foodList = MutableStateFlow<List<Food>>(emptyList())
     private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
@@ -133,7 +133,7 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
     val screenList = listOf(
         BottomNavItem(
             name = "Grocery List",
-            route = GroceryScreens.GroceryScreen.name,
+            route = GroceryScreens.ListScreen.name,
             icon = Icons.Filled.List
         ),
         BottomNavItem(

@@ -8,32 +8,36 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.ListItem9
 import com.kunle.aisle9b.ui.theme.BaseOrange
+import java.util.*
+
 
 @Composable
-fun AddMealScreen(
-    shoppingViewModel: ShoppingViewModel,
+fun EditMealScreen(
+    modifier: Modifier,
     navController: NavController,
-    modifier: Modifier
+    shoppingViewModel: ShoppingViewModel,
+    MWI_ID: String?
 ) {
+    val convertedMWIUUID = UUID.fromString(MWI_ID)
+    val mwi = shoppingViewModel.mealWithIngredientsList.collectAsState().value.first { MWI ->
+        MWI.meal.mealId == convertedMWIUUID
+    }
     val context = LocalContext.current
     val mealName = remember {
-        mutableStateOf("")
+        mutableStateOf(mwi.meal.name)
+    }
+    val ingredientList = remember {
+        mutableStateListOf(mwi.foods)
     }
     Surface(
         modifier = modifier
@@ -65,7 +69,7 @@ fun AddMealScreen(
                         .size(48.dp)
                         .weight(.25f)
                         .clickable {
-                            navController.navigate(route = GroceryScreens.EditIngredientsScreen.name)
+
                         }
                 )
                 Icon(
@@ -76,20 +80,7 @@ fun AddMealScreen(
                         .size(48.dp)
                         .weight(.25f)
                         .clickable {
-                            TODO("inflate add ingredient screen")
-                        }
-                )
-                Icon(
-                    imageVector = Icons.Filled.Create,
-                    contentDescription = "Save button",
-                    tint = BaseOrange,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .weight(.25f)
-                        .clickable {
-                            if (mealName.value.isNotEmpty()) {
-
-                            }
+                            TODO("inflate delete ingredient screen")
                         }
                 )
                 Icon(
@@ -105,10 +96,8 @@ fun AddMealScreen(
                 )
             }
             LazyColumn {
-                items(items = shoppingViewModel.tempFoodList) {
-                    ListItem9(food = it, checkBoxEnabled = false, viewModel = shoppingViewModel) { foodId ->
-                        navController.navigate(route = GroceryScreens.EditIngredientsScreen.name + "/$foodId")
-                    }
+                items(items = ingredientList[0]) {
+                    ListItem9(food = it, viewModel = shoppingViewModel, checkBoxEnabled = false)
                 }
             }
         }

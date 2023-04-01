@@ -15,17 +15,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.OrangeTintLight
-import java.util.UUID
 
 @Composable
-fun MealItem9(meal: Meal, deleteEnabled: Boolean, onCheckBoxClick: (Meal) -> Unit) {
+fun MealItem9(
+    meal: Meal,
+    deleteEnabled: Boolean,
+    onCheckBoxChecked: (Int) -> Unit,
+    onEditClicked: (String?) -> Unit
+) {
     //move to ViewModel later
     val isChecked = remember { mutableStateOf(false) }
     Card(
@@ -44,7 +46,7 @@ fun MealItem9(meal: Meal, deleteEnabled: Boolean, onCheckBoxClick: (Meal) -> Uni
                 checked = isChecked.value,
                 onCheckedChange = {
                     isChecked.value = true
-                    onCheckBoxClick(meal)
+                    onCheckBoxChecked(3) //change later
                 },
                 enabled = deleteEnabled,
                 colors = CheckboxDefaults.colors(

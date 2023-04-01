@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -21,13 +23,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.kunle.aisle9b.data.sampleFoodData
 import com.kunle.aisle9b.models.Food
+import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.ListItem9
 import com.kunle.aisle9b.ui.theme.BaseOrange
 
 @Composable
-fun ListScreen(shoppingViewModel: ShoppingViewModel, modifier: Modifier = Modifier) {
+fun ListScreen(
+    shoppingViewModel: ShoppingViewModel,
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
+    val foodList = shoppingViewModel.foodList.collectAsState().value
     Surface(modifier = modifier.fillMaxSize(1f)) {
         Column {
             GroceryInputTextField(
@@ -53,9 +62,10 @@ fun ListScreen(shoppingViewModel: ShoppingViewModel, modifier: Modifier = Modifi
                 )
             }
             LazyColumn {
-                items(items = sampleFoodData) {
-                    ListItem9(food = it) { food ->
-                        shoppingViewModel.updateFood(food)
+                items(items = foodList) {
+                    ListItem9(food = it, viewModel = shoppingViewModel) { foodId ->
+                        Log.d("Screen", "ListScreen: activated")
+                        navController.navigate(route = GroceryScreens.EditIngredientsScreen.name + "/$foodId")
                     }
                 }
             }
@@ -84,9 +94,11 @@ fun GroceryInputTextField(
         elevation = 6.dp,
         backgroundColor = Color.White,
     ) {
-        Row(modifier = Modifier.fillMaxWidth(),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically) {
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             TextField(
                 value = item.value,
                 onValueChange = {
@@ -126,7 +138,9 @@ fun GroceryInputTextField(
                                     isInGroceryList = true
                                 )
                             )
-                            Toast.makeText(context, "${item.value} added", Toast.LENGTH_SHORT).show()
+                            Toast
+                                .makeText(context, "${item.value} added", Toast.LENGTH_SHORT)
+                                .show()
                             item.value = ""
                             quantity.value = ""
                         }

@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.templates
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,14 +19,21 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.kunle.aisle9b.models.Food
+import com.kunle.aisle9b.screens.ShoppingViewModel
 import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.OrangeTintDark
 import com.kunle.aisle9b.ui.theme.OrangeTintLight
 import java.util.*
 
 @Composable
-fun ListItem9(food: Food, checkBoxEnabled: Boolean = true, onCheckBoxClick: (Food) -> Unit) {
+fun ListItem9(
+    food: Food,
+    viewModel: ShoppingViewModel,
+    checkBoxEnabled: Boolean = true,
+    onEditClicked: (String?) -> Unit = {}
+) {
     //move to ViewModel later
     val isChecked = remember { mutableStateOf(false) }
     Card(
@@ -44,7 +52,8 @@ fun ListItem9(food: Food, checkBoxEnabled: Boolean = true, onCheckBoxClick: (Foo
                 checked = isChecked.value,
                 onCheckedChange = {
                     isChecked.value = true
-                    onCheckBoxClick(food)
+                    food.isInGroceryList = false
+                    viewModel.updateFood(food)
                 },
                 enabled = checkBoxEnabled,
                 colors = CheckboxDefaults.colors(
@@ -63,7 +72,11 @@ fun ListItem9(food: Food, checkBoxEnabled: Boolean = true, onCheckBoxClick: (Foo
                 }
             }, modifier = Modifier.weight(1f))
             Icon(
-                modifier = Modifier.size(36.dp),
+                modifier = Modifier
+                    .size(36.dp)
+                    .clickable {
+                        onEditClicked(food.foodId.toString())
+                    },
                 imageVector = Icons.Filled.Edit,
                 contentDescription = "Edit Icon",
             )

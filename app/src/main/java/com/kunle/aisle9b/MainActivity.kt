@@ -15,13 +15,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.kunle.aisle9b.data.addFakeToDatabase
+import com.kunle.aisle9b.data.sampleFoodData
 import com.kunle.aisle9b.navigation.Aisle9Navigation
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.screens.ShoppingViewModel
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
 import com.kunle.aisle9b.ui.theme.OrangeTintDark
 import dagger.hilt.android.AndroidEntryPoint
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val shoppingViewModel:ShoppingViewModel by viewModels()
+//            addFakeToDatabase(list = sampleFoodData,viewModel = shoppingViewModel)
             Aisle9bTheme {
                 Scaffold(
                     topBar = {

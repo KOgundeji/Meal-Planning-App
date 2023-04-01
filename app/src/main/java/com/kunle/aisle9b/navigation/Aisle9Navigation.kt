@@ -1,6 +1,7 @@
 package com.kunle.aisle9b.navigation
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -12,13 +13,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.kunle.aisle9b.screens.ListScreen
-import com.kunle.aisle9b.screens.MealScreen
-import com.kunle.aisle9b.screens.SettingsScreen
-import com.kunle.aisle9b.screens.ShoppingViewModel
+import androidx.navigation.navArgument
+import com.kunle.aisle9b.screens.*
 import com.kunle.aisle9b.ui.theme.BaseOrange
 
 @Composable
@@ -28,22 +28,55 @@ fun Aisle9Navigation(
     modifier: Modifier = Modifier
 ) {
     NavHost(navController = navController, startDestination = GroceryScreens.MealScreen.name) {
-        composable(route = GroceryScreens.GroceryScreen.name) {
+        composable(route = GroceryScreens.ListScreen.name) {
             ListScreen(
                 shoppingViewModel = shoppingViewModel,
-                modifier = modifier
+                modifier = modifier,
+                navController = navController
             )
         }
         composable(route = GroceryScreens.MealScreen.name) {
             MealScreen(
                 shoppingViewModel = shoppingViewModel,
-                modifier = modifier
+                modifier = modifier,
+                navController = navController
             )
         }
         composable(route = GroceryScreens.SettingsScreen.name) {
             SettingsScreen(
                 shoppingViewModel = shoppingViewModel,
                 modifier = modifier
+            )
+        }
+        composable(route = GroceryScreens.AddMealScreen.name) {
+            AddMealScreen(
+                shoppingViewModel = shoppingViewModel,
+                navController = navController,
+                modifier = modifier
+            )
+        }
+        composable(
+            route = GroceryScreens.EditIngredientsScreen.name + "/{ingredient}",
+            arguments = listOf(navArgument(name = "ingredient") { type = NavType.StringType })
+        ) { backStackEntry ->
+            Log.d("Nav", "Aisle9Navigation: EditIngredients activated")
+            EditIngredientsScreen(
+                modifier = modifier,
+                ingredientIDString = backStackEntry.arguments?.getString("ingredient"),
+                navController = navController,
+                shoppingViewModel = shoppingViewModel
+            )
+        }
+        composable(
+            route = GroceryScreens.EditMealScreen.name + "/{meal}",
+            arguments = listOf(
+                navArgument(name = "meal") { type = NavType.StringType })
+        ) { backStackEntry ->
+            EditMealScreen(
+                modifier = modifier,
+                navController = navController,
+                shoppingViewModel = shoppingViewModel,
+                MWI_ID = backStackEntry.arguments?.getString("meal")
             )
         }
     }
