@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import com.kunle.aisle9b.data.sampleFoodData
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
+import com.kunle.aisle9b.templates.EditFoodDialog9
 import com.kunle.aisle9b.templates.ListItem9
 import com.kunle.aisle9b.ui.theme.BaseOrange
 
@@ -37,6 +38,8 @@ fun ListScreen(
     navController: NavController
 ) {
     val foodList = shoppingViewModel.foodList.collectAsState().value
+
+
     Surface(modifier = modifier.fillMaxSize(1f)) {
         Column {
             GroceryInputTextField(
@@ -63,10 +66,7 @@ fun ListScreen(
             }
             LazyColumn {
                 items(items = foodList) {
-                    ListItem9(food = it, viewModel = shoppingViewModel) { foodId ->
-                        Log.d("Screen", "ListScreen: activated")
-                        navController.navigate(route = GroceryScreens.EditIngredientsScreen.name + "/$foodId")
-                    }
+                    ListItem9(food = it, viewModel = shoppingViewModel)
                 }
             }
         }

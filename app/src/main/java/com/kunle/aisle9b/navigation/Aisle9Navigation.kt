@@ -56,18 +56,6 @@ fun Aisle9Navigation(
             )
         }
         composable(
-            route = GroceryScreens.EditIngredientsScreen.name + "/{ingredient}",
-            arguments = listOf(navArgument(name = "ingredient") { type = NavType.StringType })
-        ) { backStackEntry ->
-            Log.d("Nav", "Aisle9Navigation: EditIngredients activated")
-            EditIngredientsScreen(
-                modifier = modifier,
-                ingredientIDString = backStackEntry.arguments?.getString("ingredient"),
-                navController = navController,
-                shoppingViewModel = shoppingViewModel
-            )
-        }
-        composable(
             route = GroceryScreens.EditMealScreen.name + "/{meal}",
             arguments = listOf(
                 navArgument(name = "meal") { type = NavType.StringType })

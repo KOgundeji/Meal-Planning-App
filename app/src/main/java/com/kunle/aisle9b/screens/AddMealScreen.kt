@@ -106,9 +106,7 @@ fun AddMealScreen(
             }
             LazyColumn {
                 items(items = shoppingViewModel.tempFoodList) {
-                    ListItem9(food = it, checkBoxEnabled = false, viewModel = shoppingViewModel) { foodId ->
-                        navController.navigate(route = GroceryScreens.EditIngredientsScreen.name + "/$foodId")
-                    }
+                    ListItem9(food = it, checkBoxEnabled = false, viewModel = shoppingViewModel)
                 }
             }
         }

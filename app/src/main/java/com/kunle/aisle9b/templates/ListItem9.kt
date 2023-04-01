@@ -31,11 +31,24 @@ import java.util.*
 fun ListItem9(
     food: Food,
     viewModel: ShoppingViewModel,
-    checkBoxEnabled: Boolean = true,
-    onEditClicked: (String?) -> Unit = {}
+    checkBoxEnabled: Boolean = true
 ) {
     //move to ViewModel later
-    val isChecked = remember { mutableStateOf(false) }
+    val isChecked = remember {
+        mutableStateOf(false)
+    }
+
+    val showEditFoodDialog = remember {
+        mutableStateOf(false)
+    }
+
+    if (showEditFoodDialog.value) {
+        EditFoodDialog9(
+            food = food,
+            setShowDialog = { showEditFoodDialog.value = it },
+            setFood = { viewModel.updateFood(it) })
+    }
+
     Card(
         modifier = Modifier
             .padding(4.dp)
@@ -75,7 +88,7 @@ fun ListItem9(
                 modifier = Modifier
                     .size(36.dp)
                     .clickable {
-                        onEditClicked(food.foodId.toString())
+                        showEditFoodDialog.value = true
                     },
                 imageVector = Icons.Filled.Edit,
                 contentDescription = "Edit Icon",
@@ -84,6 +97,7 @@ fun ListItem9(
         }
     }
 }
+
 
 
 //@Composable
