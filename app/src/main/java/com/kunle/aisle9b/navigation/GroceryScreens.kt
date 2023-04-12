@@ -22,7 +22,7 @@ enum class GroceryScreens {
                 MealScreen -> "Meals"
                 SettingsScreen -> "Settings"
                 RecipeScreen -> "Recipes"
-                FoodListScreen -> "List of Food"
+                FoodListScreen -> "Saved Foods"
             }
     }
 }

@@ -9,9 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,13 +32,13 @@ fun EditFoodDialog9(
     setFood: (Food) -> Unit
 ) {
 
-    val ingredientName = remember {
+    var ingredientName by remember {
         mutableStateOf(food.name)
     }
-    val ingredientQuantity = remember {
+    var ingredientQuantity by remember {
         mutableStateOf(food.quantity)
     }
-    val ingredientCategory = remember {
+    var ingredientCategory by remember {
         mutableStateOf(food.category)
     }
 
@@ -73,40 +71,32 @@ fun EditFoodDialog9(
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     TextField(
-                        value = ingredientName.value,
-                        onValueChange = { ingredientName.value = it },
+                        value = ingredientName,
+                        onValueChange = { ingredientName = it },
                         label = { Text(text = "Ingredient") },
                         placeholder = { Text(text = "Type food name") },
                         colors = TextFieldDefaults.textFieldColors(containerColor = Color.Gray),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                     )
                     TextField(
-                        value = ingredientQuantity.value,
-                        onValueChange = { ingredientQuantity.value = it },
+                        value = ingredientQuantity,
+                        onValueChange = { ingredientQuantity = it },
                         label = { Text(text = "How much/How many?") },
                         placeholder = { Text(text = "Type quantity") },
                         colors = TextFieldDefaults.textFieldColors(containerColor = Color.Gray),
                     )
-                    TextField(
-                        value = ingredientCategory.value,
-                        onValueChange = {
-                            if (it.all { char ->
-                                    char.isLetter() || char.isWhitespace()
-                                }) ingredientCategory.value = it
-                        },
-                        label = { Text(text = "Select Category") },
-                        placeholder = { Text(text = "Select Category") },
-                        colors = TextFieldDefaults.textFieldColors(containerColor = Color.Gray),
-                    )
+                    CategoryDropDownMenu(
+                        category = ingredientCategory,
+                        newCategory = { ingredientCategory = it })
                     Spacer(modifier = Modifier.height(20.dp))
                     Box() {
                         Button(
                             onClick = {
                                 val newFood = Food(
                                     foodId = food.foodId,
-                                    name = ingredientName.value,
-                                    quantity = ingredientQuantity.value,
-                                    category = ingredientCategory.value,
+                                    name = ingredientName,
+                                    quantity = ingredientQuantity,
+                                    category = ingredientCategory,
                                     isInGroceryList = food.isInGroceryList
                                 )
                                 setFood(newFood)
@@ -121,6 +111,67 @@ fun EditFoodDialog9(
                             Text(text = "Save")
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
+    val categories = arrayOf(
+        "Baking/Spices",
+        "Beverages",
+        "Bread/Grain",
+        "Canned Goods",
+        "Condiments",
+        "Dairy",
+        "For the Home",
+        "Frozen Food",
+        "Fruit",
+        "Meat/Fish",
+        "Pet Supplies",
+        "Produce",
+        "Snacks",
+        "Toiletries",
+        "Uncategorized"
+    )
+
+    var expanded by remember { mutableStateOf(false) }
+    var selectedText by remember { mutableStateOf(category) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            TextField(
+                value = selectedText,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor(),
+                label = { Text(text = "Select Category") },
+                colors = TextFieldDefaults.textFieldColors(containerColor = Color.Gray),
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                categories.forEach { category ->
+                    DropdownMenuItem(
+                        text = { Text(text = category) },
+                        onClick = {
+                            selectedText = category
+                            newCategory(selectedText)
+                            expanded = false
+                        }
+                    )
                 }
             }
         }

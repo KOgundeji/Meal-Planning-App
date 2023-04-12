@@ -153,11 +153,6 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
             icon = Icons.Filled.DinnerDining
         ),
         BottomNavItem(
-            name = "Settings",
-            route = GroceryScreens.SettingsScreen.name,
-            icon = Icons.Filled.Settings
-        ),
-        BottomNavItem(
             name = "Recipes",
             route = GroceryScreens.RecipeScreen.name,
             icon = Icons.Filled.Notes

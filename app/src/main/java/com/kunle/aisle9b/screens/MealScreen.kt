@@ -10,9 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,8 +42,7 @@ fun MealScreen(
     }
 
     if (showAddMealDialog.value) {
-        AddMealDialog9(
-            meal = Meal(name = ""),
+        AddMealDialog9(meal = Meal(name = ""),
             shoppingViewModel = shoppingViewModel,
             setShowAddMealDialog = { showAddMealDialog.value = it })
     }
@@ -53,13 +50,10 @@ fun MealScreen(
     Surface(modifier = modifier.fillMaxSize()) {
         Column {
             if (!mealDeleteEnabled.value) {
-                AddDeleteBar(
-                    onAddClick = { showAddMealDialog.value = it },
-                    mealDeleteEnabled = { mealDeleteEnabled.value = it }
-                )
+                AddDeleteBar(onAddClick = { showAddMealDialog.value = it },
+                    mealDeleteEnabled = { mealDeleteEnabled.value = it })
             } else {
-                SubDeleteBar(
-                    shoppingViewModel = shoppingViewModel,
+                SubDeleteBar(shoppingViewModel = shoppingViewModel,
                     mealDeleteEnabled = { mealDeleteEnabled.value = it },
                     onDeleteClick = {
                         it.forEach { meal ->
@@ -70,23 +64,19 @@ fun MealScreen(
                     })
             }
             MealListContent(
-                deleteEnabled = mealDeleteEnabled,
-                shoppingViewModel = shoppingViewModel
+                deleteEnabled = mealDeleteEnabled, shoppingViewModel = shoppingViewModel
             )
         }
     }
 }
 
 val fakeMealList: List<Meal> = listOf(
-    Meal(name = "Pumpkin Pie"),
-    Meal(name = "Risotto"),
-    Meal(name = "Meat Lasagna")
+    Meal(name = "Pumpkin Pie"), Meal(name = "Risotto"), Meal(name = "Meat Lasagna")
 )
 
 @Composable
 fun AddDeleteBar(
-    onAddClick: (Boolean) -> Unit,
-    mealDeleteEnabled: (Boolean) -> Unit
+    onAddClick: (Boolean) -> Unit, mealDeleteEnabled: (Boolean) -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -184,8 +174,7 @@ fun SubDeleteBar(
 
 @Composable
 fun MealListContent(
-    deleteEnabled: MutableState<Boolean>,
-    shoppingViewModel: ShoppingViewModel
+    deleteEnabled: MutableState<Boolean>, shoppingViewModel: ShoppingViewModel
 ) {
     val mealList = shoppingViewModel.mealList.collectAsState().value
     val mealListCount = mealList.size
@@ -202,12 +191,6 @@ fun MealListContent(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun MealPreview() {
-//    MealScreen()
 }
 
 
