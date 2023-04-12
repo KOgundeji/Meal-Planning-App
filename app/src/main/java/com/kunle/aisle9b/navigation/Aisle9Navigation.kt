@@ -1,9 +1,8 @@
 package com.kunle.aisle9b.navigation
 
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,11 +12,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
 import com.kunle.aisle9b.screens.*
 import com.kunle.aisle9b.ui.theme.BaseOrange
 
@@ -25,51 +22,43 @@ import com.kunle.aisle9b.ui.theme.BaseOrange
 fun Aisle9Navigation(
     navController: NavHostController,
     shoppingViewModel: ShoppingViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    screenHeader: (String) -> Unit
 ) {
-    NavHost(navController = navController, startDestination = GroceryScreens.MealScreen.name) {
+    NavHost(navController = navController, startDestination = GroceryScreens.SettingsScreen.name) {
         composable(route = GroceryScreens.ListScreen.name) {
             ListScreen(
                 shoppingViewModel = shoppingViewModel,
                 modifier = modifier,
-                navController = navController
+                screenHeader = screenHeader
             )
         }
         composable(route = GroceryScreens.MealScreen.name) {
             MealScreen(
                 shoppingViewModel = shoppingViewModel,
                 modifier = modifier,
-                navController = navController
+                screenHeader = screenHeader
             )
         }
         composable(route = GroceryScreens.SettingsScreen.name) {
             SettingsScreen(
                 shoppingViewModel = shoppingViewModel,
-                modifier = modifier
-            )
-        }
-        composable(route = GroceryScreens.AddMealScreen.name) {
-            AddMealScreen(
-                shoppingViewModel = shoppingViewModel,
-                navController = navController,
-                modifier = modifier
-            )
-        }
-        composable(
-            route = GroceryScreens.EditMealScreen.name + "/{meal}",
-            arguments = listOf(
-                navArgument(name = "meal") { type = NavType.StringType })
-        ) { backStackEntry ->
-            EditMealScreen(
                 modifier = modifier,
-                navController = navController,
+                screenHeader = screenHeader
+            )
+        }
+        composable(route = GroceryScreens.RecipeScreen.name) {
+            RecipeScreen(
                 shoppingViewModel = shoppingViewModel,
-                MWI_ID = backStackEntry.arguments?.getString("meal")
+                modifier = modifier,
+                screenHeader = screenHeader,
+                navController = navController
             )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar9(
     items: List<BottomNavItem>,
@@ -78,18 +67,16 @@ fun BottomNavigationBar9(
     onItemClick: (BottomNavItem) -> Unit
 ) {
     val backStackEntry = navController.currentBackStackEntryAsState()
-    BottomNavigation(
+    NavigationBar(
         modifier = modifier,
-        backgroundColor = Color.DarkGray,
-        elevation = 5.dp
+        containerColor = Color.White,
+        tonalElevation = 5.dp
     ) {
         items.forEach { item ->
             val selected = item.route == backStackEntry.value?.destination?.route
             //its checking if the current navController route is the same as the selected route. If it is, highlight the item
-            BottomNavigationItem(
+            NavigationBarItem(
                 selected = selected,
-                selectedContentColor = BaseOrange,
-                unselectedContentColor = Color.Gray,
                 onClick = { onItemClick(item) },
                 icon = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -102,9 +89,7 @@ fun BottomNavigationBar9(
                         } else {
                             Icon(imageVector = item.icon, contentDescription = item.name)
                         }
-                        if (selected) {
-                            Text(text = item.name, textAlign = TextAlign.Center, fontSize = 10.sp)
-                        }
+                        Text(text = item.name, textAlign = TextAlign.Center, fontSize = 11.sp)
                     }
                 })
         }

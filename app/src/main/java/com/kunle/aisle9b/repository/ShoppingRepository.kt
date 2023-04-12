@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
+import java.util.*
 import javax.inject.Inject
 
 
@@ -45,7 +46,7 @@ class ShoppingRepository @Inject constructor(
     suspend fun insertPair(crossRef: MealFoodMap) = mealWithIngredientsDao.insertPair(crossRef)
     suspend fun deletePair(crossRef: MealFoodMap) = mealWithIngredientsDao.deletePair(crossRef)
     suspend fun updatePair(crossRef: MealFoodMap) = mealWithIngredientsDao.updatePair(crossRef)
-    suspend fun deleteSpecificMealIngredients(mealId: Long) =
+    suspend fun deleteSpecificMealIngredients(mealId: UUID) =
         mealWithIngredientsDao.deleteSpecificMealIngredients(mealId)
     suspend fun deleteAllMealWithIngredients() =
         mealWithIngredientsDao.deleteAllMealWithIngredients()

@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,22 +17,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.ShoppingViewModel
 import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.OrangeTintDark
 import com.kunle.aisle9b.ui.theme.OrangeTintLight
-import java.util.*
 
 @Composable
 fun ListItem9(
     food: Food,
-    viewModel: ShoppingViewModel,
-    checkBoxEnabled: Boolean = true
+    shoppingViewModel: ShoppingViewModel,
+    checkBoxEnabled: Boolean = true,
+    onEditClickNew: Boolean = false
 ) {
     //move to ViewModel later
     val isChecked = remember {
@@ -45,17 +44,22 @@ fun ListItem9(
     if (showEditFoodDialog.value) {
         EditFoodDialog9(
             food = food,
-            setShowDialog = { showEditFoodDialog.value = it },
-            setFood = { viewModel.updateFood(it) })
+            shoppingViewModel = shoppingViewModel,
+            setShowSelfDialog = { showEditFoodDialog.value = it },
+            setFood = { if (!onEditClickNew) {
+                shoppingViewModel.updateFood(it)
+            } else {
+                shoppingViewModel.tempIngredientList.remove(food)
+                shoppingViewModel.tempIngredientList.add(it)
+            } })
     }
 
     Card(
         modifier = Modifier
             .padding(4.dp)
-            .height(60.dp)
+            .height(50.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(corner = CornerSize(6.dp)),
-        elevation = 6.dp
+        shape = RoundedCornerShape(corner = CornerSize(6.dp))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -66,7 +70,7 @@ fun ListItem9(
                 onCheckedChange = {
                     isChecked.value = true
                     food.isInGroceryList = false
-                    viewModel.updateFood(food)
+                    shoppingViewModel.updateFood(food)
                 },
                 enabled = checkBoxEnabled,
                 colors = CheckboxDefaults.colors(

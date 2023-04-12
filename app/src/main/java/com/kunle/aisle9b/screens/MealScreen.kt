@@ -10,6 +10,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,9 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.navigation.GroceryScreens
+import com.kunle.aisle9b.templates.AddMealDialog9
 import com.kunle.aisle9b.templates.MealItem9
 import com.kunle.aisle9b.ui.theme.BaseOrange
 
@@ -27,32 +30,49 @@ import com.kunle.aisle9b.ui.theme.BaseOrange
 fun MealScreen(
     shoppingViewModel: ShoppingViewModel,
     modifier: Modifier = Modifier,
-    navController: NavController
+    screenHeader: (String) -> Unit
 ) {
+    val mealHeader = GroceryScreens.fullName(GroceryScreens.MealScreen)
+    screenHeader(mealHeader)
+
+    val mealDeleteEnabled = remember { mutableStateOf(false) }
+    val showAddMealDialog = remember { mutableStateOf(false) }
+    val list = shoppingViewModel.tempIngredientList
+
+    list.forEach {
+        Log.d("Test", "MealScreen: $it")
+    }
+
+    if (showAddMealDialog.value) {
+        AddMealDialog9(
+            meal = Meal(name = ""),
+            shoppingViewModel = shoppingViewModel,
+            setShowAddMealDialog = { showAddMealDialog.value = it })
+    }
 
     Surface(modifier = modifier.fillMaxSize()) {
         Column {
-            if (!shoppingViewModel.mealDeleteEnabled.value) {
+            if (!mealDeleteEnabled.value) {
                 AddDeleteBar(
-                    onAddClick = { navController.navigate(route = GroceryScreens.AddMealScreen.name) },
-                    onDeleteClick = { shoppingViewModel.mealDeleteEnabled.value = true }
+                    onAddClick = { showAddMealDialog.value = it },
+                    mealDeleteEnabled = { mealDeleteEnabled.value = it }
                 )
             } else {
                 SubDeleteBar(
+                    shoppingViewModel = shoppingViewModel,
+                    mealDeleteEnabled = { mealDeleteEnabled.value = it },
                     onDeleteClick = {
-
-                        shoppingViewModel.mealDeleteEnabled.value = false
-                    }, //if item is checked, delete
-                    onBackClick = { shoppingViewModel.mealDeleteEnabled.value = false })
+                        it.forEach { meal ->
+                            shoppingViewModel.deleteMeal(meal)
+                            shoppingViewModel.deleteSpecificMealIngredients(meal.mealId)
+                        }
+                        mealDeleteEnabled.value = false
+                    })
             }
             MealListContent(
-                deleteEnabled = shoppingViewModel.mealDeleteEnabled,
-                onCheckBoxChecked = {},
-                viewModel = shoppingViewModel
-            ) { mealId ->
-                Log.d("Screen", "MealScreen: activated")
-                navController.navigate(route = GroceryScreens.EditMealScreen.name + "/$mealId")
-            }
+                deleteEnabled = mealDeleteEnabled,
+                shoppingViewModel = shoppingViewModel
+            )
         }
     }
 }
@@ -64,7 +84,10 @@ val fakeMealList: List<Meal> = listOf(
 )
 
 @Composable
-fun AddDeleteBar(onAddClick: () -> Unit, onDeleteClick: () -> Unit) {
+fun AddDeleteBar(
+    onAddClick: (Boolean) -> Unit,
+    mealDeleteEnabled: (Boolean) -> Unit
+) {
     Surface(
         modifier = Modifier
             .padding(top = 20.dp, bottom = 20.dp)
@@ -79,7 +102,7 @@ fun AddDeleteBar(onAddClick: () -> Unit, onDeleteClick: () -> Unit) {
                 contentDescription = "Add button",
                 modifier = Modifier
                     .size(48.dp)
-                    .clickable { onAddClick },
+                    .clickable { onAddClick(true) },
                 tint = BaseOrange
             )
             Spacer(modifier = Modifier.width(2.dp))
@@ -95,7 +118,7 @@ fun AddDeleteBar(onAddClick: () -> Unit, onDeleteClick: () -> Unit) {
                 contentDescription = "Delete button",
                 modifier = Modifier
                     .size(48.dp)
-                    .clickable { onDeleteClick },
+                    .clickable { mealDeleteEnabled(true) },
                 tint = BaseOrange
             )
             Spacer(modifier = Modifier.width(2.dp))
@@ -110,7 +133,11 @@ fun AddDeleteBar(onAddClick: () -> Unit, onDeleteClick: () -> Unit) {
 }
 
 @Composable
-fun SubDeleteBar(onDeleteClick: () -> Unit, onBackClick: () -> Unit) {
+fun SubDeleteBar(
+    shoppingViewModel: ShoppingViewModel,
+    mealDeleteEnabled: (Boolean) -> Unit,
+    onDeleteClick: (List<Meal>) -> Unit,
+) {
     Surface(
         modifier = Modifier
             .padding(top = 20.dp, bottom = 20.dp)
@@ -125,7 +152,7 @@ fun SubDeleteBar(onDeleteClick: () -> Unit, onBackClick: () -> Unit) {
                 contentDescription = "Delete button",
                 modifier = Modifier
                     .size(48.dp)
-                    .clickable { onDeleteClick },
+                    .clickable { onDeleteClick(shoppingViewModel.mealDeleteList) },
                 tint = BaseOrange
             )
             Spacer(modifier = Modifier.width(2.dp))
@@ -141,7 +168,7 @@ fun SubDeleteBar(onDeleteClick: () -> Unit, onBackClick: () -> Unit) {
                 contentDescription = "Back button",
                 modifier = Modifier
                     .size(48.dp)
-                    .clickable { onBackClick },
+                    .clickable { mealDeleteEnabled(false) },
                 tint = BaseOrange
             )
             Spacer(modifier = Modifier.width(2.dp))
@@ -158,22 +185,20 @@ fun SubDeleteBar(onDeleteClick: () -> Unit, onBackClick: () -> Unit) {
 @Composable
 fun MealListContent(
     deleteEnabled: MutableState<Boolean>,
-    viewModel: ShoppingViewModel,
-    onCheckBoxChecked: (Int) -> Unit,
-    onMealEditClick: (String?) -> Unit
+    shoppingViewModel: ShoppingViewModel
 ) {
-    val mealList = viewModel.mealList.collectAsState().value
+    val mealList = shoppingViewModel.mealList.collectAsState().value
+    val mealListCount = mealList.size
+    shoppingViewModel.screenList[1].name = "Meals ($mealListCount)"
+
     Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp)) {
         LazyColumn {
             items(items = mealList) {
-                Log.d("Screen", "MealListContent: $it")
                 MealItem9(
                     meal = it,
                     deleteEnabled = deleteEnabled.value,
-                    onCheckBoxChecked = onCheckBoxChecked
-                ) { meal ->
-                    onMealEditClick(meal)
-                }
+                    shoppingViewModel = shoppingViewModel
+                )
             }
         }
     }

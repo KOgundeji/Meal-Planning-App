@@ -1,12 +1,16 @@
 package com.kunle.aisle9b.screens
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kunle.aisle9b.R
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.BottomNavItem
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -16,12 +20,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 @HiltViewModel
 class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepository) :
     ViewModel() {
-    var mealDeleteEnabled = mutableStateOf(false)
-    val tempFoodList = mutableListOf<Food>()
+
+    val mealDeleteList: MutableList<Meal> = mutableListOf()
+    val tempIngredientList = mutableStateListOf<Food>()
+
+    fun addIngredient(ingredient: Food) {
+        tempIngredientList.add(ingredient)
+
+    }
 
     private var _foodList = MutableStateFlow<List<Food>>(emptyList())
     private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
@@ -117,7 +128,7 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
     fun updatePair(crossRef: MealFoodMap) =
         viewModelScope.launch { repository.updatePair(crossRef) }
 
-    fun deleteSpecificMealIngredients(mealId: Long) =
+    fun deleteSpecificMealIngredients(mealId: UUID) =
         viewModelScope.launch { repository.deleteSpecificMealIngredients(mealId) }
 
     fun deleteAllMealWithIngredients() =
@@ -134,17 +145,22 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
         BottomNavItem(
             name = "Grocery List",
             route = GroceryScreens.ListScreen.name,
-            icon = Icons.Filled.List
+            icon = Icons.Filled.Checklist
         ),
         BottomNavItem(
             name = "Meals",
             route = GroceryScreens.MealScreen.name,
-            icon = Icons.Filled.Delete
+            icon = Icons.Filled.DinnerDining
         ),
         BottomNavItem(
             name = "Settings",
             route = GroceryScreens.SettingsScreen.name,
             icon = Icons.Filled.Settings
+        ),
+        BottomNavItem(
+            name = "Recipes",
+            route = GroceryScreens.RecipeScreen.name,
+            icon = Icons.Filled.Notes
         )
     )
 

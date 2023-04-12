@@ -3,8 +3,8 @@ package com.kunle.aisle9b.navigation
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class BottomNavItem(
-    val name: String,
+    var name: String,
     val route: String,
     val icon: ImageVector,
-    val badgeCount: Int = 0
+    var badgeCount: Int = 0
 )

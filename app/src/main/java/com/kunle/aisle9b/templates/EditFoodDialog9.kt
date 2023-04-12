@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.templates
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,6 +8,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,27 +23,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
+import com.kunle.aisle9b.screens.ShoppingViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditFoodDialog9(food: Food, setShowDialog: (Boolean) -> Unit, setFood: (Food) -> Unit) {
-
-    val foodId = food.foodId
-    var name = food.name
-    var quantity = food.quantity
-    var category = food.category
-    val isInGroceryList = food.isInGroceryList
+fun EditFoodDialog9(
+    food: Food,
+    shoppingViewModel: ShoppingViewModel,
+    setShowSelfDialog: (Boolean) -> Unit,
+    setFood: (Food) -> Unit
+) {
 
     val ingredientName = remember {
-        mutableStateOf(name)
+        mutableStateOf(food.name)
     }
     val ingredientQuantity = remember {
-        mutableStateOf(quantity)
+        mutableStateOf(food.quantity)
     }
     val ingredientCategory = remember {
-        mutableStateOf(category)
+        mutableStateOf(food.category)
     }
 
-    Dialog(onDismissRequest = { setShowDialog(false) }) {
+    Dialog(onDismissRequest = { setShowSelfDialog(false) }) {
         Surface(shape = RoundedCornerShape(16.dp), color = Color.DarkGray) {
             Box(contentAlignment = Alignment.Center) {
                 Column(modifier = Modifier.padding(20.dp)) {
@@ -65,32 +68,24 @@ fun EditFoodDialog9(food: Food, setShowDialog: (Boolean) -> Unit, setFood: (Food
                             modifier = Modifier
                                 .width(30.dp)
                                 .height(30.dp)
-                                .clickable { setShowDialog(false) }
+                                .clickable { setShowSelfDialog(false) }
                         )
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     TextField(
                         value = ingredientName.value,
-                        onValueChange = {
-                            if (it.all { char ->
-                                    char.isLetter() || char.isWhitespace()
-                                }) ingredientName.value = it
-                        },
+                        onValueChange = { ingredientName.value = it },
                         label = { Text(text = "Ingredient") },
                         placeholder = { Text(text = "Type food name") },
-                        colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Gray),
+                        colors = TextFieldDefaults.textFieldColors(containerColor = Color.Gray),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                     )
                     TextField(
                         value = ingredientQuantity.value,
-                        onValueChange = {
-                            if (it.all { char ->
-                                    char.isLetter() || char.isWhitespace()
-                                }) ingredientQuantity.value = it
-                        },
+                        onValueChange = { ingredientQuantity.value = it },
                         label = { Text(text = "How much/How many?") },
                         placeholder = { Text(text = "Type quantity") },
-                        colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Gray),
+                        colors = TextFieldDefaults.textFieldColors(containerColor = Color.Gray),
                     )
                     TextField(
                         value = ingredientCategory.value,
@@ -101,14 +96,22 @@ fun EditFoodDialog9(food: Food, setShowDialog: (Boolean) -> Unit, setFood: (Food
                         },
                         label = { Text(text = "Select Category") },
                         placeholder = { Text(text = "Select Category") },
-                        colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Gray),
+                        colors = TextFieldDefaults.textFieldColors(containerColor = Color.Gray),
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     Box() {
                         Button(
                             onClick = {
-                                //do something like update
-                                setShowDialog(false)
+                                val newFood = Food(
+                                    foodId = food.foodId,
+                                    name = ingredientName.value,
+                                    quantity = ingredientQuantity.value,
+                                    category = ingredientCategory.value,
+                                    isInGroceryList = food.isInGroceryList
+                                )
+                                setFood(newFood)
+                                Log.d("Test", "tempIngredientList")
+                                setShowSelfDialog(false)
                             },
                             shape = RoundedCornerShape(50.dp),
                             modifier = Modifier
