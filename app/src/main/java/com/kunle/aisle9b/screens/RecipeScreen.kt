@@ -11,6 +11,6 @@ fun RecipeScreen(
     shoppingViewModel: ShoppingViewModel,
     screenHeader: (String) -> Unit
 ) {
-   screenHeader(GroceryScreens.fullName(GroceryScreens.RecipeScreen))
+   screenHeader(GroceryScreens.headerTitle(GroceryScreens.RecipeScreen))
 
 }

@@ -5,17 +5,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Meal
@@ -30,43 +29,38 @@ fun MealScreen(
     modifier: Modifier = Modifier,
     screenHeader: (String) -> Unit
 ) {
-    val mealHeader = GroceryScreens.fullName(GroceryScreens.MealScreen)
+    val mealHeader = GroceryScreens.headerTitle(GroceryScreens.MealScreen)
     screenHeader(mealHeader)
 
-    val mealDeleteEnabled = remember { mutableStateOf(false) }
-    val showAddMealDialog = remember { mutableStateOf(false) }
+    var mealDeleteEnabled by remember { mutableStateOf(false) }
+    var showAddMealDialog by remember { mutableStateOf(false) }
     val list = shoppingViewModel.tempIngredientList
 
-    list.forEach {
-        Log.d("Test", "MealScreen: $it")
-    }
-
-    if (showAddMealDialog.value) {
+    if (showAddMealDialog) {
         AddMealDialog9(meal = Meal(name = ""),
             shoppingViewModel = shoppingViewModel,
-            setShowAddMealDialog = { showAddMealDialog.value = it })
+            setShowAddMealDialog = { showAddMealDialog = it })
     }
 
-    Surface(modifier = modifier.fillMaxSize()) {
-        Column {
-            if (!mealDeleteEnabled.value) {
-                AddDeleteBar(onAddClick = { showAddMealDialog.value = it },
-                    mealDeleteEnabled = { mealDeleteEnabled.value = it })
-            } else {
-                SubDeleteBar(shoppingViewModel = shoppingViewModel,
-                    mealDeleteEnabled = { mealDeleteEnabled.value = it },
-                    onDeleteClick = {
-                        it.forEach { meal ->
-                            shoppingViewModel.deleteMeal(meal)
-                            shoppingViewModel.deleteSpecificMealIngredients(meal.mealId)
-                        }
-                        mealDeleteEnabled.value = false
-                    })
-            }
-            MealListContent(
-                deleteEnabled = mealDeleteEnabled, shoppingViewModel = shoppingViewModel
-            )
+    Column(modifier = modifier.fillMaxSize()) {
+        if (!mealDeleteEnabled) {
+            AddDeleteBar(onAddClick = { showAddMealDialog = it },
+                mealDeleteEnabled = { mealDeleteEnabled = it })
+        } else {
+            SubDeleteBar(shoppingViewModel = shoppingViewModel,
+                mealDeleteEnabled = { mealDeleteEnabled = it },
+                onDeleteClick = {
+                    it.forEach { meal ->
+                        shoppingViewModel.deleteMeal(meal)
+                        shoppingViewModel.deleteSpecificMealIngredients(meal.mealId)
+                    }
+                    mealDeleteEnabled = false
+                })
         }
+        MealListContent(
+            mealDeleteEnabled = mealDeleteEnabled,
+            shoppingViewModel = shoppingViewModel
+        )
     }
 }
 
@@ -76,47 +70,46 @@ val fakeMealList: List<Meal> = listOf(
 
 @Composable
 fun AddDeleteBar(
-    onAddClick: (Boolean) -> Unit, mealDeleteEnabled: (Boolean) -> Unit
+    onAddClick: (Boolean) -> Unit,
+    mealDeleteEnabled: (Boolean) -> Unit
 ) {
-    Surface(
+    Row(
         modifier = Modifier
-            .padding(top = 20.dp, bottom = 20.dp)
-            .fillMaxWidth()
+            .padding(vertical = 15.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
+            modifier = Modifier.clickable { onAddClick(true) },
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
         ) {
             Icon(
                 imageVector = Icons.Filled.AddCircle,
                 contentDescription = "Add button",
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable { onAddClick(true) },
+                modifier = Modifier.size(48.dp),
                 tint = BaseOrange
             )
-            Spacer(modifier = Modifier.width(2.dp))
             Text(
                 text = "Add",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 4.dp)
             )
-            Spacer(modifier = Modifier.width(35.dp))
+        }
+        Row(
+            modifier = Modifier.clickable { mealDeleteEnabled(true) },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Icon(
                 imageVector = Icons.Filled.Delete,
                 contentDescription = "Delete button",
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable { mealDeleteEnabled(true) },
+                modifier = Modifier.size(48.dp),
                 tint = BaseOrange
             )
-            Spacer(modifier = Modifier.width(2.dp))
             Text(
                 text = "Delete",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 4.dp)
             )
         }
     }
@@ -128,45 +121,44 @@ fun SubDeleteBar(
     mealDeleteEnabled: (Boolean) -> Unit,
     onDeleteClick: (List<Meal>) -> Unit,
 ) {
-    Surface(
+
+    Row(
         modifier = Modifier
-            .padding(top = 20.dp, bottom = 20.dp)
-            .fillMaxWidth()
+            .padding(vertical = 15.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            modifier = Modifier.clickable { onDeleteClick(shoppingViewModel.mealDeleteList) },
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Filled.AddCircle,
+                imageVector = Icons.Filled.Delete,
                 contentDescription = "Delete button",
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable { onDeleteClick(shoppingViewModel.mealDeleteList) },
+                modifier = Modifier.size(48.dp),
                 tint = BaseOrange
             )
-            Spacer(modifier = Modifier.width(2.dp))
             Text(
                 text = "Delete",
                 fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 4.dp)
+                fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.width(35.dp))
+        }
+        Row(
+            modifier = Modifier.clickable { mealDeleteEnabled(false) },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Back button",
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable { mealDeleteEnabled(false) },
+                modifier = Modifier.size(48.dp),
                 tint = BaseOrange
             )
-            Spacer(modifier = Modifier.width(2.dp))
             Text(
                 text = "Go Back",
                 fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 4.dp)
+                fontWeight = FontWeight.Bold
             )
         }
     }
@@ -174,18 +166,19 @@ fun SubDeleteBar(
 
 @Composable
 fun MealListContent(
-    deleteEnabled: MutableState<Boolean>, shoppingViewModel: ShoppingViewModel
+    mealDeleteEnabled: Boolean,
+    shoppingViewModel: ShoppingViewModel
 ) {
     val mealList = shoppingViewModel.mealList.collectAsState().value
     val mealListCount = mealList.size
     shoppingViewModel.screenList[1].name = "Meals ($mealListCount)"
 
-    Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp)) {
-        LazyColumn {
+    Column {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             items(items = mealList) {
                 MealItem9(
                     meal = it,
-                    deleteEnabled = deleteEnabled.value,
+                    deleteEnabled = mealDeleteEnabled,
                     shoppingViewModel = shoppingViewModel
                 )
             }

@@ -8,7 +8,7 @@ enum class GroceryScreens {
     FoodListScreen;
 
     companion object {
-        fun fullName(header: GroceryScreens): String =
+        fun headerTitle(header: GroceryScreens): String =
             when (header) {
                 ListScreen -> "Grocery List"
                 MealScreen -> "Meals"

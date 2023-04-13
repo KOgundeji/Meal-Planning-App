@@ -139,8 +139,8 @@ fun AddMealDialog9(
                             ListItem9(
                                 food = it,
                                 shoppingViewModel = shoppingViewModel,
-                                checkBoxEnabled = false,
-                                onEditClickNew = true
+                                checkBoxShown = false,
+                                onEditClickNewFood = true
                             )
                         }
                     }

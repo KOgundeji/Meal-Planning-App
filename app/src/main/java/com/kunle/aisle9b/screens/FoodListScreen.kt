@@ -44,7 +44,7 @@ fun FoodListScreen(
             fontSize = 16.sp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp)
+                .padding(start = 10.dp, end = 10.dp, top = 6.dp)
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -71,7 +71,7 @@ fun FoodListScreen(
                 ListItem9(
                     food = it,
                     shoppingViewModel = shoppingViewModel,
-                    checkBoxEnabled = false
+                    checkBoxShown = false
                 )
             }
         }

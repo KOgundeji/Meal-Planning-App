@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.kunle.aisle9b.navigation.GroceryScreens
 
@@ -26,7 +27,8 @@ fun AdditionalScreenOptions(navController: NavController) {
         IconButton(onClick = { expanded = !expanded }) {
             Icon(
                 imageVector = Icons.Filled.MoreVert,
-                contentDescription = "Additional screen options"
+                contentDescription = "Additional screen options",
+                tint = Color.White
             )
 
         }
@@ -34,7 +36,7 @@ fun AdditionalScreenOptions(navController: NavController) {
             expanded = expanded,
             onDismissRequest = { expanded = false }) {
             DropdownMenuItem(
-                text = { Text(text = GroceryScreens.fullName(GroceryScreens.FoodListScreen)) },
+                text = { Text(text = GroceryScreens.headerTitle(GroceryScreens.FoodListScreen)) },
                 onClick = {
                     navController.navigate(GroceryScreens.FoodListScreen.name)
                     expanded = false
@@ -47,7 +49,7 @@ fun AdditionalScreenOptions(navController: NavController) {
                 }
             )
             DropdownMenuItem(
-                text = { Text(text = GroceryScreens.fullName(GroceryScreens.SettingsScreen)) },
+                text = { Text(text = GroceryScreens.headerTitle(GroceryScreens.SettingsScreen)) },
                 onClick = {
                     navController.navigate(GroceryScreens.SettingsScreen.name)
                     expanded = false

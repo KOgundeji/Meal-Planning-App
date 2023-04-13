@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,9 +24,12 @@ import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.OrangeTintLight
 
 @Composable
-fun MealItem9(meal: Meal, deleteEnabled: Boolean, shoppingViewModel: ShoppingViewModel) {
+fun MealItem9(
+    meal: Meal,
+    deleteEnabled: Boolean,
+    shoppingViewModel: ShoppingViewModel,
+) {
     var isChecked by remember { mutableStateOf(false) }
-
     var showEditMealDialog by remember { mutableStateOf(false) }
 
     if (showEditMealDialog) {
@@ -35,50 +39,54 @@ fun MealItem9(meal: Meal, deleteEnabled: Boolean, shoppingViewModel: ShoppingVie
             setShowDialog = { showEditMealDialog = it })
     }
 
-
     Card(
         modifier = Modifier
-            .padding(4.dp)
-            .height(60.dp)
+            .padding(horizontal = 6.dp)
             .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(corner = CornerSize(6.dp))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
         ) {
-            Checkbox(
-                checked = isChecked,
-                onCheckedChange = {
-                    isChecked = !isChecked
-                    if (isChecked) {
-                        shoppingViewModel.mealDeleteList.add(meal)
-                    } else {
-                        shoppingViewModel.mealDeleteList.remove(meal)
-                    }
-                },
-                enabled = deleteEnabled,
-                colors = CheckboxDefaults.colors(
-                    checkedColor = OrangeTintLight,
-                    uncheckedColor = OrangeTintLight,
-                    checkmarkColor = Color.Black
-                ),
-                modifier = Modifier.size(36.dp)
-            )
-            Text(text = buildAnnotatedString {
-                withStyle(style = SpanStyle(color = BaseOrange, fontSize = 22.sp)) {
-                    append(meal.name)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (deleteEnabled) {
+                    Checkbox(
+                        checked = isChecked,
+                        onCheckedChange = {
+                            isChecked = !isChecked
+                            if (isChecked) {
+                                shoppingViewModel.mealDeleteList.add(meal)
+                            } else {
+                                shoppingViewModel.mealDeleteList.remove(meal)
+                            }
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = OrangeTintLight,
+                            uncheckedColor = Color.Black,
+                            checkmarkColor = Color.Black
+                        ),
+                        modifier = Modifier.size(36.dp)
+                    )
                 }
-            }, modifier = Modifier.weight(1f))
+                Text(
+                    text = meal.name,
+                    color = Color.Black,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             Icon(
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier
+                    .size(36.dp)
                     .clickable { showEditMealDialog = true },
                 imageVector = Icons.Filled.Edit,
                 contentDescription = "Edit Icon",
             )
-            Spacer(modifier = Modifier.width(5.dp))
-
-
         }
     }
 }

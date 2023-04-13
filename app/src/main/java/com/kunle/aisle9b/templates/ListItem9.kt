@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -20,16 +19,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.ShoppingViewModel
-import com.kunle.aisle9b.ui.theme.BaseOrange
-import com.kunle.aisle9b.ui.theme.OrangeTintDark
 import com.kunle.aisle9b.ui.theme.OrangeTintLight
 
 @Composable
 fun ListItem9(
     food: Food,
     shoppingViewModel: ShoppingViewModel,
-    checkBoxEnabled: Boolean = true,
-    onEditClickNew: Boolean = false
+    checkBoxShown: Boolean = true,
+    onEditClickNewFood: Boolean = false
 ) {
     var isChecked by remember { mutableStateOf(false) }
     var showEditFoodDialog by remember { mutableStateOf(false) }
@@ -40,7 +37,7 @@ fun ListItem9(
             shoppingViewModel = shoppingViewModel,
             setShowSelfDialog = { showEditFoodDialog = it },
             setFood = {
-                if (!onEditClickNew) {
+                if (!onEditClickNewFood) {
                     shoppingViewModel.updateFood(it)
                 } else {
                     shoppingViewModel.tempIngredientList.remove(food)
@@ -61,26 +58,27 @@ fun ListItem9(
             horizontalArrangement = Arrangement.Start,
             modifier = Modifier.padding(8.dp)
         ) {
-            Checkbox(
-                checked = isChecked,
-                onCheckedChange = {
-                    isChecked = true
-                    food.isInGroceryList = false
-                    shoppingViewModel.updateFood(food)
-                },
-                enabled = checkBoxEnabled,
-                colors = CheckboxDefaults.colors(
-                    checkedColor = OrangeTintLight,
-                    uncheckedColor = Color.Black,
-                    checkmarkColor = Color.Black
-                ),
-                modifier = Modifier.size(36.dp)
-            )
+            if (checkBoxShown) {
+                Checkbox(
+                    checked = isChecked,
+                    onCheckedChange = {
+                        isChecked = true
+                        food.isInGroceryList = false
+                        shoppingViewModel.updateFood(food)
+                    },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = OrangeTintLight,
+                        uncheckedColor = Color.Black,
+                        checkmarkColor = Color.Black
+                    ),
+                    modifier = Modifier.size(36.dp)
+                )
+            }
             Text(text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
                         color = Color.Black,
-                        fontSize = 22.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                 ) {
@@ -109,10 +107,3 @@ fun ListItem9(
         }
     }
 }
-
-
-//@Composable
-//@Preview
-//fun Preview() {
-//    ListItem9(Food(name = "Hot Dog", quantity = "3", category =  "NA", isInGroceryList = true))
-//}

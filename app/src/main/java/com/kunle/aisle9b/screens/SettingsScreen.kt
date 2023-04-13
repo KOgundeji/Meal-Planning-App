@@ -1,7 +1,6 @@
 package com.kunle.aisle9b.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +14,6 @@ import com.kunle.aisle9b.models.Settings
 import com.kunle.aisle9b.models.SettingsEnum
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.ui.theme.BaseOrange
-import com.kunle.aisle9b.ui.theme.OrangeTintLight
 
 @Composable
 fun SettingsScreen(
@@ -23,7 +21,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     screenHeader: (String) -> Unit
 ) {
-    val settingsHeader = GroceryScreens.fullName(GroceryScreens.SettingsScreen)
+    val settingsHeader = GroceryScreens.headerTitle(GroceryScreens.SettingsScreen)
     screenHeader(settingsHeader)
 
     var darkMode by remember { mutableStateOf(false) }

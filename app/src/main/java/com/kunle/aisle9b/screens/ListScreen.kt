@@ -1,7 +1,6 @@
 package com.kunle.aisle9b.screens
 
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,8 +31,7 @@ fun ListScreen(
     modifier: Modifier = Modifier,
     screenHeader: (String) -> Unit
 ) {
-
-    val listHeader = GroceryScreens.fullName(GroceryScreens.ListScreen)
+    val listHeader = GroceryScreens.headerTitle(GroceryScreens.ListScreen)
     screenHeader(listHeader)
 
     val groceryList = shoppingViewModel.groceryList.collectAsState().value
@@ -56,7 +54,6 @@ fun ListScreen(
             }
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

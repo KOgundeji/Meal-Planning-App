@@ -44,7 +44,7 @@ fun ShoppingApp(shoppingViewModel: ShoppingViewModel) {
                     actions = {
                         AdditionalScreenOptions(navController = navController)
                     },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         titleContentColor = MaterialTheme.colorScheme.onPrimary
                     )

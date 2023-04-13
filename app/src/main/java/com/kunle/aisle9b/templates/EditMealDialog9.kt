@@ -115,7 +115,7 @@ fun EditMealDialog9(
                             ListItem9(
                                 food = it,
                                 shoppingViewModel = shoppingViewModel,
-                                checkBoxEnabled = false
+                                checkBoxShown = false
                             )
                         }
                     }
