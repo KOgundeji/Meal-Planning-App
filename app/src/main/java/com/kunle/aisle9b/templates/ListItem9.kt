@@ -8,14 +8,13 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,59 +31,68 @@ fun ListItem9(
     checkBoxEnabled: Boolean = true,
     onEditClickNew: Boolean = false
 ) {
-    //move to ViewModel later
-    val isChecked = remember {
-        mutableStateOf(false)
-    }
+    var isChecked by remember { mutableStateOf(false) }
+    var showEditFoodDialog by remember { mutableStateOf(false) }
 
-    val showEditFoodDialog = remember {
-        mutableStateOf(false)
-    }
-
-    if (showEditFoodDialog.value) {
+    if (showEditFoodDialog) {
         EditFoodDialog9(
             food = food,
             shoppingViewModel = shoppingViewModel,
-            setShowSelfDialog = { showEditFoodDialog.value = it },
-            setFood = { if (!onEditClickNew) {
-                shoppingViewModel.updateFood(it)
-            } else {
-                shoppingViewModel.tempIngredientList.remove(food)
-                shoppingViewModel.tempIngredientList.add(it)
-            } })
+            setShowSelfDialog = { showEditFoodDialog = it },
+            setFood = {
+                if (!onEditClickNew) {
+                    shoppingViewModel.updateFood(it)
+                } else {
+                    shoppingViewModel.tempIngredientList.remove(food)
+                    shoppingViewModel.tempIngredientList.add(it)
+                }
+            })
     }
 
     Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
-            .padding(4.dp)
-            .height(50.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(corner = CornerSize(6.dp))
+            .fillMaxWidth()
+            .padding(horizontal = 6.dp),
+        shape = RoundedCornerShape(corner = CornerSize(6.dp)),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.padding(8.dp)
         ) {
             Checkbox(
-                checked = isChecked.value,
+                checked = isChecked,
                 onCheckedChange = {
-                    isChecked.value = true
+                    isChecked = true
                     food.isInGroceryList = false
                     shoppingViewModel.updateFood(food)
                 },
                 enabled = checkBoxEnabled,
                 colors = CheckboxDefaults.colors(
                     checkedColor = OrangeTintLight,
-                    uncheckedColor = OrangeTintLight,
+                    uncheckedColor = Color.Black,
                     checkmarkColor = Color.Black
                 ),
                 modifier = Modifier.size(36.dp)
             )
             Text(text = buildAnnotatedString {
-                withStyle(style = SpanStyle(color = BaseOrange, fontSize = 22.sp)) {
+                withStyle(
+                    style = SpanStyle(
+                        color = Color.Black,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                ) {
                     append(food.name)
                 }
-                withStyle(style = SpanStyle(color = OrangeTintDark, fontSize = 16.sp)) {
+                withStyle(
+                    style = SpanStyle(
+                        color = Color.Gray,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                ) {
                     append(" (${food.quantity})")
                 }
             }, modifier = Modifier.weight(1f))
@@ -92,7 +100,7 @@ fun ListItem9(
                 modifier = Modifier
                     .size(36.dp)
                     .clickable {
-                        showEditFoodDialog.value = true
+                        showEditFoodDialog = true
                     },
                 imageVector = Icons.Filled.Edit,
                 contentDescription = "Edit Icon",
@@ -101,7 +109,6 @@ fun ListItem9(
         }
     }
 }
-
 
 
 //@Composable

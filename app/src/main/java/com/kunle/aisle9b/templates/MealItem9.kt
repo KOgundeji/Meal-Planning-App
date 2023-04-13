@@ -8,9 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,18 +24,15 @@ import com.kunle.aisle9b.ui.theme.OrangeTintLight
 
 @Composable
 fun MealItem9(meal: Meal, deleteEnabled: Boolean, shoppingViewModel: ShoppingViewModel) {
-    val isChecked = remember {
-        mutableStateOf(false) }
+    var isChecked by remember { mutableStateOf(false) }
 
-    val showEditMealDialog = remember {
-        mutableStateOf(false)
-    }
+    var showEditMealDialog by remember { mutableStateOf(false) }
 
-    if (showEditMealDialog.value) {
+    if (showEditMealDialog) {
         EditMealDialog9(
             meal = meal,
             shoppingViewModel = shoppingViewModel,
-            setShowDialog = { showEditMealDialog.value = it })
+            setShowDialog = { showEditMealDialog = it })
     }
 
 
@@ -53,10 +48,10 @@ fun MealItem9(meal: Meal, deleteEnabled: Boolean, shoppingViewModel: ShoppingVie
             horizontalArrangement = Arrangement.Start
         ) {
             Checkbox(
-                checked = isChecked.value,
+                checked = isChecked,
                 onCheckedChange = {
-                    isChecked.value = !isChecked.value
-                    if (isChecked.value) {
+                    isChecked = !isChecked
+                    if (isChecked) {
                         shoppingViewModel.mealDeleteList.add(meal)
                     } else {
                         shoppingViewModel.mealDeleteList.remove(meal)
@@ -77,7 +72,7 @@ fun MealItem9(meal: Meal, deleteEnabled: Boolean, shoppingViewModel: ShoppingVie
             }, modifier = Modifier.weight(1f))
             Icon(
                 modifier = Modifier.size(36.dp)
-                    .clickable { showEditMealDialog.value = true },
+                    .clickable { showEditMealDialog = true },
                 imageVector = Icons.Filled.Edit,
                 contentDescription = "Edit Icon",
             )

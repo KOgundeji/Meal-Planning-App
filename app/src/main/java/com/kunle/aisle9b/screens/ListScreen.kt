@@ -1,6 +1,7 @@
 package com.kunle.aisle9b.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.ListItem9
+import com.kunle.aisle9b.ui.theme.OrangeTintDark
 import kotlinx.coroutines.launch
 
 @Composable
@@ -48,7 +50,7 @@ fun ListScreen(
                 coroutineScope.launch { listState.animateScrollToItem(index = 0) }
             }
         )
-        LazyColumn(state = listState) {
+        LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(4.dp)) {
             items(items = groceryList) {
                 ListItem9(food = it, shoppingViewModel = shoppingViewModel)
             }
@@ -78,6 +80,7 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit = {}) {
             singleLine = true,
             onValueChange = { item = it },
             modifier = Modifier.weight(.6f),
+            colors = TextFieldDefaults.textFieldColors(containerColor = OrangeTintDark),
             label = { Text(text = "New item") }
         )
         Spacer(modifier = Modifier.width(10.dp))
@@ -86,6 +89,7 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit = {}) {
             singleLine = true,
             onValueChange = { quantity = it },
             modifier = Modifier.weight(.4f),
+            colors = TextFieldDefaults.textFieldColors(containerColor = Color.LightGray),
             label = { Text(text = "#") },
         )
         Spacer(modifier = Modifier.width(10.dp))
@@ -110,22 +114,25 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit = {}) {
                         quantity = ""
                         focusManager.clearFocus()
                     }
-                }
+                },
+            colors = CardDefaults.cardColors(containerColor = Color.LightGray)
         ) {
-            Box(contentAlignment = Alignment.Center) {
+            Box(
+                contentAlignment = Alignment.Center,
+            ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     Icon(
                         imageVector = Icons.Filled.AddCircle,
                         contentDescription = "Add Circle",
-                        tint = Color.White
+                        tint = Color.Black
                     )
-                    Spacer(modifier = Modifier.width(5.dp))
                     Text(
                         text = "Add",
-                        color = Color.White,
+                        color = Color.Black,
                         fontWeight = FontWeight.Bold
                     )
                 }

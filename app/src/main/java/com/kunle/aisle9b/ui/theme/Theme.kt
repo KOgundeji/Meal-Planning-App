@@ -17,7 +17,7 @@ private val LightColorPalette = lightColorScheme(
     primary = BaseOrange,
     secondary = BaseYellow,
     background = OrangeTintLight,
-    onPrimary = Color.Black
+    onPrimary = Color.White
 
     /* Other default colors to override
     background = Color.White,
