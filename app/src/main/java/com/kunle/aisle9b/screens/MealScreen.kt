@@ -170,8 +170,6 @@ fun MealListContent(
     shoppingViewModel: ShoppingViewModel
 ) {
     val mealList = shoppingViewModel.mealList.collectAsState().value
-    val mealListCount = mealList.size
-    shoppingViewModel.screenList[1].name = "Meals ($mealListCount)"
 
     Column {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {

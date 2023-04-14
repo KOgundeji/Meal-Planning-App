@@ -1,11 +1,15 @@
 package com.kunle.aisle9b.navigation
 
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -16,7 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.kunle.aisle9b.screens.*
-import com.kunle.aisle9b.ui.theme.BaseOrange
+import com.kunle.aisle9b.ui.theme.*
 
 @Composable
 fun Aisle9Navigation(
@@ -25,7 +29,7 @@ fun Aisle9Navigation(
     modifier: Modifier = Modifier,
     screenHeader: (String) -> Unit
 ) {
-    NavHost(navController = navController, startDestination = GroceryScreens.MealScreen.name) {
+    NavHost(navController = navController, startDestination = GroceryScreens.ListScreen.name) {
         composable(route = GroceryScreens.ListScreen.name) {
             ListScreen(
                 shoppingViewModel = shoppingViewModel,
@@ -69,13 +73,16 @@ fun Aisle9Navigation(
 fun BottomNavigationBar9(
     items: List<BottomNavItem>,
     navController: NavController,
-    modifier: Modifier = Modifier,
+    shoppingViewModel: ShoppingViewModel,
+    badgeCount: Int,
     onItemClick: (BottomNavItem) -> Unit
 ) {
+    val darkMode = shoppingViewModel.darkModeSetting.value
     val backStackEntry = navController.currentBackStackEntryAsState()
+
     NavigationBar(
-        modifier = modifier,
-        containerColor = Color.White,
+        containerColor = if (darkMode) DM_DarkGray else OrangeTintDark,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         tonalElevation = 5.dp
     ) {
         items.forEach { item ->
@@ -83,12 +90,14 @@ fun BottomNavigationBar9(
             //its checking if the current navController route is the same as the selected route. If it is, highlight the item
             NavigationBarItem(
                 selected = selected,
+                colors = NavigationBarItemDefaults.colors(indicatorColor = if (darkMode) OrangeTintDark else DM_DarkGray),
                 onClick = { onItemClick(item) },
                 icon = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (item.badgeCount > 0) {
+                        if (item.name == "Grocery List") {
                             BadgedBox(badge = {
-                                Badge { Text(text = item.badgeCount.toString()) }
+                                Badge(containerColor = BaseOrange) {
+                                    Text(text = badgeCount.toString()) }
                             }) {
                                 Icon(imageVector = item.icon, contentDescription = item.name)
                             }

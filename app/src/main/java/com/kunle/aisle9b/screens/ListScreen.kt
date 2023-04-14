@@ -24,6 +24,8 @@ import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.ListItem9
 import com.kunle.aisle9b.ui.theme.OrangeTintDark
 import kotlinx.coroutines.launch
+import okhttp3.internal.notify
+import okhttp3.internal.notifyAll
 
 @Composable
 fun ListScreen(
@@ -35,8 +37,7 @@ fun ListScreen(
     screenHeader(listHeader)
 
     val groceryList = shoppingViewModel.groceryList.collectAsState().value
-    val groceryListCount = groceryList.size
-    shoppingViewModel.screenList[0].badgeCount = groceryListCount
+    shoppingViewModel.groceryBadgeCount.value = groceryList.size
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -45,6 +46,7 @@ fun ListScreen(
         GroceryInputTextField(
             onAddGrocery = {
                 shoppingViewModel.insertFood(it)
+                shoppingViewModel.groceryBadgeCount.value += 1
                 coroutineScope.launch { listState.animateScrollToItem(index = 0) }
             }
         )

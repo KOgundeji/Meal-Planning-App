@@ -2,6 +2,7 @@ package com.kunle.aisle9b.screens
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +29,14 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
 
     val mealDeleteList: MutableList<Meal> = mutableListOf()
     val tempIngredientList = mutableStateListOf<Food>()
+    var darkModeSetting = mutableStateOf(false)
+    var keepScreenOn = mutableStateOf(false)
+    var categoriesOn = mutableStateOf(false)
+
+    val groceryBadgeCount = mutableStateOf(0)
 
     fun addIngredient(ingredient: Food) {
         tempIngredientList.add(ingredient)
-
     }
 
     private var _foodList = MutableStateFlow<List<Food>>(emptyList())
@@ -145,7 +150,8 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
         BottomNavItem(
             name = "Grocery List",
             route = GroceryScreens.ListScreen.name,
-            icon = Icons.Filled.Checklist
+            icon = Icons.Filled.Checklist,
+            badgeCount = groceryBadgeCount.value
         ),
         BottomNavItem(
             name = "Meals",

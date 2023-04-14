@@ -13,7 +13,7 @@ data class Settings(
     @ColumnInfo
     val value: Boolean) {}
 
-enum class SettingsEnum {
+enum class AppSettings {
     DarkMode,
     ScreenPermOn,
     Categories

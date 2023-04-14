@@ -47,7 +47,7 @@ fun ListItem9(
     }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 6.dp),
@@ -67,9 +67,9 @@ fun ListItem9(
                         shoppingViewModel.updateFood(food)
                     },
                     colors = CheckboxDefaults.colors(
-                        checkedColor = OrangeTintLight,
-                        uncheckedColor = Color.Black,
-                        checkmarkColor = Color.Black
+                        checkedColor = MaterialTheme.colorScheme.background,
+                        uncheckedColor = MaterialTheme.colorScheme.outline,
+                        checkmarkColor = MaterialTheme.colorScheme.outline
                     ),
                     modifier = Modifier.size(36.dp)
                 )
@@ -77,7 +77,7 @@ fun ListItem9(
             Text(text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -102,6 +102,7 @@ fun ListItem9(
                     },
                 imageVector = Icons.Filled.Edit,
                 contentDescription = "Edit Icon",
+                tint = MaterialTheme.colorScheme.outline
             )
             Spacer(modifier = Modifier.width(5.dp))
         }
