@@ -19,6 +19,7 @@ import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.ListItem9
 import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.DM_DarkGray
+import com.kunle.aisle9b.ui.theme.DM_MediumGray
 import kotlinx.coroutines.launch
 
 @Composable
@@ -29,7 +30,7 @@ fun FoodListScreen(
 ) {
     val tempFoodList = shoppingViewModel.foodList.collectAsState().value
     val foodList = remember { mutableStateOf(tempFoodList) }
-    
+
     val darkMode = shoppingViewModel.darkModeSetting.value
     val listState = rememberLazyListState()
     val coroutine = rememberCoroutineScope()
@@ -60,7 +61,7 @@ fun FoodListScreen(
         ) {
             Button(
                 modifier = Modifier.width(125.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = if (darkMode) DM_DarkGray else BaseOrange),
+                colors = ButtonDefaults.buttonColors(containerColor = if (darkMode) DM_MediumGray else BaseOrange),
                 onClick = {
                     coroutine.launch { listState.animateScrollToItem(0) }
                 }) {
@@ -69,16 +70,16 @@ fun FoodListScreen(
 
             Button(
                 modifier = Modifier.width(130.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = if (darkMode) DM_DarkGray else BaseOrange),
+                colors = ButtonDefaults.buttonColors(containerColor = if (darkMode) DM_MediumGray else BaseOrange),
                 onClick = {
-                    coroutine.launch { listState.animateScrollToItem(foodList.size - 1) }
+                    coroutine.launch { listState.animateScrollToItem(foodList.value.size - 1) }
                 }) {
                 Text(text = "Scroll to end")
             }
 
             Button(
                 modifier = Modifier.width(125.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = if (darkMode) DM_DarkGray else BaseOrange),
+                colors = ButtonDefaults.buttonColors(containerColor = if (darkMode) DM_MediumGray else BaseOrange),
                 onClick = {
                     alphabeticalUp = if (alphabeticalUp) {
                         foodList.value = foodList.value.sortedByDescending { it.name.lowercase() }

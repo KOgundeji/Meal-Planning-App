@@ -14,29 +14,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kunle.aisle9b.models.Meal
+import com.kunle.aisle9b.models.GroceryList
 import com.kunle.aisle9b.screens.ShoppingViewModel
 import com.kunle.aisle9b.ui.theme.DM_DarkishGray
 import com.kunle.aisle9b.ui.theme.DM_LightGray
 
 @Composable
-fun MealItem9(
-    meal: Meal,
+fun PreMadeListItem9(
+    list: GroceryList,
     deleteEnabled: Boolean,
     shoppingViewModel: ShoppingViewModel,
 ) {
     val darkMode = shoppingViewModel.darkModeSetting.value
     var isChecked by remember { mutableStateOf(false) }
     var showEditMealDialog by remember { mutableStateOf(false) }
-    val mwi = shoppingViewModel.mealWithIngredientsList.collectAsState().value.find { MWI ->
-        MWI.meal.mealId == meal.mealId
+    val lwg = shoppingViewModel.listsWithGroceries.collectAsState().value.find { LWG ->
+        LWG.list.listId == list.listId
     }
-    val listedIngredients: String = mwi?.foods
-        ?.joinToString(separator = ", ") { it.name } ?: "" //its the default separator, but wanted to include anyway
+    val listedGroceries: String = lwg?.groceries
+        ?.joinToString(separator = ", ") { it.name } ?: ""  //its the default separator, but wanted to include anyway
 
     if (showEditMealDialog) {
-        EditMealDialog9(
-            meal = meal,
+        EditListDialog9(
+            list = list,
             shoppingViewModel = shoppingViewModel,
             setShowDialog = { showEditMealDialog = it })
     }
@@ -65,9 +65,9 @@ fun MealItem9(
                         onCheckedChange = {
                             isChecked = !isChecked
                             if (isChecked) {
-                                shoppingViewModel.mealDeleteList.add(meal)
+                                shoppingViewModel.groceryListDeleteList.add(list)
                             } else {
-                                shoppingViewModel.mealDeleteList.remove(meal)
+                                shoppingViewModel.groceryListDeleteList.remove(list)
                             }
                         },
                         colors = CheckboxDefaults.colors(
@@ -83,13 +83,13 @@ fun MealItem9(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = meal.name,
+                        text = list.name,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = listedIngredients,
+                        text = listedGroceries,
                         color = if (darkMode) DM_LightGray else DM_DarkishGray,
                         fontSize = 18.sp,
                         maxLines = 1,
@@ -108,10 +108,3 @@ fun MealItem9(
         }
     }
 }
-
-
-//@Composable
-//@Preview
-//fun MealPreview() {
-//    MealItem9(Meal(name = "Delicious Example"))
-//}

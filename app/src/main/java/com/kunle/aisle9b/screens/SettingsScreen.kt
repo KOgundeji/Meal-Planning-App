@@ -1,21 +1,18 @@
 package com.kunle.aisle9b.screens
 
-import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.kunle.aisle9b.models.Settings
 import com.kunle.aisle9b.models.AppSettings
+import com.kunle.aisle9b.models.AppSetting
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.ui.theme.BaseOrange
 
@@ -63,8 +60,8 @@ fun SettingsScreen(
                 onCheckedChange = {
                     darkMode = !darkMode
                     shoppingViewModel.insertSettings(
-                        Settings(
-                            settingsName = AppSettings.DarkMode.name,
+                        AppSettings(
+                            settingsName = AppSetting.DarkMode.name,
                             value = darkMode
                         )
                     )
@@ -90,8 +87,8 @@ fun SettingsScreen(
                 onCheckedChange = {
                     screenPermOn = !screenPermOn
                     shoppingViewModel.insertSettings(
-                        Settings(
-                            settingsName = AppSettings.ScreenPermOn.name,
+                        AppSettings(
+                            settingsName = AppSetting.ScreenPermOn.name,
                             value = screenPermOn
                         )
                     )
@@ -118,8 +115,8 @@ fun SettingsScreen(
                 onCheckedChange = {
                     categories = !categories
                     shoppingViewModel.insertSettings(
-                        Settings(
-                            settingsName = AppSettings.Categories.name,
+                        AppSettings(
+                            settingsName = AppSetting.Categories.name,
                             value = categories
                         )
                     )

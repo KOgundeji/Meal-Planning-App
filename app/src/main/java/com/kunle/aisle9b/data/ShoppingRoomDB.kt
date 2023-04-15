@@ -6,12 +6,18 @@ import androidx.room.TypeConverters
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.util.UUIDConverter
 
-@Database(entities = [Food::class, Meal::class, Settings::class, MealFoodMap::class], version = 1, exportSchema = false)
+@Database(
+    entities = [Food::class, GroceryList::class, Meal::class, AppSettings::class, ListFoodMap::class, MealFoodMap::class],
+    version = 1,
+    exportSchema = false
+)
 @TypeConverters(UUIDConverter::class)
 abstract class ShoppingRoomDB : RoomDatabase() {
 
     abstract fun foodDao(): FoodDao
+    abstract fun listDao(): ListDao
     abstract fun mealDao(): MealDao
     abstract fun settingsDao(): SettingsDao
-    abstract fun mealWithIngredientsDao() : MealWithIngredientsDao
+    abstract fun listWithGroceriesDao(): ListWithGroceriesDao
+    abstract fun mealWithIngredientsDao(): MealWithIngredientsDao
 }

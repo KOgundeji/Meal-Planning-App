@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.ListItem9
+import com.kunle.aisle9b.ui.theme.DM_MediumGray
 import com.kunle.aisle9b.ui.theme.OrangeTintDark
 import kotlinx.coroutines.launch
 import okhttp3.internal.notify
@@ -37,6 +38,7 @@ fun ListScreen(
     screenHeader(listHeader)
 
     val groceryList = shoppingViewModel.groceryList.collectAsState().value
+    val darkMode = shoppingViewModel.darkModeSetting.value
     shoppingViewModel.groceryBadgeCount.value = groceryList.size
 
     val listState = rememberLazyListState()
@@ -44,12 +46,11 @@ fun ListScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         GroceryInputTextField(
-            onAddGrocery = {
-                shoppingViewModel.insertFood(it)
-                shoppingViewModel.groceryBadgeCount.value += 1
-                coroutineScope.launch { listState.animateScrollToItem(index = 0) }
-            }
-        )
+            darkMode = darkMode) {
+            shoppingViewModel.insertFood(it)
+            shoppingViewModel.groceryBadgeCount.value += 1
+            coroutineScope.launch { listState.animateScrollToItem(index = 0) }
+        }
         LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(4.dp)) {
             items(items = groceryList) {
                 ListItem9(food = it, shoppingViewModel = shoppingViewModel)
@@ -60,7 +61,7 @@ fun ListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroceryInputTextField(onAddGrocery: (Food) -> Unit = {}) {
+fun GroceryInputTextField(darkMode: Boolean, onAddGrocery: (Food) -> Unit) {
 
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -79,7 +80,10 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit = {}) {
             singleLine = true,
             onValueChange = { item = it },
             modifier = Modifier.weight(.6f),
-            colors = TextFieldDefaults.textFieldColors(containerColor = OrangeTintDark),
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = if (darkMode) DM_MediumGray else Color.White,
+                textColor = if (darkMode) Color.White else Color.Black
+            ),
             label = { Text(text = "New item") }
         )
         Spacer(modifier = Modifier.width(10.dp))
@@ -88,7 +92,10 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit = {}) {
             singleLine = true,
             onValueChange = { quantity = it },
             modifier = Modifier.weight(.4f),
-            colors = TextFieldDefaults.textFieldColors(containerColor = Color.LightGray),
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = if (darkMode) DM_MediumGray else Color.White,
+                textColor = if (darkMode) Color.White else Color.Black
+            ),
             label = { Text(text = "#") },
         )
         Spacer(modifier = Modifier.width(10.dp))
@@ -114,7 +121,7 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit = {}) {
                         focusManager.clearFocus()
                     }
                 },
-            colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+            colors = CardDefaults.cardColors(containerColor = if (darkMode) DM_MediumGray else Color.White)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -127,11 +134,11 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit = {}) {
                     Icon(
                         imageVector = Icons.Filled.AddCircle,
                         contentDescription = "Add Circle",
-                        tint = Color.Black
+                        tint = if (darkMode) Color.White else Color.Black
                     )
                     Text(
                         text = "Add",
-                        color = Color.Black,
+                        color = if (darkMode) Color.White else Color.Black,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -143,6 +150,6 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit = {}) {
 @Preview(widthDp = 393, heightDp = 830, showBackground = true)
 @Composable
 fun ListPreview() {
-    GroceryInputTextField()
+    GroceryInputTextField(true) {}
 }
 

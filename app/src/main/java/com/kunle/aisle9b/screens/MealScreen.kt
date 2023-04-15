@@ -64,10 +64,6 @@ fun MealScreen(
     }
 }
 
-val fakeMealList: List<Meal> = listOf(
-    Meal(name = "Pumpkin Pie"), Meal(name = "Risotto"), Meal(name = "Meat Lasagna")
-)
-
 @Composable
 fun AddDeleteBar(
     onAddClick: (Boolean) -> Unit,

@@ -2,16 +2,10 @@ package com.kunle.aisle9b.screens
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kunle.aisle9b.R
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.BottomNavItem
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -28,11 +22,12 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
     ViewModel() {
 
     val mealDeleteList: MutableList<Meal> = mutableListOf()
+    val groceryListDeleteList: MutableList<GroceryList> = mutableListOf()
     val tempIngredientList = mutableStateListOf<Food>()
+    val tempGroceryList = mutableStateListOf<Food>()
     var darkModeSetting = mutableStateOf(false)
     var keepScreenOn = mutableStateOf(false)
     var categoriesOn = mutableStateOf(false)
-
     val groceryBadgeCount = mutableStateOf(0)
 
     fun addIngredient(ingredient: Food) {
@@ -41,13 +36,17 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
 
     private var _foodList = MutableStateFlow<List<Food>>(emptyList())
     private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
+    private var _premadeLists = MutableStateFlow<List<GroceryList>>(emptyList())
     private var _mealList = MutableStateFlow<List<Meal>>(emptyList())
-    private var _settingsList = MutableStateFlow<List<Settings>>(emptyList())
+    private var _settingsList = MutableStateFlow<List<AppSettings>>(emptyList())
+    private var _listWithGroceriesList = MutableStateFlow<List<ListWithGroceries>>(emptyList())
     private var _mealWithIngredientsList = MutableStateFlow<List<MealWithIngredients>>(emptyList())
     val foodList = _foodList.asStateFlow()
     val groceryList = _groceryList.asStateFlow()
+    val premadeLists = _premadeLists.asStateFlow()
     val mealList = _mealList.asStateFlow()
     val settingsList = _settingsList.asStateFlow()
+    val listsWithGroceries = _listWithGroceriesList.asStateFlow()
     val mealWithIngredientsList = _mealWithIngredientsList.asStateFlow()
 
     init {
@@ -66,6 +65,13 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
+            repository.getAllLists().distinctUntilChanged().collect { premadeLists ->
+                if (premadeLists.isNotEmpty()) {
+                    _premadeLists.value = premadeLists
+                }
+            }
+        }
+        viewModelScope.launch(Dispatchers.IO) {
             repository.getAllMeals().distinctUntilChanged().collect { listOfMeals ->
                 if (listOfMeals.isNotEmpty()) {
                     _mealList.value = listOfMeals
@@ -76,6 +82,13 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
             repository.getAllSettings().distinctUntilChanged().collect { listOfSettings ->
                 if (listOfSettings.isNotEmpty()) {
                     _settingsList.value = listOfSettings
+                }
+            }
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getAllListWithGroceries().distinctUntilChanged().collect { listOfLWG ->
+                if (listOfLWG.isNotEmpty()) {
+                    _listWithGroceriesList.value = listOfLWG
                 }
             }
         }
@@ -98,6 +111,16 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
         }.await()
     }
 
+    fun insertList(list: GroceryList) = viewModelScope.launch { repository.insertList(list) }
+    fun deleteList(list: GroceryList) = viewModelScope.launch { repository.deleteList(list) }
+    fun updateList(list: GroceryList) = viewModelScope.launch { repository.updateList(list) }
+    fun deleteAllLists() = viewModelScope.launch { repository.deleteAllLists() }
+    suspend fun getLists(name: String): GroceryList {
+        return viewModelScope.async {
+            repository.getLists(name)
+        }.await()
+    }
+
     fun insertMeal(meal: Meal) = viewModelScope.launch { repository.insertMeal(meal) }
     fun deleteMeal(meal: Meal) = viewModelScope.launch { repository.deleteMeal(meal) }
     fun updateMeal(meal: Meal) = viewModelScope.launch { repository.updateMeal(meal) }
@@ -108,19 +131,40 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
         }.await()
     }
 
-    fun insertSettings(settings: Settings) =
+    fun insertSettings(settings: AppSettings) =
         viewModelScope.launch { repository.insertSettings(settings) }
 
-    fun deleteSettings(settings: Settings) =
+    fun deleteSettings(settings: AppSettings) =
         viewModelScope.launch { repository.deleteSettings(settings) }
 
-    fun updateSettings(settings: Settings) =
+    fun updateSettings(settings: AppSettings) =
         viewModelScope.launch { repository.updateSettings(settings) }
 
     fun deleteAllSettings() = viewModelScope.launch { repository.deleteAllSettings() }
     suspend fun checkSetting(name: String): Int {
         return viewModelScope.async {
             repository.checkSetting(name)
+        }.await()
+    }
+
+    fun insertPair(crossRef: ListFoodMap) =
+        viewModelScope.launch { repository.insertPair(crossRef) }
+
+    fun deletePair(crossRef: ListFoodMap) =
+        viewModelScope.launch { repository.deletePair(crossRef) }
+
+    fun updatePair(crossRef: ListFoodMap) =
+        viewModelScope.launch { repository.updatePair(crossRef) }
+
+    fun deleteSpecificListWithGroceries(listId: UUID) =
+        viewModelScope.launch { repository.deleteSpecificGroceryList(listId) }
+
+    fun deleteAllListWithGroceries() =
+        viewModelScope.launch { repository.deleteAllListWithGroceries() }
+
+    suspend fun getSpecificListWithGroceries(listId: Long): ListWithGroceries {
+        return viewModelScope.async {
+            repository.getSpecificListWithGroceries(listId)
         }.await()
     }
 
@@ -152,6 +196,11 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
             route = GroceryScreens.ListScreen.name,
             icon = Icons.Filled.Checklist,
             badgeCount = groceryBadgeCount.value
+        ),
+        BottomNavItem(
+            name = "Pre-made Lists",
+            route = GroceryScreens.PremadeListScreen.name,
+            icon = Icons.Filled.PlaylistAdd
         ),
         BottomNavItem(
             name = "Meals",

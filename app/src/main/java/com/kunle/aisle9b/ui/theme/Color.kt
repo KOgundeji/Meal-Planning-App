@@ -19,9 +19,8 @@ val DM_BackdropOrangeGray = Color(0xFF856C56)
 val DM_BaseYellow = Color(0xFFDBA810)
 val DM_DarkGray = Color(0xFF212121)
 val DM_DarkishGray = Color(0xFF333333)
+val DM_MediumGray = Color(0xFF4D4D4D)
 val DM_LightGray = Color(0xFFCCCCCC)
-val DM_Green = Color(0xFF009900)
-val DM_Red = Color(0xFFB30000)
 
 
 val PrimaryLight = BaseOrange

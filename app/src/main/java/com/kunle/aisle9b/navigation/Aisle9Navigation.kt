@@ -29,7 +29,7 @@ fun Aisle9Navigation(
     modifier: Modifier = Modifier,
     screenHeader: (String) -> Unit
 ) {
-    NavHost(navController = navController, startDestination = GroceryScreens.ListScreen.name) {
+    NavHost(navController = navController, startDestination = GroceryScreens.PremadeListScreen.name) {
         composable(route = GroceryScreens.ListScreen.name) {
             ListScreen(
                 shoppingViewModel = shoppingViewModel,
@@ -65,6 +65,13 @@ fun Aisle9Navigation(
                 screenHeader = screenHeader
             )
         }
+        composable(route = GroceryScreens.PremadeListScreen.name) {
+            ListLibrary(
+                shoppingViewModel = shoppingViewModel,
+                modifier = modifier,
+                screenHeader = screenHeader
+            )
+        }
     }
 }
 
@@ -90,7 +97,7 @@ fun BottomNavigationBar9(
             //its checking if the current navController route is the same as the selected route. If it is, highlight the item
             NavigationBarItem(
                 selected = selected,
-                colors = NavigationBarItemDefaults.colors(indicatorColor = if (darkMode) OrangeTintDark else DM_DarkGray),
+                colors = NavigationBarItemDefaults.colors(indicatorColor = if (darkMode) DM_MediumGray else OrangeTintLight),
                 onClick = { onItemClick(item) },
                 icon = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {

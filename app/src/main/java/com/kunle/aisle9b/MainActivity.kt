@@ -10,27 +10,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.kunle.aisle9b.data.addFakeToDatabase
 import com.kunle.aisle9b.data.sampleFoodData
-import com.kunle.aisle9b.models.AppSettings
-import com.kunle.aisle9b.models.Settings
+import com.kunle.aisle9b.models.AppSetting
 import com.kunle.aisle9b.navigation.Aisle9Navigation
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.screens.ShoppingViewModel
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
 import com.kunle.aisle9b.util.AdditionalScreenOptions
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.forEach
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -51,13 +46,13 @@ fun ShoppingApp(shoppingViewModel: ShoppingViewModel) {
 
 
     shoppingViewModel.groceryBadgeCount.value = shoppingViewModel.groceryList.collectAsState().value.size
-    shoppingViewModel.screenList[1].name = "Meals (${shoppingViewModel.mealList.collectAsState().value.size})"
+    shoppingViewModel.screenList[2].name = "Meals (${shoppingViewModel.mealList.collectAsState().value.size})"
 
     Log.d("Test", "ShoppingApp: badgeCount = ${shoppingViewModel.groceryBadgeCount.value}")
 //    addFakeToDatabase(list = sampleFoodData,viewModel = shoppingViewModel)
     shoppingViewModel.darkModeSetting.value = shoppingViewModel.settingsList.collectAsState()
         .value.firstOrNull() {
-            it.settingsName == AppSettings.DarkMode.name
+            it.settingsName == AppSetting.DarkMode.name
         }?.value ?: isSystemInDarkTheme()
 
     Aisle9bTheme(darkTheme = shoppingViewModel.darkModeSetting.value) {

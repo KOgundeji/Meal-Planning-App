@@ -31,6 +31,11 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideListDao(shoppingRoomDB: ShoppingRoomDB): ListDao =
+        shoppingRoomDB.listDao()
+
+    @Singleton
+    @Provides
     fun provideMealDao(shoppingRoomDB: ShoppingRoomDB): MealDao =
         shoppingRoomDB.mealDao()
 
@@ -38,6 +43,11 @@ object AppModule {
     @Provides
     fun provideSettingsDao(shoppingRoomDB: ShoppingRoomDB): SettingsDao =
         shoppingRoomDB.settingsDao()
+
+    @Singleton
+    @Provides
+    fun provideLWGDao(shoppingRoomDB: ShoppingRoomDB): ListWithGroceriesDao =
+        shoppingRoomDB.listWithGroceriesDao()
 
     @Singleton
     @Provides
