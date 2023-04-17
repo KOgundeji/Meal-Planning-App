@@ -26,6 +26,7 @@ fun ListItem9(
     food: Food,
     shoppingViewModel: ShoppingViewModel,
     checkBoxShown: Boolean = true,
+    editPencilShown: Boolean = false,
     onEditClickNewFood: Boolean = false
 ) {
     var isChecked by remember { mutableStateOf(false) }
@@ -94,17 +95,19 @@ fun ListItem9(
                     append(" (${food.quantity})")
                 }
             }, modifier = Modifier.weight(1f))
-            Icon(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clickable {
-                        showEditFoodDialog = true
-                    },
-                imageVector = Icons.Filled.Edit,
-                contentDescription = "Edit Icon",
-                tint = MaterialTheme.colorScheme.outline
-            )
-            Spacer(modifier = Modifier.width(5.dp))
+            if (editPencilShown) {
+                Icon(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clickable {
+                            showEditFoodDialog = true
+                        },
+                    imageVector = Icons.Filled.Edit,
+                    contentDescription = "Edit Icon",
+                    tint = MaterialTheme.colorScheme.outline
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Egg
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -43,7 +44,7 @@ fun AdditionalScreenOptions(navController: NavController) {
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Filled.Egg,
+                        imageVector = Icons.Filled.MenuBook,
                         contentDescription = "Ingredients"
                     )
                 }

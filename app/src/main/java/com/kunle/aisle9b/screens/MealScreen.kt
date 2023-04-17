@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.AddMealDialog9
@@ -27,6 +28,7 @@ import com.kunle.aisle9b.ui.theme.BaseOrange
 fun MealScreen(
     shoppingViewModel: ShoppingViewModel,
     modifier: Modifier = Modifier,
+    navController: NavController,
     screenHeader: (String) -> Unit
 ) {
     val mealHeader = GroceryScreens.headerTitle(GroceryScreens.MealScreen)

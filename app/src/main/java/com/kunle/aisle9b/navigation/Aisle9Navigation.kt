@@ -41,6 +41,7 @@ fun Aisle9Navigation(
             MealScreen(
                 shoppingViewModel = shoppingViewModel,
                 modifier = modifier,
+                navController = navController,
                 screenHeader = screenHeader
             )
         }
@@ -69,7 +70,8 @@ fun Aisle9Navigation(
             ListLibrary(
                 shoppingViewModel = shoppingViewModel,
                 modifier = modifier,
-                screenHeader = screenHeader
+                navController = navController,
+                screenHeader = screenHeader,
             )
         }
     }

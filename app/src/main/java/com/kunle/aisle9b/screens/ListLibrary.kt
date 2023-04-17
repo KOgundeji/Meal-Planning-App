@@ -1,6 +1,6 @@
 package com.kunle.aisle9b.screens
 
-import androidx.compose.foundation.clickable
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,14 +11,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.GroceryList
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.AddPreMadeListDialog9
 import com.kunle.aisle9b.templates.PreMadeListItem9
 import com.kunle.aisle9b.ui.theme.BaseOrange
+import com.kunle.aisle9b.util.ReconciliationDialog
+import com.kunle.aisle9b.util.filterForReconciliation
 
 //this will be a screen that houses custom grocery lists that users can
 //jumpstart their grocery lists
@@ -28,23 +34,46 @@ import com.kunle.aisle9b.ui.theme.BaseOrange
 fun ListLibrary(
     shoppingViewModel: ShoppingViewModel,
     modifier: Modifier = Modifier,
+    navController: NavController,
     screenHeader: (String) -> Unit
 ) {
     val preMadeListHeader = GroceryScreens.headerTitle(GroceryScreens.PremadeListScreen)
     screenHeader(preMadeListHeader)
+    val context = LocalContext.current
 
-    var listDeleteEnabled by remember { mutableStateOf(false) }
+    var primaryButtonBar by remember { mutableStateOf(0) }
     var showAddCustomListDialog by remember { mutableStateOf(false) }
+    var transferFoodsToGroceryList by remember { mutableStateOf(false) }
     var searchWord by remember { mutableStateOf("") }
+
     val customLists = shoppingViewModel.premadeLists.collectAsState().value
-    val filteredCustomLists = remember { mutableStateOf(customLists)}
+    val filteredCustomLists = remember { mutableStateOf(customLists) }
+
     val tempGroceryList = shoppingViewModel.tempGroceryList
+    //the below line starts the list with the existing grocery list
+    val listsToAddToGroceryList =
+        remember { mutableStateListOf(shoppingViewModel.groceryList.value) }
 
     if (showAddCustomListDialog) {
         AddPreMadeListDialog9(
             list = GroceryList(name = ""),
             shoppingViewModel = shoppingViewModel,
             setShowAddMealDialog = { showAddCustomListDialog = it })
+    }
+
+    if (transferFoodsToGroceryList) {
+        val foodsForReconciliation = filterForReconciliation(
+            lists = listsToAddToGroceryList,
+            shoppingViewModel = shoppingViewModel
+        )
+        ReconciliationDialog(
+            items = foodsForReconciliation,
+            shoppingViewModel = shoppingViewModel,
+            resetListLibraryToDefault = { primaryButtonBar = 0 }
+        ) {
+            transferFoodsToGroceryList = it
+        }
+        Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
     }
 
     Column(
@@ -54,28 +83,41 @@ fun ListLibrary(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        if (!listDeleteEnabled) {
-            AddDeleteListBar(
-                onAddClick = { showAddCustomListDialog = it },
-                deleteEnabled = { listDeleteEnabled = it })
-        } else {
-            SubDeleteListBar(
-                shoppingViewModel = shoppingViewModel,
-                deleteEnabled = { listDeleteEnabled = it },
-                onDeleteClick = {
-                    it.forEach { customList ->
-                        shoppingViewModel.deleteList(customList)
-                        shoppingViewModel.deleteSpecificListWithGroceries(customList.listId)
-                    }
-                    listDeleteEnabled = false
-                })
+        when (primaryButtonBar) {
+            0 -> {
+                AddDeleteButtonBar(
+                    onAddClick = { showAddCustomListDialog = it },
+                    primaryButtonBar = { primaryButtonBar = it })
+            }
+            1 -> {
+                FinalDeleteListButtonBar(
+                    shoppingViewModel = shoppingViewModel,
+                    primaryButtonBar = { primaryButtonBar = it },
+                    onDeleteClick = {
+                        it.forEach { customList ->
+                            shoppingViewModel.deleteList(customList)
+                            shoppingViewModel.deleteSpecificListWithGroceries(customList.listId)
+                        }
+                        primaryButtonBar = 0
+                    })
+            }
+            else -> {
+                AddToGroceryListButtonBar(
+                    shoppingViewModel = shoppingViewModel,
+                    transferList = listsToAddToGroceryList,
+                    addLists = { transferFoodsToGroceryList = it }
+                ) {
+                    primaryButtonBar = 0
+                }
+            }
         }
+
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(.9f),
             value = searchWord,
             onValueChange = {
                 searchWord = it
-                filteredCustomLists.value = customLists.filter {list ->
+                filteredCustomLists.value = customLists.filter { list ->
                     list.name.lowercase().contains(searchWord.lowercase())
                 }
             },
@@ -94,9 +136,10 @@ fun ListLibrary(
                 if (searchWord.isNotEmpty()) {
                     IconButton(onClick = {
                         searchWord = ""
-                        filteredCustomLists.value = customLists.filter {list ->
+                        filteredCustomLists.value = customLists.filter { list ->
                             list.name.lowercase().contains(searchWord.lowercase())
-                        }}) {
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Cancel,
                             contentDescription = "Cancel button",
@@ -113,8 +156,9 @@ fun ListLibrary(
             items(items = filteredCustomLists.value) {
                 PreMadeListItem9(
                     list = it,
-                    deleteEnabled = listDeleteEnabled,
-                    shoppingViewModel = shoppingViewModel
+                    primaryButtonBarAction = primaryButtonBar,
+                    shoppingViewModel = shoppingViewModel,
+                    transferList = listsToAddToGroceryList
                 )
             }
         }
@@ -123,54 +167,102 @@ fun ListLibrary(
 
 
 @Composable
-fun AddDeleteListBar(
+fun AddDeleteButtonBar(
     onAddClick: (Boolean) -> Unit,
-    deleteEnabled: (Boolean) -> Unit
+    primaryButtonBar: (Int) -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.spacedBy(15.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            modifier = Modifier.clickable { onAddClick(true) },
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Icon(
-                imageVector = Icons.Filled.AddCircle,
-                contentDescription = "Add button",
-                modifier = Modifier.size(48.dp),
-                tint = BaseOrange
-            )
-            Text(
-                text = "Add",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-            )
+            Button(
+                modifier = Modifier.width(140.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
+                onClick = { onAddClick(true) }) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Icon(
+                        modifier = Modifier.size(30.dp),
+                        imageVector = Icons.Filled.AddCircle,
+                        contentDescription = null
+                    )
+                    Text(
+                        text = "Add",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+            Button(
+                modifier = Modifier.width(140.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
+                onClick = { primaryButtonBar(1) }) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Icon(
+                        modifier = Modifier.size(30.dp),
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = null
+                    )
+                    Text(
+                        text = "Delete",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
         }
         Row(
-            modifier = Modifier.clickable { deleteEnabled(true) },
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                contentDescription = "Delete button",
-                modifier = Modifier.size(48.dp),
-                tint = BaseOrange
-            )
-            Text(
-                text = "Delete",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-            )
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
+                onClick = { primaryButtonBar(2) }) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Icon(
+                        modifier = Modifier.size(30.dp),
+                        imageVector = Icons.Filled.DriveFileMoveRtl,
+                        contentDescription = null
+                    )
+                    Text(
+                        text = "Transfer",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-fun SubDeleteListBar(
+fun FinalDeleteListButtonBar(
     shoppingViewModel: ShoppingViewModel,
-    deleteEnabled: (Boolean) -> Unit,
+    primaryButtonBar: (Int) -> Unit,
     onDeleteClick: (List<GroceryList>) -> Unit,
 ) {
 
@@ -179,37 +271,100 @@ fun SubDeleteListBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Row(
-            modifier = Modifier.clickable { onDeleteClick(shoppingViewModel.groceryListDeleteList) },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                contentDescription = "Delete button",
-                modifier = Modifier.size(48.dp),
-                tint = BaseOrange
-            )
-            Text(
-                text = "Delete",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
+        Button(onClick = {}) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "delete button"
+                )
+                Text(
+                    text = "Delete",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
-        Row(
-            modifier = Modifier.clickable { deleteEnabled(false) },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "Back button",
-                modifier = Modifier.size(48.dp),
-                tint = BaseOrange
-            )
-            Text(
-                text = "Go Back",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
+        Button(onClick = { primaryButtonBar(0) }) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back button"
+                )
+                Text(
+                    text = "Go Back",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
     }
+}
+
+@Composable
+fun AddToGroceryListButtonBar(
+    shoppingViewModel: ShoppingViewModel,
+    transferList: MutableList<List<Food>>,
+    addLists: (Boolean) -> Unit,
+    primaryButtonBar: (Int) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Button(onClick = {
+            if (transferList.isNotEmpty()) {
+                addLists(true)
+            }
+        }) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = Icons.Filled.DriveFileMoveRtl,
+                    contentDescription = "transfer to grocery list button"
+                )
+                Text(
+                    text = "Transfer",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
+        Button(onClick = { primaryButtonBar(0) }) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back button"
+                )
+                Text(
+                    text = "Go Back",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
+
+    }
+
+}
+
+@Preview(showBackground = true, widthDp = 320, heightDp = 800)
+@Composable
+fun Preview() {
+    AddDeleteButtonBar(onAddClick = {}, primaryButtonBar = {})
 }

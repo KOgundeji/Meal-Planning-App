@@ -2,8 +2,7 @@ package com.kunle.aisle9b.screens
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.*
@@ -23,8 +22,13 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
 
     val mealDeleteList: MutableList<Meal> = mutableListOf()
     val groceryListDeleteList: MutableList<GroceryList> = mutableListOf()
+    var foodMap: Map<String,MutableList<Food>> = mapOf()
+
     val tempIngredientList = mutableStateListOf<Food>()
     val tempGroceryList = mutableStateListOf<Food>()
+
+    var showReconciliationDialog = mutableStateOf(false)
+
     var darkModeSetting = mutableStateOf(false)
     var keepScreenOn = mutableStateOf(false)
     var categoriesOn = mutableStateOf(false)

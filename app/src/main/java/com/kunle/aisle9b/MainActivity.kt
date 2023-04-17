@@ -48,7 +48,6 @@ fun ShoppingApp(shoppingViewModel: ShoppingViewModel) {
     shoppingViewModel.groceryBadgeCount.value = shoppingViewModel.groceryList.collectAsState().value.size
     shoppingViewModel.screenList[2].name = "Meals (${shoppingViewModel.mealList.collectAsState().value.size})"
 
-    Log.d("Test", "ShoppingApp: badgeCount = ${shoppingViewModel.groceryBadgeCount.value}")
 //    addFakeToDatabase(list = sampleFoodData,viewModel = shoppingViewModel)
     shoppingViewModel.darkModeSetting.value = shoppingViewModel.settingsList.collectAsState()
         .value.firstOrNull() {

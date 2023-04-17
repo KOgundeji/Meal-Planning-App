@@ -23,10 +23,7 @@ import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.ListItem9
 import com.kunle.aisle9b.ui.theme.DM_MediumGray
-import com.kunle.aisle9b.ui.theme.OrangeTintDark
 import kotlinx.coroutines.launch
-import okhttp3.internal.notify
-import okhttp3.internal.notifyAll
 
 @Composable
 fun ListScreen(

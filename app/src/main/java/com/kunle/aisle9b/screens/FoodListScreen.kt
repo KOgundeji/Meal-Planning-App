@@ -31,7 +31,6 @@ fun FoodListScreen(
     val tempFoodList = shoppingViewModel.foodList.collectAsState().value
     val foodList = remember { mutableStateOf(tempFoodList) }
 
-    val darkMode = shoppingViewModel.darkModeSetting.value
     val listState = rememberLazyListState()
     val coroutine = rememberCoroutineScope()
     var alphabeticalUp by remember { mutableStateOf(true) }
@@ -61,7 +60,10 @@ fun FoodListScreen(
         ) {
             Button(
                 modifier = Modifier.width(125.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = if (darkMode) DM_MediumGray else BaseOrange),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
                 onClick = {
                     coroutine.launch { listState.animateScrollToItem(0) }
                 }) {
@@ -70,7 +72,10 @@ fun FoodListScreen(
 
             Button(
                 modifier = Modifier.width(130.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = if (darkMode) DM_MediumGray else BaseOrange),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
                 onClick = {
                     coroutine.launch { listState.animateScrollToItem(foodList.value.size - 1) }
                 }) {
@@ -79,7 +84,10 @@ fun FoodListScreen(
 
             Button(
                 modifier = Modifier.width(125.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = if (darkMode) DM_MediumGray else BaseOrange),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
                 onClick = {
                     alphabeticalUp = if (alphabeticalUp) {
                         foodList.value = foodList.value.sortedByDescending { it.name.lowercase() }
