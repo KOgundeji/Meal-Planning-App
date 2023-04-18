@@ -19,14 +19,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.ShoppingViewModel
-import com.kunle.aisle9b.ui.theme.OrangeTintLight
 
 @Composable
 fun ListItem9(
     food: Food,
     shoppingViewModel: ShoppingViewModel,
     checkBoxShown: Boolean = true,
-    editPencilShown: Boolean = false,
+    editPencilShown: Boolean = true,
     onEditClickNewFood: Boolean = false
 ) {
     var isChecked by remember { mutableStateOf(false) }
@@ -35,7 +34,6 @@ fun ListItem9(
     if (showEditFoodDialog) {
         EditFoodDialog9(
             food = food,
-            shoppingViewModel = shoppingViewModel,
             setShowSelfDialog = { showEditFoodDialog = it },
             setFood = {
                 if (!onEditClickNewFood) {

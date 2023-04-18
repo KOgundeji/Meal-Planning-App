@@ -1,6 +1,5 @@
 package com.kunle.aisle9b.screens
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +18,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.templates.AddMealDialog9
 import com.kunle.aisle9b.templates.MealItem9
 import com.kunle.aisle9b.ui.theme.BaseOrange
 
@@ -35,18 +32,10 @@ fun MealScreen(
     screenHeader(mealHeader)
 
     var mealDeleteEnabled by remember { mutableStateOf(false) }
-    var showAddMealDialog by remember { mutableStateOf(false) }
-    val list = shoppingViewModel.tempIngredientList
-
-    if (showAddMealDialog) {
-        AddMealDialog9(meal = Meal(name = ""),
-            shoppingViewModel = shoppingViewModel,
-            setShowAddMealDialog = { showAddMealDialog = it })
-    }
 
     Column(modifier = modifier.fillMaxSize()) {
         if (!mealDeleteEnabled) {
-            AddDeleteBar(onAddClick = { showAddMealDialog = it },
+            AddDeleteBar(navController = navController,
                 mealDeleteEnabled = { mealDeleteEnabled = it })
         } else {
             SubDeleteBar(shoppingViewModel = shoppingViewModel,
@@ -68,7 +57,7 @@ fun MealScreen(
 
 @Composable
 fun AddDeleteBar(
-    onAddClick: (Boolean) -> Unit,
+    navController: NavController,
     mealDeleteEnabled: (Boolean) -> Unit
 ) {
     Row(
@@ -79,7 +68,8 @@ fun AddDeleteBar(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Row(
-            modifier = Modifier.clickable { onAddClick(true) },
+            modifier = Modifier.clickable {
+                navController.navigate(GroceryScreens.AddMealsScreen.name) },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(

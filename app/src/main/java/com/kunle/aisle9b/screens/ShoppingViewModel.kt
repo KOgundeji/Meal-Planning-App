@@ -22,21 +22,13 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
 
     val mealDeleteList: MutableList<Meal> = mutableListOf()
     val groceryListDeleteList: MutableList<GroceryList> = mutableListOf()
-    var foodMap: Map<String,MutableList<Food>> = mapOf()
 
     val tempIngredientList = mutableStateListOf<Food>()
     val tempGroceryList = mutableStateListOf<Food>()
-
-    var showReconciliationDialog = mutableStateOf(false)
-
     var darkModeSetting = mutableStateOf(false)
     var keepScreenOn = mutableStateOf(false)
     var categoriesOn = mutableStateOf(false)
     val groceryBadgeCount = mutableStateOf(0)
-
-    fun addIngredient(ingredient: Food) {
-        tempIngredientList.add(ingredient)
-    }
 
     private var _foodList = MutableStateFlow<List<Food>>(emptyList())
     private var _groceryList = MutableStateFlow<List<Food>>(emptyList())

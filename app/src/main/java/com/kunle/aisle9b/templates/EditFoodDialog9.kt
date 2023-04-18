@@ -22,12 +22,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.ShoppingViewModel
+import com.kunle.aisle9b.util.CategoryDropDownMenu
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditFoodDialog9(
     food: Food,
-    shoppingViewModel: ShoppingViewModel,
     setShowSelfDialog: (Boolean) -> Unit,
     setFood: (Food) -> Unit
 ) {
@@ -117,63 +117,3 @@ fun EditFoodDialog9(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
-    val categories = arrayOf(
-        "Baking/Spices",
-        "Beverages",
-        "Bread/Grain",
-        "Canned Goods",
-        "Condiments",
-        "Dairy",
-        "For the Home",
-        "Frozen Food",
-        "Fruit",
-        "Meat/Fish",
-        "Pet Supplies",
-        "Produce",
-        "Snacks",
-        "Toiletries",
-        "Uncategorized"
-    )
-
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(category) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
-            TextField(
-                value = selectedText,
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor(),
-                label = { Text(text = "Select Category") },
-                colors = TextFieldDefaults.textFieldColors(containerColor = Color.Gray),
-            )
-
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                categories.forEach { category ->
-                    DropdownMenuItem(
-                        text = { Text(text = category) },
-                        onClick = {
-                            selectedText = category
-                            newCategory(selectedText)
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-    }
-}

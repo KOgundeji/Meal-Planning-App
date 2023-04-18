@@ -50,7 +50,6 @@ fun EditMealDialog9(
     if (showFoodDialog.value) {
         EditFoodDialog9(
             food = Food(name = "", quantity = "", isInGroceryList = false),
-            shoppingViewModel = shoppingViewModel,
             setShowSelfDialog = { showFoodDialog.value = it },
             setFood = {
                 shoppingViewModel.insertFood(it)

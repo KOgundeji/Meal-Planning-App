@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.ShoppingViewModel
-import com.kunle.aisle9b.templates.CategoryDropDownMenu
 import com.kunle.aisle9b.templates.ListItem9
 
 @Composable
@@ -88,14 +87,8 @@ fun ReconciliationDialog(
                         setFood = { shoppingViewModel.insertFood(it) },
                         takeOriginalFoodOutOfGroceryList = {
                             list.forEach {
-                                val outOfGrocery = Food(
-                                    foodId = it.foodId,
-                                    name = it.name,
-                                    quantity = it.quantity,
-                                    category = it.category,
-                                    isInGroceryList = false
-                                )
-                                shoppingViewModel.updateFood(outOfGrocery)
+                                it.isInGroceryList = false
+                                shoppingViewModel.updateFood(it)
                             }
                         },
                         onNextClick = {
@@ -124,7 +117,7 @@ fun ReplacementFoodSection(
     onNextClick: () -> Unit
 ) {
     var ingredientQuantity by remember { mutableStateOf("") }
-    var ingredientCategory by remember { mutableStateOf("Uncategorized") }
+    var ingredientCategory by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier.padding(bottom = 20.dp),
@@ -160,8 +153,8 @@ fun ReplacementFoodSection(
                     )
                     setFood(newFood)
                     ingredientQuantity = ""
-                    ingredientCategory = "Uncategorized"
-                    
+                    ingredientCategory = ""
+
                     takeOriginalFoodOutOfGroceryList()
                     onNextClick()
                 },

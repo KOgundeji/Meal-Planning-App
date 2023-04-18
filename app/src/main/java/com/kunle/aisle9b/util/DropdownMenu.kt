@@ -37,19 +37,6 @@ fun AdditionalScreenOptions(navController: NavController) {
             expanded = expanded,
             onDismissRequest = { expanded = false }) {
             DropdownMenuItem(
-                text = { Text(text = GroceryScreens.headerTitle(GroceryScreens.FoodListScreen)) },
-                onClick = {
-                    navController.navigate(GroceryScreens.FoodListScreen.name)
-                    expanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.MenuBook,
-                        contentDescription = "Ingredients"
-                    )
-                }
-            )
-            DropdownMenuItem(
                 text = { Text(text = GroceryScreens.headerTitle(GroceryScreens.SettingsScreen)) },
                 onClick = {
                     navController.navigate(GroceryScreens.SettingsScreen.name)
@@ -61,7 +48,6 @@ fun AdditionalScreenOptions(navController: NavController) {
                         contentDescription = "Settings"
                     )
                 })
-
         }
     }
 }

@@ -20,7 +20,6 @@ import androidx.navigation.NavController
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.GroceryList
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.templates.AddPreMadeListDialog9
 import com.kunle.aisle9b.templates.PreMadeListItem9
 import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.util.ReconciliationDialog
@@ -42,24 +41,15 @@ fun ListLibrary(
     val context = LocalContext.current
 
     var primaryButtonBar by remember { mutableStateOf(0) }
-    var showAddCustomListDialog by remember { mutableStateOf(false) }
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
     var searchWord by remember { mutableStateOf("") }
 
     val customLists = shoppingViewModel.premadeLists.collectAsState().value
     val filteredCustomLists = remember { mutableStateOf(customLists) }
 
-    val tempGroceryList = shoppingViewModel.tempGroceryList
     //the below line starts the list with the existing grocery list
     val listsToAddToGroceryList =
         remember { mutableStateListOf(shoppingViewModel.groceryList.value) }
-
-    if (showAddCustomListDialog) {
-        AddPreMadeListDialog9(
-            list = GroceryList(name = ""),
-            shoppingViewModel = shoppingViewModel,
-            setShowAddMealDialog = { showAddCustomListDialog = it })
-    }
 
     if (transferFoodsToGroceryList) {
         val foodsForReconciliation = filterForReconciliation(
@@ -86,7 +76,7 @@ fun ListLibrary(
         when (primaryButtonBar) {
             0 -> {
                 AddDeleteButtonBar(
-                    onAddClick = { showAddCustomListDialog = it },
+                    onAddClick = { navController.navigate(GroceryScreens.AddCustomListScreen.name) },
                     primaryButtonBar = { primaryButtonBar = it })
             }
             1 -> {

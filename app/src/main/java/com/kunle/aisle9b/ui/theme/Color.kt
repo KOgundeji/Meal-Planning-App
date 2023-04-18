@@ -48,7 +48,7 @@ val OnSurfaceVariantLight = Color(0xFF43474e)
 val PrimaryDark = DM_DarkGray
 val OnPrimaryDark = DM_LightGray
 val PrimaryContainerDark = DM_DarkishGray
-val OnPrimaryContainerDark = BaseOrange
+val OnPrimaryContainerDark = DM_BaseOrange
 
 val SecondaryContainerDark = DM_MediumGray
 val onSecondaryContainerDark = DM_LightGray
