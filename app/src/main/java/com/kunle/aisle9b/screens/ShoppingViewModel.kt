@@ -23,6 +23,8 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
     val mealDeleteList: MutableList<Meal> = mutableListOf()
     val groceryListDeleteList: MutableList<GroceryList> = mutableListOf()
 
+    var filteredList = mutableStateOf<List<GroceryList>>(emptyList())
+
     val tempIngredientList = mutableStateListOf<Food>()
     val tempGroceryList = mutableStateListOf<Food>()
     var darkModeSetting = mutableStateOf(false)
@@ -202,11 +204,6 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
             name = "Meals",
             route = GroceryScreens.MealScreen.name,
             icon = Icons.Filled.DinnerDining
-        ),
-        BottomNavItem(
-            name = "Recipes",
-            route = GroceryScreens.RecipeScreen.name,
-            icon = Icons.Filled.Notes
         )
     )
 

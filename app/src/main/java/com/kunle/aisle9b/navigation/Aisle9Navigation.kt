@@ -14,6 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.screens.*
 import com.kunle.aisle9b.screens.AddMealScreen
 import com.kunle.aisle9b.screens.AddPreMadeListScreen
@@ -24,6 +25,7 @@ fun Aisle9Navigation(
     navController: NavHostController,
     shoppingViewModel: ShoppingViewModel,
     modifier: Modifier = Modifier,
+    topBarOption: (String) -> Unit = { TopBarOptions.Default.name },
     screenHeader: (String) -> Unit
 ) {
     NavHost(navController = navController, startDestination = GroceryScreens.MealScreen.name) {
@@ -62,6 +64,7 @@ fun Aisle9Navigation(
                 modifier = modifier,
                 navController = navController,
                 screenHeader = screenHeader,
+                topBarOption = { topBarOption(it) }
             )
         }
         composable(route = GroceryScreens.AddMealsScreen.name) {

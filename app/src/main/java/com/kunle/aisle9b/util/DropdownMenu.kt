@@ -48,6 +48,18 @@ fun AdditionalScreenOptions(navController: NavController) {
                         contentDescription = "Settings"
                     )
                 })
+            DropdownMenuItem(
+                text = { Text(text = GroceryScreens.headerTitle(GroceryScreens.RecipeScreen)) },
+                onClick = {
+                    navController.navigate(GroceryScreens.RecipeScreen.name)
+                    expanded = false
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.MenuBook,
+                        contentDescription = "Recipe screen"
+                    )
+                })
         }
     }
 }

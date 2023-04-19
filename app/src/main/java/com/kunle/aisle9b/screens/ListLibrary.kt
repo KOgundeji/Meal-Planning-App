@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.GroceryList
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -34,10 +35,13 @@ fun ListLibrary(
     shoppingViewModel: ShoppingViewModel,
     modifier: Modifier = Modifier,
     navController: NavController,
+    topBarOption: (String) -> Unit,
     screenHeader: (String) -> Unit
 ) {
     val preMadeListHeader = GroceryScreens.headerTitle(GroceryScreens.PremadeListScreen)
     screenHeader(preMadeListHeader)
+    topBarOption(TopBarOptions.SearchEnabled.name)
+
     val context = LocalContext.current
 
     var primaryButtonBar by remember { mutableStateOf(0) }
@@ -143,7 +147,7 @@ fun ListLibrary(
             colors = TextFieldDefaults.textFieldColors(cursorColor = BaseOrange)
         )
         LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            items(items = filteredCustomLists.value) {
+            items(items = shoppingViewModel.filteredList.value) {
                 PreMadeListItem9(
                     list = it,
                     primaryButtonBarAction = primaryButtonBar,
