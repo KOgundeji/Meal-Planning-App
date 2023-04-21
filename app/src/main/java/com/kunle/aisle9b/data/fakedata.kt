@@ -1,7 +1,7 @@
 package com.kunle.aisle9b.data
 
 import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.screens.ShoppingViewModel
+import com.kunle.aisle9b.screens.ShoppingVM
 
 var oranges =
     Food(name = "Oranges", quantity = "4 bunches", category = "Fruit", isInGroceryList = true)
@@ -37,7 +37,7 @@ val sampleFoodData = listOf(
     brownrice
 )
 
-fun addFakeToDatabase(list: List<Food>, viewModel: ShoppingViewModel) {
+fun addFakeToDatabase(list: List<Food>, viewModel: ShoppingVM) {
     sampleFoodData.forEach {
         viewModel.insertFood(it)
     }

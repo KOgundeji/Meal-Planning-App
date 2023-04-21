@@ -23,64 +23,54 @@ import com.kunle.aisle9b.ui.theme.*
 @Composable
 fun Aisle9Navigation(
     navController: NavHostController,
-    shoppingViewModel: ShoppingViewModel,
-    modifier: Modifier = Modifier,
-    topBarOption: (String) -> Unit = { TopBarOptions.Default.name },
-    screenHeader: (String) -> Unit
+    shoppingVM: ShoppingVM,
+    modifier: Modifier = Modifier
 ) {
     NavHost(navController = navController, startDestination = GroceryScreens.MealScreen.name) {
         composable(route = GroceryScreens.ListScreen.name) {
             ListScreen(
-                shoppingViewModel = shoppingViewModel,
-                modifier = modifier,
-                screenHeader = screenHeader
+                shoppingVM = shoppingVM,
+                modifier = modifier
             )
         }
         composable(route = GroceryScreens.MealScreen.name) {
             MealScreen(
-                shoppingViewModel = shoppingViewModel,
+                shoppingVM = shoppingVM,
                 modifier = modifier,
-                navController = navController,
-                screenHeader = screenHeader
+                navController = navController
             )
         }
         composable(route = GroceryScreens.SettingsScreen.name) {
             SettingsScreen(
-                shoppingViewModel = shoppingViewModel,
-                modifier = modifier,
-                screenHeader = screenHeader
+                shoppingVM = shoppingVM,
+                modifier = modifier
             )
         }
         composable(route = GroceryScreens.RecipeScreen.name) {
             RecipeScreen(
-                shoppingViewModel = shoppingViewModel,
-                modifier = modifier,
-                screenHeader = screenHeader
+                shoppingVM = shoppingVM,
+                modifier = modifier
             )
         }
         composable(route = GroceryScreens.PremadeListScreen.name) {
             ListLibrary(
-                shoppingViewModel = shoppingViewModel,
+                shoppingVM = shoppingVM,
                 modifier = modifier,
-                navController = navController,
-                screenHeader = screenHeader,
-                topBarOption = { topBarOption(it) }
+                navController = navController
             )
         }
         composable(route = GroceryScreens.AddMealsScreen.name) {
             AddMealScreen(
-                shoppingViewModel = shoppingViewModel,
+                shoppingVM = shoppingVM,
                 modifier = modifier,
-                navController = navController,
-                screenHeader = screenHeader,
+                navController = navController
             )
         }
         composable(route = GroceryScreens.AddCustomListScreen.name) {
             AddPreMadeListScreen(
-                shoppingViewModel = shoppingViewModel,
+                shoppingVM = shoppingVM,
                 modifier = modifier,
-                navController = navController,
-                screenHeader = screenHeader,
+                navController = navController
             )
         }
     }
@@ -91,11 +81,11 @@ fun Aisle9Navigation(
 fun BottomNavigationBar9(
     items: List<BottomNavItem>,
     navController: NavController,
-    shoppingViewModel: ShoppingViewModel,
+    shoppingVM: ShoppingVM,
     badgeCount: Int,
     onItemClick: (BottomNavItem) -> Unit
 ) {
-    val darkMode = shoppingViewModel.darkModeSetting.value
+    val darkMode = shoppingVM.darkModeSetting.value
     val backStackEntry = navController.currentBackStackEntryAsState()
 
     NavigationBar(

@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.BottomNavItem
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 @HiltViewModel
-class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepository) :
+class ShoppingVM @Inject constructor(private val repository: ShoppingRepository) :
     ViewModel() {
 
     val mealDeleteList: MutableList<Meal> = mutableListOf()
@@ -25,6 +26,8 @@ class ShoppingViewModel @Inject constructor(private val repository: ShoppingRepo
 
     var filteredList = mutableStateOf<List<GroceryList>>(emptyList())
 
+    var screenHeader = mutableStateOf("")
+    var topBar = mutableStateOf(TopBarOptions.Default)
     val tempIngredientList = mutableStateListOf<Food>()
     val tempGroceryList = mutableStateListOf<Food>()
     var darkModeSetting = mutableStateOf(false)

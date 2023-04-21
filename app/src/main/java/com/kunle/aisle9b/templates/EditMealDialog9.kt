@@ -22,18 +22,18 @@ import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.models.MealFoodMap
-import com.kunle.aisle9b.screens.ShoppingViewModel
+import com.kunle.aisle9b.screens.ShoppingVM
 import com.kunle.aisle9b.ui.theme.BaseOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditMealDialog9(
     meal: Meal,
-    shoppingViewModel: ShoppingViewModel,
+    shoppingVM: ShoppingVM,
     setShowDialog: (Boolean) -> Unit
 ) {
 
-    val mwi = shoppingViewModel.mealWithIngredientsList.collectAsState().value.first() { MWI ->
+    val mwi = shoppingVM.mealWithIngredientsList.collectAsState().value.first() { MWI ->
         MWI.meal.mealId == meal.mealId
     }
 
@@ -52,8 +52,8 @@ fun EditMealDialog9(
             food = Food(name = "", quantity = "", isInGroceryList = false),
             setShowSelfDialog = { showFoodDialog.value = it },
             setFood = {
-                shoppingViewModel.insertFood(it)
-                shoppingViewModel.insertPair(MealFoodMap(mealId = meal.mealId, foodId = it.foodId)) })
+                shoppingVM.insertFood(it)
+                shoppingVM.insertPair(MealFoodMap(mealId = meal.mealId, foodId = it.foodId)) })
     }
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
@@ -113,7 +113,7 @@ fun EditMealDialog9(
                         items(items = foodList[0]) {
                             ListItem9(
                                 food = it,
-                                shoppingViewModel = shoppingViewModel,
+                                shoppingVM = shoppingVM,
                                 checkBoxShown = false
                             )
                         }

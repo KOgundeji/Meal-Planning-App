@@ -18,13 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.screens.ShoppingViewModel
+import com.kunle.aisle9b.screens.ShoppingVM
 import com.kunle.aisle9b.templates.ListItem9
 
 @Composable
 fun ReconciliationDialog(
     items: Map<String, List<Food>>,
-    shoppingViewModel: ShoppingViewModel,
+    shoppingVM: ShoppingVM,
     resetListLibraryToDefault: () -> Unit,
     dialogOpen: (Boolean) -> Unit
 ) {
@@ -55,7 +55,7 @@ fun ReconciliationDialog(
                     ) {
                         ListItem9(
                             food = list[0],
-                            shoppingViewModel = shoppingViewModel,
+                            shoppingVM = shoppingVM,
                             editPencilShown = false,
                             checkBoxShown = false
                         )
@@ -71,7 +71,7 @@ fun ReconciliationDialog(
                                 )
                                 ListItem9(
                                     food = list[currentNum + 1],
-                                    shoppingViewModel = shoppingViewModel,
+                                    shoppingVM = shoppingVM,
                                     editPencilShown = false,
                                     checkBoxShown = false
                                 )
@@ -84,11 +84,11 @@ fun ReconciliationDialog(
                     )
                     ReplacementFoodSection(
                         name = keyList[currentDialogIndex],
-                        setFood = { shoppingViewModel.insertFood(it) },
+                        setFood = { shoppingVM.insertFood(it) },
                         takeOriginalFoodOutOfGroceryList = {
                             list.forEach {
                                 it.isInGroceryList = false
-                                shoppingViewModel.updateFood(it)
+                                shoppingVM.updateFood(it)
                             }
                         },
                         onNextClick = {

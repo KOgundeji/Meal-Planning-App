@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.AppSettings
 import com.kunle.aisle9b.models.AppSetting
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -19,19 +20,16 @@ import com.kunle.aisle9b.ui.theme.BaseOrange
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    shoppingViewModel: ShoppingViewModel,
-    screenHeader: (String) -> Unit
+    shoppingVM: ShoppingVM
 ) {
-    val settingsHeader = GroceryScreens.headerTitle(GroceryScreens.SettingsScreen)
-    screenHeader(settingsHeader)
+    shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.SettingsScreen)
+    shoppingVM.topBar.value = TopBarOptions.BackButton
 
-    var darkMode by remember { mutableStateOf(shoppingViewModel.darkModeSetting.value) }
-    var screenPermOn by remember { mutableStateOf(shoppingViewModel.keepScreenOn.value) }
-    var categories by remember { mutableStateOf(shoppingViewModel.categoriesOn.value) }
+    var darkMode by remember { mutableStateOf(shoppingVM.darkModeSetting.value) }
+    var screenPermOn by remember { mutableStateOf(shoppingVM.keepScreenOn.value) }
+    var categories by remember { mutableStateOf(shoppingVM.categoriesOn.value) }
 
-    if (screenPermOn) {
-        KeepScreenOn()
-    }
+    if (screenPermOn) { KeepScreenOn() }
 
     Column(modifier = modifier) {
         Text(
@@ -51,7 +49,7 @@ fun SettingsScreen(
                 text = "Dark Mode",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 22.sp,
+                fontSize = 16.sp,
                 modifier = Modifier.padding(start = 15.dp)
             )
             Switch(
@@ -59,7 +57,7 @@ fun SettingsScreen(
                 colors = SwitchDefaults.colors(),
                 onCheckedChange = {
                     darkMode = !darkMode
-                    shoppingViewModel.insertSettings(
+                    shoppingVM.insertSettings(
                         AppSettings(
                             settingsName = AppSetting.DarkMode.name,
                             value = darkMode
@@ -78,7 +76,7 @@ fun SettingsScreen(
                 text = "Keep Screen on",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 22.sp,
+                fontSize = 16.sp,
                 modifier = Modifier.padding(start = 15.dp)
             )
             Switch(
@@ -86,7 +84,7 @@ fun SettingsScreen(
                 colors = SwitchDefaults.colors(),
                 onCheckedChange = {
                     screenPermOn = !screenPermOn
-                    shoppingViewModel.insertSettings(
+                    shoppingVM.insertSettings(
                         AppSettings(
                             settingsName = AppSetting.ScreenPermOn.name,
                             value = screenPermOn
@@ -105,7 +103,7 @@ fun SettingsScreen(
                 text = "Add Categories to Grocery List",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 modifier = Modifier.padding(start = 15.dp),
                 maxLines = 2
             )
@@ -114,7 +112,7 @@ fun SettingsScreen(
                 colors = SwitchDefaults.colors(),
                 onCheckedChange = {
                     categories = !categories
-                    shoppingViewModel.insertSettings(
+                    shoppingVM.insertSettings(
                         AppSettings(
                             settingsName = AppSetting.Categories.name,
                             value = categories

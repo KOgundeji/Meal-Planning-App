@@ -20,18 +20,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.screens.ShoppingViewModel
+import com.kunle.aisle9b.screens.ShoppingVM
 import com.kunle.aisle9b.ui.theme.BaseOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditListDialog9(
     list: GroceryList,
-    shoppingViewModel: ShoppingViewModel,
+    shoppingVM: ShoppingVM,
     setShowDialog: (Boolean) -> Unit
 ) {
 
-    val lwg = shoppingViewModel.listsWithGroceries.collectAsState().value.first() { LWG ->
+    val lwg = shoppingVM.listsWithGroceries.collectAsState().value.first() { LWG ->
         LWG.list.listId == list.listId
     }
 
@@ -50,8 +50,8 @@ fun EditListDialog9(
             food = Food(name = "", quantity = "", isInGroceryList = false),
             setShowSelfDialog = { showFoodDialog.value = it },
             setFood = {
-                shoppingViewModel.insertFood(it)
-                shoppingViewModel.insertPair(ListFoodMap(listId = list.listId, foodId = it.foodId)) })
+                shoppingVM.insertFood(it)
+                shoppingVM.insertPair(ListFoodMap(listId = list.listId, foodId = it.foodId)) })
     }
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
@@ -111,7 +111,7 @@ fun EditListDialog9(
                         items(items = foodList[0]) {
                             ListItem9(
                                 food = it,
-                                shoppingViewModel = shoppingViewModel,
+                                shoppingVM = shoppingVM,
                                 checkBoxShown = false
                             )
                         }

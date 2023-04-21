@@ -18,12 +18,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.screens.ShoppingViewModel
+import com.kunle.aisle9b.screens.ShoppingVM
 
 @Composable
 fun ListItem9(
     food: Food,
-    shoppingViewModel: ShoppingViewModel,
+    shoppingVM: ShoppingVM,
     checkBoxShown: Boolean = true,
     editPencilShown: Boolean = true,
     onEditClickNewFood: Boolean = false
@@ -37,10 +37,10 @@ fun ListItem9(
             setShowSelfDialog = { showEditFoodDialog = it },
             setFood = {
                 if (!onEditClickNewFood) {
-                    shoppingViewModel.updateFood(it)
+                    shoppingVM.updateFood(it)
                 } else {
-                    shoppingViewModel.tempIngredientList.remove(food)
-                    shoppingViewModel.tempIngredientList.add(it)
+                    shoppingVM.tempIngredientList.remove(food)
+                    shoppingVM.tempIngredientList.add(it)
                 }
             })
     }
@@ -55,7 +55,7 @@ fun ListItem9(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(3.dp)
         ) {
             if (checkBoxShown) {
                 Checkbox(
@@ -63,7 +63,7 @@ fun ListItem9(
                     onCheckedChange = {
                         isChecked = true
                         food.isInGroceryList = false
-                        shoppingViewModel.updateFood(food)
+                        shoppingVM.updateFood(food)
                     },
                     colors = CheckboxDefaults.colors(
                         checkedColor = MaterialTheme.colorScheme.background,
@@ -77,7 +77,7 @@ fun ListItem9(
                 withStyle(
                     style = SpanStyle(
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontSize = 24.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
                 ) {
@@ -86,7 +86,7 @@ fun ListItem9(
                 withStyle(
                     style = SpanStyle(
                         color = Color.Gray,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
                 ) {
@@ -96,7 +96,7 @@ fun ListItem9(
             if (editPencilShown) {
                 Icon(
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(30.dp)
                         .clickable {
                             showEditFoodDialog = true
                         },

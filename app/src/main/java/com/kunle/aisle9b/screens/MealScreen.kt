@@ -1,6 +1,5 @@
 package com.kunle.aisle9b.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,28 +7,25 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.kunle.aisle9b.models.Meal
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.MealItem9
-import com.kunle.aisle9b.ui.theme.BaseOrange
 
 @Composable
 fun MealScreen(
-    shoppingViewModel: ShoppingViewModel,
+    shoppingVM: ShoppingVM,
     modifier: Modifier = Modifier,
-    navController: NavController,
-    screenHeader: (String) -> Unit
+    navController: NavController
 ) {
-    val mealHeader = GroceryScreens.headerTitle(GroceryScreens.MealScreen)
-    screenHeader(mealHeader)
+    shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.MealScreen)
+    shoppingVM.topBar.value = TopBarOptions.SearchEnabled
 
     var mealDeleteEnabled by remember { mutableStateOf(false) }
 
@@ -38,19 +34,20 @@ fun MealScreen(
             AddDeleteBar(navController = navController,
                 mealDeleteEnabled = { mealDeleteEnabled = it })
         } else {
-            SubDeleteBar(shoppingViewModel = shoppingViewModel,
+            SubDeleteBar(shoppingVM = shoppingVM,
+                navController = navController,
                 mealDeleteEnabled = { mealDeleteEnabled = it },
                 onDeleteClick = {
-                    it.forEach { meal ->
-                        shoppingViewModel.deleteMeal(meal)
-                        shoppingViewModel.deleteSpecificMealIngredients(meal.mealId)
+                    shoppingVM.mealDeleteList.forEach { meal ->
+                        shoppingVM.deleteMeal(meal)
+                        shoppingVM.deleteSpecificMealIngredients(meal.mealId)
                     }
                     mealDeleteEnabled = false
                 })
         }
         MealListContent(
             mealDeleteEnabled = mealDeleteEnabled,
-            shoppingViewModel = shoppingViewModel
+            shoppingVM = shoppingVM
         )
     }
 }
@@ -67,37 +64,30 @@ fun AddDeleteBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Row(
-            modifier = Modifier.clickable {
-                navController.navigate(GroceryScreens.AddMealsScreen.name) },
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        Button(
+            modifier = Modifier.width(75.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ),
+            onClick = { navController.navigate(GroceryScreens.AddMealsScreen.name) }) {
             Icon(
                 imageVector = Icons.Filled.AddCircle,
                 contentDescription = "Add button",
-                modifier = Modifier.size(48.dp),
-                tint = BaseOrange
-            )
-            Text(
-                text = "Add",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
+                modifier = Modifier.size(30.dp)
             )
         }
-        Row(
-            modifier = Modifier.clickable { mealDeleteEnabled(true) },
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        Button(
+            modifier = Modifier.width(75.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ),
+            onClick = { mealDeleteEnabled(true) }) {
             Icon(
                 imageVector = Icons.Filled.Delete,
                 contentDescription = "Delete button",
-                modifier = Modifier.size(48.dp),
-                tint = BaseOrange
-            )
-            Text(
-                text = "Delete",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
+                modifier = Modifier.size(30.dp)
             )
         }
     }
@@ -105,9 +95,10 @@ fun AddDeleteBar(
 
 @Composable
 fun SubDeleteBar(
-    shoppingViewModel: ShoppingViewModel,
+    shoppingVM: ShoppingVM,
+    navController: NavController,
     mealDeleteEnabled: (Boolean) -> Unit,
-    onDeleteClick: (List<Meal>) -> Unit,
+    onDeleteClick: () -> Unit,
 ) {
 
     Row(
@@ -117,47 +108,42 @@ fun SubDeleteBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Row(
-            modifier = Modifier.clickable { onDeleteClick(shoppingViewModel.mealDeleteList) },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                contentDescription = "Delete button",
-                modifier = Modifier.size(48.dp),
-                tint = BaseOrange
-            )
-            Text(
-                text = "Delete",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        Row(
-            modifier = Modifier.clickable { mealDeleteEnabled(false) },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Button(
+            modifier = Modifier.width(75.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ),
+            onClick = { mealDeleteEnabled(false) }) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Back button",
-                modifier = Modifier.size(48.dp),
-                tint = BaseOrange
+                modifier = Modifier.size(30.dp)
             )
-            Text(
-                text = "Go Back",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
+        }
+        Button(
+            modifier = Modifier.width(75.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ),
+            onClick = { onDeleteClick() }) {
+            Icon(
+                imageVector = Icons.Filled.DeleteForever,
+                contentDescription = "Delete button",
+                modifier = Modifier.size(30.dp)
             )
         }
     }
 }
 
+
 @Composable
 fun MealListContent(
     mealDeleteEnabled: Boolean,
-    shoppingViewModel: ShoppingViewModel
+    shoppingVM: ShoppingVM
 ) {
-    val mealList = shoppingViewModel.mealList.collectAsState().value
+    val mealList = shoppingVM.mealList.collectAsState().value
 
     Column {
         LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -165,7 +151,7 @@ fun MealListContent(
                 MealItem9(
                     meal = it,
                     deleteEnabled = mealDeleteEnabled,
-                    shoppingViewModel = shoppingViewModel
+                    shoppingVM = shoppingVM
                 )
             }
         }

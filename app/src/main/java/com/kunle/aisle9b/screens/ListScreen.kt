@@ -16,9 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.ListItem9
@@ -27,30 +27,30 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ListScreen(
-    shoppingViewModel: ShoppingViewModel,
-    modifier: Modifier = Modifier,
-    screenHeader: (String) -> Unit
+    shoppingVM: ShoppingVM,
+    modifier: Modifier = Modifier
 ) {
-    val listHeader = GroceryScreens.headerTitle(GroceryScreens.ListScreen)
-    screenHeader(listHeader)
+    shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.ListScreen)
+    shoppingVM.topBar.value = TopBarOptions.Default
 
-    val groceryList = shoppingViewModel.groceryList.collectAsState().value
-    val darkMode = shoppingViewModel.darkModeSetting.value
-    shoppingViewModel.groceryBadgeCount.value = groceryList.size
+    val groceryList = shoppingVM.groceryList.collectAsState().value
+    val darkMode = shoppingVM.darkModeSetting.value
+    shoppingVM.groceryBadgeCount.value = groceryList.size
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = modifier.fillMaxSize()) {
         GroceryInputTextField(
-            darkMode = darkMode) {
-            shoppingViewModel.insertFood(it)
-            shoppingViewModel.groceryBadgeCount.value += 1
+            darkMode = darkMode
+        ) {
+            shoppingVM.insertFood(it)
+            shoppingVM.groceryBadgeCount.value += 1
             coroutineScope.launch { listState.animateScrollToItem(index = 0) }
         }
         LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(4.dp)) {
             items(items = groceryList) {
-                ListItem9(food = it, shoppingViewModel = shoppingViewModel)
+                ListItem9(food = it, shoppingVM = shoppingVM)
             }
         }
     }
@@ -72,11 +72,11 @@ fun GroceryInputTextField(darkMode: Boolean, onAddGrocery: (Food) -> Unit) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TextField(
+        OutlinedTextField(
             value = item,
             singleLine = true,
             onValueChange = { item = it },
-            modifier = Modifier.weight(.6f),
+            modifier = Modifier.weight(.7f),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = if (darkMode) DM_MediumGray else Color.White,
                 textColor = if (darkMode) Color.White else Color.Black
@@ -84,7 +84,7 @@ fun GroceryInputTextField(darkMode: Boolean, onAddGrocery: (Food) -> Unit) {
             label = { Text(text = "New item") }
         )
         Spacer(modifier = Modifier.width(10.dp))
-        TextField(
+        OutlinedTextField(
             value = quantity,
             singleLine = true,
             onValueChange = { quantity = it },
@@ -96,11 +96,10 @@ fun GroceryInputTextField(darkMode: Boolean, onAddGrocery: (Food) -> Unit) {
             label = { Text(text = "#") },
         )
         Spacer(modifier = Modifier.width(10.dp))
-        Card(
+        Icon(
             modifier = Modifier
-                .fillMaxWidth()
                 .height(55.dp)
-                .weight(.25f)
+                .weight(.2f)
                 .clickable {
                     if (item.isNotEmpty()) {
                         onAddGrocery(
@@ -118,29 +117,10 @@ fun GroceryInputTextField(darkMode: Boolean, onAddGrocery: (Food) -> Unit) {
                         focusManager.clearFocus()
                     }
                 },
-            colors = CardDefaults.cardColors(containerColor = if (darkMode) DM_MediumGray else Color.White)
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.AddCircle,
-                        contentDescription = "Add Circle",
-                        tint = if (darkMode) Color.White else Color.Black
-                    )
-                    Text(
-                        text = "Add",
-                        color = if (darkMode) Color.White else Color.Black,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
+            imageVector = Icons.Filled.AddCircle,
+            contentDescription = "Add Circle",
+            tint = if (darkMode) Color.White else Color.Black
+        )
     }
 }
 

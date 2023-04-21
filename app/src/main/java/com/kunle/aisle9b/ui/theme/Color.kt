@@ -31,6 +31,8 @@ val OnPrimaryContainerLight = Color.Black
 val SecondaryContainerLight = BaseOrange
 val onSecondaryContainerLight = Color.White
 
+val TertiaryContainerLight = BaseOrange
+
 val ErrorLight = Color(0xFFba1a1a)
 val OnErrorLight = Color(0xFFffffff)
 val ErrorContainerLight = Color(0xFFffdad6)
@@ -52,6 +54,8 @@ val OnPrimaryContainerDark = DM_BaseOrange
 
 val SecondaryContainerDark = DM_MediumGray
 val onSecondaryContainerDark = DM_LightGray
+
+val TertiaryContainerDark = DM_BaseOrange
 
 val ErrorDark = Color(0xFFffb4ab)
 val OnErrorDark = Color(0xFF690005)

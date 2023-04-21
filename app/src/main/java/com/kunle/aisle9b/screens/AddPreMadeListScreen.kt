@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.EditFoodDialog9
@@ -31,10 +32,10 @@ import com.kunle.aisle9b.ui.theme.BaseOrange
 fun AddPreMadeListScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    shoppingViewModel: ShoppingViewModel,
-    screenHeader: (String) -> Unit
+    shoppingVM: ShoppingVM
 ) {
-    screenHeader(GroceryScreens.headerTitle(GroceryScreens.AddCustomListScreen))
+    shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.AddCustomListScreen)
+    shoppingVM.topBar.value = TopBarOptions.BackButton
 
     val list = GroceryList(name = "")
     var customListName by remember { mutableStateOf("") }
@@ -45,7 +46,7 @@ fun AddPreMadeListScreen(
         EditFoodDialog9(
             food = Food(name = "", quantity = "", isInGroceryList = false),
             setShowSelfDialog = { showAddGroceryDialog = it },
-            setFood = { shoppingViewModel.tempGroceryList.add(it) }
+            setFood = { shoppingVM.tempGroceryList.add(it) }
         )
     }
     Column(
@@ -100,16 +101,16 @@ fun AddPreMadeListScreen(
                 modifier = Modifier
                     .size(48.dp)
                     .clickable {
-                        shoppingViewModel.tempGroceryList.forEach {
-                            shoppingViewModel.insertFood(it)
-                            shoppingViewModel.insertList(
+                        shoppingVM.tempGroceryList.forEach {
+                            shoppingVM.insertFood(it)
+                            shoppingVM.insertList(
                                 list = GroceryList(listId = list.listId, name = customListName)
                             )
-                            shoppingViewModel.insertPair(
+                            shoppingVM.insertPair(
                                 ListFoodMap(listId = list.listId, foodId = it.foodId)
                             )
                         }
-                        shoppingViewModel.tempGroceryList.clear()
+                        shoppingVM.tempGroceryList.clear()
                         navController.navigate(GroceryScreens.PremadeListScreen.name)
                     }
             )
@@ -117,10 +118,10 @@ fun AddPreMadeListScreen(
         }
         Spacer(modifier = Modifier.height(10.dp))
         LazyColumn {
-            items(items = shoppingViewModel.tempGroceryList) {
+            items(items = shoppingVM.tempGroceryList) {
                 ListItem9(
                     food = it,
-                    shoppingViewModel = shoppingViewModel,
+                    shoppingVM = shoppingVM,
                     checkBoxShown = false,
                     onEditClickNewFood = true
                 )

@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.screens.ShoppingViewModel
 import com.kunle.aisle9b.util.CategoryDropDownMenu
 
 @OptIn(ExperimentalMaterial3Api::class)

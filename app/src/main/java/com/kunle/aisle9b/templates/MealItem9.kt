@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Meal
-import com.kunle.aisle9b.screens.ShoppingViewModel
+import com.kunle.aisle9b.screens.ShoppingVM
 import com.kunle.aisle9b.ui.theme.DM_DarkishGray
 import com.kunle.aisle9b.ui.theme.DM_LightGray
 
@@ -23,12 +23,12 @@ import com.kunle.aisle9b.ui.theme.DM_LightGray
 fun MealItem9(
     meal: Meal,
     deleteEnabled: Boolean,
-    shoppingViewModel: ShoppingViewModel,
+    shoppingVM: ShoppingVM,
 ) {
-    val darkMode = shoppingViewModel.darkModeSetting.value
+    val darkMode = shoppingVM.darkModeSetting.value
     var isChecked by remember { mutableStateOf(false) }
     var showEditMealDialog by remember { mutableStateOf(false) }
-    val mwi = shoppingViewModel.mealWithIngredientsList.collectAsState().value.find { MWI ->
+    val mwi = shoppingVM.mealWithIngredientsList.collectAsState().value.find { MWI ->
         MWI.meal.mealId == meal.mealId
     }
     val listedIngredients: String = mwi?.foods
@@ -37,7 +37,7 @@ fun MealItem9(
     if (showEditMealDialog) {
         EditMealDialog9(
             meal = meal,
-            shoppingViewModel = shoppingViewModel,
+            shoppingVM = shoppingVM,
             setShowDialog = { showEditMealDialog = it })
     }
 
@@ -52,7 +52,7 @@ fun MealItem9(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 16.dp)
+                .padding(horizontal = 8.dp, vertical = 10.dp)
                 .fillMaxWidth()
         ) {
             Row(
@@ -65,9 +65,9 @@ fun MealItem9(
                         onCheckedChange = {
                             isChecked = !isChecked
                             if (isChecked) {
-                                shoppingViewModel.mealDeleteList.add(meal)
+                                shoppingVM.mealDeleteList.add(meal)
                             } else {
-                                shoppingViewModel.mealDeleteList.remove(meal)
+                                shoppingVM.mealDeleteList.remove(meal)
                             }
                         },
                         colors = CheckboxDefaults.colors(
@@ -85,13 +85,13 @@ fun MealItem9(
                     Text(
                         text = meal.name,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontSize = 24.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = listedIngredients,
                         color = if (darkMode) DM_LightGray else DM_DarkishGray,
-                        fontSize = 18.sp,
+                        fontSize = 14.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

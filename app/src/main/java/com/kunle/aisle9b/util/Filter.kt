@@ -2,11 +2,11 @@ package com.kunle.aisle9b.util
 
 import android.util.Log
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.screens.ShoppingViewModel
+import com.kunle.aisle9b.screens.ShoppingVM
 
 fun filterForReconciliation(
     lists: List<List<Food>>,
-    shoppingViewModel: ShoppingViewModel
+    shoppingVM: ShoppingVM
 ): Map<String, List<Food>> {
     val foodMap: MutableMap<String, MutableList<Food>> = mutableMapOf()
     val filteredFoodMap: MutableMap<String, MutableList<Food>> = mutableMapOf()
@@ -31,7 +31,7 @@ fun filterForReconciliation(
                 category = value[0].category,
                 isInGroceryList = true
             )
-            shoppingViewModel.updateFood(newFood)
+            shoppingVM.updateFood(newFood)
         } else {
             filteredFoodMap[key] = value
         }

@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.models.MealFoodMap
@@ -33,11 +34,11 @@ import com.kunle.aisle9b.ui.theme.BaseOrange
 @Composable
 fun AddMealScreen(
     modifier: Modifier = Modifier,
-    shoppingViewModel: ShoppingViewModel,
-    navController: NavController,
-    screenHeader: (String) -> Unit
+    shoppingVM: ShoppingVM,
+    navController: NavController
 ) {
-    screenHeader(GroceryScreens.headerTitle(GroceryScreens.AddMealsScreen))
+    shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.AddMealsScreen)
+    shoppingVM.topBar.value = TopBarOptions.BackButton
 
     val meal = Meal(name = "")
     var mealName by remember { mutableStateOf("") }
@@ -48,7 +49,7 @@ fun AddMealScreen(
         EditFoodDialog9(
             food = Food(name = "", quantity = "", isInGroceryList = false),
             setShowSelfDialog = { showEditFoodDialog = it },
-            setFood = { shoppingViewModel.tempIngredientList.add(it) },
+            setFood = { shoppingVM.tempIngredientList.add(it) },
         )
     }
 
@@ -106,16 +107,16 @@ fun AddMealScreen(
                 modifier = Modifier
                     .size(48.dp)
                     .clickable {
-                        shoppingViewModel.tempIngredientList.forEach {
-                            shoppingViewModel.insertFood(it)
-                            shoppingViewModel.insertMeal(
+                        shoppingVM.tempIngredientList.forEach {
+                            shoppingVM.insertFood(it)
+                            shoppingVM.insertMeal(
                                 meal = Meal(mealId = meal.mealId, name = mealName)
                             )
-                            shoppingViewModel.insertPair(
+                            shoppingVM.insertPair(
                                 MealFoodMap(mealId = meal.mealId, foodId = it.foodId)
                             )
                         }
-                        shoppingViewModel.tempIngredientList.clear()
+                        shoppingVM.tempIngredientList.clear()
                         navController.navigate(GroceryScreens.MealScreen.name)
                     }
             )
@@ -123,11 +124,11 @@ fun AddMealScreen(
         }
         Spacer(modifier = Modifier.height(10.dp))
         LazyColumn {
-            items(items = shoppingViewModel.tempIngredientList) {
+            items(items = shoppingVM.tempIngredientList) {
                 Log.d("Test", "lazyColumn: activated: $it")
                 ListItem9(
                     food = it,
-                    shoppingViewModel = shoppingViewModel,
+                    shoppingVM = shoppingVM,
                     checkBoxShown = false,
                     onEditClickNewFood = true
                 )

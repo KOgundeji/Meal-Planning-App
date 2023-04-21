@@ -1,14 +1,12 @@
 package com.kunle.aisle9b
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -17,26 +15,20 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.kunle.aisle9b.data.addFakeToDatabase
-import com.kunle.aisle9b.data.sampleFoodData
 import com.kunle.aisle9b.models.AppSetting
 import com.kunle.aisle9b.navigation.Aisle9Navigation
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
-import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.navigation.navDrawerList
-import com.kunle.aisle9b.screens.ShoppingViewModel
+import com.kunle.aisle9b.screens.ShoppingVM
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
 import com.kunle.aisle9b.ui.theme.BaseOrange
-import com.kunle.aisle9b.util.AdditionalScreenOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -45,34 +37,32 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val shoppingViewModel: ShoppingViewModel by viewModels()
-            ShoppingApp(shoppingViewModel = shoppingViewModel)
+            val shoppingVM: ShoppingVM by viewModels()
+            ShoppingApp(shoppingVM = shoppingVM)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShoppingApp(shoppingViewModel: ShoppingViewModel) {
+fun ShoppingApp(shoppingVM: ShoppingVM) {
     val navController = rememberNavController()
-    var screenHeader by remember { mutableStateOf("") }
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var selectedItem by remember { mutableStateOf(navDrawerList[0]) }
-    var topBarOptions by remember { mutableStateOf(TopBarOptions.Default.name) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    shoppingViewModel.groceryBadgeCount.value =
-        shoppingViewModel.groceryList.collectAsState().value.size
-    shoppingViewModel.screenList[2].name =
-        "Meals (${shoppingViewModel.mealList.collectAsState().value.size})"
+    shoppingVM.groceryBadgeCount.value =
+        shoppingVM.groceryList.collectAsState().value.size
+    shoppingVM.screenList[2].name =
+        "Meals (${shoppingVM.mealList.collectAsState().value.size})"
 
 //    addFakeToDatabase(list = sampleFoodData,viewModel = shoppingViewModel)
-    shoppingViewModel.darkModeSetting.value = shoppingViewModel.settingsList.collectAsState()
+    shoppingVM.darkModeSetting.value = shoppingVM.settingsList.collectAsState()
         .value.firstOrNull() {
             it.settingsName == AppSetting.DarkMode.name
         }?.value ?: isSystemInDarkTheme()
 
-    Aisle9bTheme(darkTheme = shoppingViewModel.darkModeSetting.value) {
+    Aisle9bTheme(darkTheme = shoppingVM.darkModeSetting.value) {
         ModalNavigationDrawer(
             gesturesEnabled = true,
             drawerState = drawerState,
@@ -113,46 +103,48 @@ fun ShoppingApp(shoppingViewModel: ShoppingViewModel) {
             }) {
             Scaffold(
                 topBar = {
-                    when (topBarOptions) {
-                        TopBarOptions.SearchEnabled.name -> {
+                    when (shoppingVM.topBar.value) {
+                        TopBarOptions.SearchEnabled -> {
                             SearchableTopAppBar(
-                                screenHeader = screenHeader,
                                 drawerState = drawerState,
-                                topBarOption = { topBarOptions = it }
+                                screenHeader = shoppingVM.screenHeader.value,
+                                topBarOption = { shoppingVM.topBar.value = it }
                             )
                         }
-                        TopBarOptions.Searchbar.name -> {
+                        TopBarOptions.Searchbar -> {
                             SearchBar(
-                                screenHeader = screenHeader,
-                                shoppingViewModel = shoppingViewModel,
-                                topBarOption = { topBarOptions = it }
+                                shoppingVM = shoppingVM,
+                                topBarOption = { shoppingVM.topBar.value = it }
                             )
                         }
-                        else -> {
+                        TopBarOptions.BackButton -> {
+                            BackTopAppBar(
+                                navController = navController,
+                                screenHeader = shoppingVM.screenHeader.value
+                            )
+                        }
+                        TopBarOptions.Default -> {
                             DefaultTopAppBar(
-                                screenHeader = screenHeader,
-                                drawerState = drawerState
+                                drawerState = drawerState,
+                                screenHeader = shoppingVM.screenHeader.value
                             )
                         }
                     }
                 }, bottomBar = {
                     BottomNavigationBar9(
-                        items = shoppingViewModel.screenList,
+                        items = shoppingVM.screenList,
                         navController = navController,
-                        shoppingViewModel = shoppingViewModel,
-                        badgeCount = shoppingViewModel.groceryBadgeCount.value,
+                        shoppingVM = shoppingVM,
+                        badgeCount = shoppingVM.groceryBadgeCount.value,
                         onItemClick = {
                             navController.navigate(it.route)
                         })
                 }) {
                 Aisle9Navigation(
                     navController = navController,
-                    shoppingViewModel = shoppingViewModel,
-                    modifier = Modifier.padding(it),
-                    topBarOption = { top -> topBarOptions = top },
-                ) { headline ->
-                    screenHeader = headline
-                }
+                    shoppingVM = shoppingVM,
+                    modifier = Modifier.padding(it)
+                )
             }
         }
 
@@ -197,7 +189,7 @@ fun DefaultTopAppBar(
 fun SearchableTopAppBar(
     screenHeader: String,
     drawerState: DrawerState,
-    topBarOption: (String) -> Unit
+    topBarOption: (TopBarOptions) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     CenterAlignedTopAppBar(
@@ -226,7 +218,7 @@ fun SearchableTopAppBar(
                 tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .clickable {
-                        topBarOption(TopBarOptions.Searchbar.name)
+                        topBarOption(TopBarOptions.Searchbar)
                     }
             )
         },
@@ -240,16 +232,14 @@ fun SearchableTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
-    screenHeader: String,
-    shoppingViewModel: ShoppingViewModel,
-    topBarOption: (String) -> Unit
+    shoppingVM: ShoppingVM,
+    topBarOption: (TopBarOptions) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
     var searchWord by remember { mutableStateOf("") }
 
-    val customLists = shoppingViewModel.premadeLists.collectAsState().value
+    val customLists = shoppingVM.premadeLists.collectAsState().value
     val filteredCustomLists = remember { mutableStateOf(customLists) }
-    shoppingViewModel.filteredList.value = filteredCustomLists.value
+    shoppingVM.filteredList.value = filteredCustomLists.value
 
     CenterAlignedTopAppBar(
         navigationIcon = {
@@ -259,12 +249,12 @@ fun SearchBar(
                 tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .clickable {
-                        topBarOption(TopBarOptions.SearchEnabled.name)
+                        topBarOption(TopBarOptions.SearchEnabled)
                     }
             )
         },
         title = {
-            TextField(
+            OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(.8f),
                 value = searchWord,
                 onValueChange = {
@@ -278,9 +268,7 @@ fun SearchBar(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search Icon",
-                        modifier = Modifier
-                            .padding(15.dp)
-                            .size(24.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 },
                 trailingIcon = {
@@ -300,7 +288,7 @@ fun SearchBar(
                     }
                 },
                 singleLine = true,
-                shape = RoundedCornerShape(30.dp),
+                shape = RectangleShape,
                 colors = TextFieldDefaults.textFieldColors(cursorColor = BaseOrange)
             )
         },
@@ -311,8 +299,42 @@ fun SearchBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BackTopAppBar(
+    navController: NavController,
+    screenHeader: String
+) {
+    CenterAlignedTopAppBar(
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Go back",
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .clickable {
+                        navController.popBackStack()
+                    }
+            )
+        },
+        title = {
+            Text(
+                text = screenHeader,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary
+        )
+    )
+}
+
+
 enum class TopBarOptions {
     Default,
     SearchEnabled,
-    Searchbar;
+    Searchbar,
+    BackButton;
 }

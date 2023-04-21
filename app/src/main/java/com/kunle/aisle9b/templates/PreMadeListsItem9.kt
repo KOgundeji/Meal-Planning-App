@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleLeft
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.outlined.ArrowCircleLeft
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,7 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.GroceryList
-import com.kunle.aisle9b.screens.ShoppingViewModel
+import com.kunle.aisle9b.screens.ButtonBar
+import com.kunle.aisle9b.screens.ShoppingVM
 import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.DM_DarkishGray
 import com.kunle.aisle9b.ui.theme.DM_LightGray
@@ -30,14 +30,14 @@ import com.kunle.aisle9b.ui.theme.DM_LightGray
 @Composable
 fun PreMadeListItem9(
     list: GroceryList,
-    primaryButtonBarAction: Int,
-    shoppingViewModel: ShoppingViewModel,
+    primaryButtonBarAction: ButtonBar,
+    shoppingVM: ShoppingVM,
     transferList: MutableList<List<Food>>
 ) {
-    val darkMode = shoppingViewModel.darkModeSetting.value
+    val darkMode = shoppingVM.darkModeSetting.value
     var isChecked by remember { mutableStateOf(false) }
     var showEditMealDialog by remember { mutableStateOf(false) }
-    val lwg = shoppingViewModel.listsWithGroceries.collectAsState().value.find { LWG ->
+    val lwg = shoppingVM.listsWithGroceries.collectAsState().value.find { LWG ->
         LWG.list.listId == list.listId
     }
     val listedGroceries: String = lwg?.groceries
@@ -47,7 +47,7 @@ fun PreMadeListItem9(
     if (showEditMealDialog) {
         EditListDialog9(
             list = list,
-            shoppingViewModel = shoppingViewModel,
+            shoppingVM = shoppingVM,
             setShowDialog = { showEditMealDialog = it })
     }
 
@@ -62,22 +62,22 @@ fun PreMadeListItem9(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 16.dp)
+                .padding(horizontal = 8.dp, vertical = 10.dp)
                 .fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(.9f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (primaryButtonBarAction == 1) {
+                if (primaryButtonBarAction == ButtonBar.Delete) {
                     Checkbox(
                         checked = isChecked,
                         onCheckedChange = {
                             isChecked = !isChecked
                             if (isChecked) {
-                                shoppingViewModel.groceryListDeleteList.add(list)
+                                shoppingVM.groceryListDeleteList.add(list)
                             } else {
-                                shoppingViewModel.groceryListDeleteList.remove(list)
+                                shoppingVM.groceryListDeleteList.remove(list)
                             }
                         },
                         colors = CheckboxDefaults.colors(
@@ -87,7 +87,7 @@ fun PreMadeListItem9(
                         ),
                         modifier = Modifier.size(36.dp)
                     )
-                } else if (primaryButtonBarAction == 2) {
+                } else if (primaryButtonBarAction == ButtonBar.Transfer) {
                     Icon(
                         modifier = Modifier
                             .clickable {
@@ -119,13 +119,13 @@ fun PreMadeListItem9(
                     Text(
                         text = list.name,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontSize = 24.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = listedGroceries,
                         color = if (darkMode) DM_LightGray else DM_DarkishGray,
-                        fontSize = 18.sp,
+                        fontSize = 14.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
