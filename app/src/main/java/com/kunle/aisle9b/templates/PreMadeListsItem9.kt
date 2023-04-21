@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.GroceryList
-import com.kunle.aisle9b.screens.ButtonBar
+import com.kunle.aisle9b.screens.CustomListButtonBar
 import com.kunle.aisle9b.screens.ShoppingVM
 import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.DM_DarkishGray
@@ -30,7 +30,7 @@ import com.kunle.aisle9b.ui.theme.DM_LightGray
 @Composable
 fun PreMadeListItem9(
     list: GroceryList,
-    primaryButtonBarAction: ButtonBar,
+    primaryButtonBarAction: CustomListButtonBar,
     shoppingVM: ShoppingVM,
     transferList: MutableList<List<Food>>
 ) {
@@ -69,7 +69,7 @@ fun PreMadeListItem9(
                 modifier = Modifier.fillMaxWidth(.9f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (primaryButtonBarAction == ButtonBar.Delete) {
+                if (primaryButtonBarAction == CustomListButtonBar.Delete) {
                     Checkbox(
                         checked = isChecked,
                         onCheckedChange = {
@@ -87,7 +87,7 @@ fun PreMadeListItem9(
                         ),
                         modifier = Modifier.size(36.dp)
                     )
-                } else if (primaryButtonBarAction == ButtonBar.Transfer) {
+                } else if (primaryButtonBarAction == CustomListButtonBar.Transfer) {
                     Icon(
                         modifier = Modifier
                             .clickable {

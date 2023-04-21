@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+
 @HiltViewModel
 class ShoppingVM @Inject constructor(private val repository: ShoppingRepository) :
     ViewModel() {
@@ -24,10 +25,12 @@ class ShoppingVM @Inject constructor(private val repository: ShoppingRepository)
     val mealDeleteList: MutableList<Meal> = mutableListOf()
     val groceryListDeleteList: MutableList<GroceryList> = mutableListOf()
 
-    var filteredList = mutableStateOf<List<GroceryList>>(emptyList())
+    var filteredCustomLists = mutableStateOf<List<GroceryList>>(emptyList())
+    var filteredMeals = mutableStateOf<List<Meal>>(emptyList())
 
     var screenHeader = mutableStateOf("")
     var topBar = mutableStateOf(TopBarOptions.Default)
+    var searchSource = mutableStateOf("")
     val tempIngredientList = mutableStateListOf<Food>()
     val tempGroceryList = mutableStateListOf<Food>()
     var darkModeSetting = mutableStateOf(false)
@@ -37,14 +40,14 @@ class ShoppingVM @Inject constructor(private val repository: ShoppingRepository)
 
     private var _foodList = MutableStateFlow<List<Food>>(emptyList())
     private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
-    private var _premadeLists = MutableStateFlow<List<GroceryList>>(emptyList())
+    private var _customLists = MutableStateFlow<List<GroceryList>>(emptyList())
     private var _mealList = MutableStateFlow<List<Meal>>(emptyList())
     private var _settingsList = MutableStateFlow<List<AppSettings>>(emptyList())
     private var _listWithGroceriesList = MutableStateFlow<List<ListWithGroceries>>(emptyList())
     private var _mealWithIngredientsList = MutableStateFlow<List<MealWithIngredients>>(emptyList())
     val foodList = _foodList.asStateFlow()
     val groceryList = _groceryList.asStateFlow()
-    val premadeLists = _premadeLists.asStateFlow()
+    val customLists = _customLists.asStateFlow()
     val mealList = _mealList.asStateFlow()
     val settingsList = _settingsList.asStateFlow()
     val listsWithGroceries = _listWithGroceriesList.asStateFlow()
@@ -68,7 +71,7 @@ class ShoppingVM @Inject constructor(private val repository: ShoppingRepository)
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllLists().distinctUntilChanged().collect { premadeLists ->
                 if (premadeLists.isNotEmpty()) {
-                    _premadeLists.value = premadeLists
+                    _customLists.value = premadeLists
                 }
             }
         }

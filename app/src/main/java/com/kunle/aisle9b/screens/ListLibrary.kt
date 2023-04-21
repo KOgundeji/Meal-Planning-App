@@ -23,7 +23,6 @@ import com.kunle.aisle9b.util.filterForReconciliation
 //this will be a screen that houses custom grocery lists that users can
 //jumpstart their grocery lists
 //option to add list to grocery list only shows up when grocery list is empty
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListLibrary(
     shoppingVM: ShoppingVM,
@@ -32,14 +31,14 @@ fun ListLibrary(
 ) {
     shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.PremadeListScreen)
     shoppingVM.topBar.value = TopBarOptions.SearchEnabled
+    shoppingVM.searchSource.value = GroceryScreens.PremadeListScreen.name
 
     val context = LocalContext.current
-    shoppingVM.filteredList.value = shoppingVM.premadeLists.collectAsState().value
+    shoppingVM.filteredCustomLists.value = shoppingVM.customLists.collectAsState().value
 
-    var primaryButtonBar by remember { mutableStateOf(ButtonBar.Default) }
+    var primaryButtonBar by remember { mutableStateOf(CustomListButtonBar.Default) }
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
-    val listsToAddToGroceryList =
-        remember { mutableStateListOf(shoppingVM.groceryList.value) }
+    val listsToAddToGroceryList = remember { mutableStateListOf(shoppingVM.groceryList.value) }
 
     if (transferFoodsToGroceryList) {
         val foodsForReconciliation = filterForReconciliation(
@@ -49,7 +48,7 @@ fun ListLibrary(
         ReconciliationDialog(
             items = foodsForReconciliation,
             shoppingVM = shoppingVM,
-            resetListLibraryToDefault = { primaryButtonBar = ButtonBar.Default }
+            resetListLibraryToDefault = { primaryButtonBar = CustomListButtonBar.Default }
         ) {
             transferFoodsToGroceryList = it
         }
@@ -64,12 +63,12 @@ fun ListLibrary(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         when (primaryButtonBar) {
-            ButtonBar.Default -> {
+            CustomListButtonBar.Default -> {
                 AddDeleteButtonBar(
                     onAddClick = { navController.navigate(GroceryScreens.AddCustomListScreen.name) },
                     primaryButtonBar = { primaryButtonBar = it })
             }
-            ButtonBar.Delete -> {
+            CustomListButtonBar.Delete -> {
                 FinalDeleteListButtonBar(
                     primaryButtonBar = { primaryButtonBar = it },
                     onDeleteClick = {
@@ -77,20 +76,20 @@ fun ListLibrary(
                             shoppingVM.deleteList(customList)
                             shoppingVM.deleteSpecificListWithGroceries(customList.listId)
                         }
-                        primaryButtonBar = ButtonBar.Default
+                        primaryButtonBar = CustomListButtonBar.Default
                     })
             }
-            ButtonBar.Transfer -> {
+            CustomListButtonBar.Transfer -> {
                 AddToGroceryListButtonBar(
                     transferList = listsToAddToGroceryList,
                     addLists = { transferFoodsToGroceryList = it }
                 ) {
-                    primaryButtonBar = ButtonBar.Default
+                    primaryButtonBar = CustomListButtonBar.Default
                 }
             }
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            items(items = shoppingVM.filteredList.value) {
+            items(items = shoppingVM.filteredCustomLists.value) {
                 PreMadeListItem9(
                     list = it,
                     primaryButtonBarAction = primaryButtonBar,
@@ -106,63 +105,58 @@ fun ListLibrary(
 @Composable
 fun AddDeleteButtonBar(
     onAddClick: (Boolean) -> Unit,
-    primaryButtonBar: (ButtonBar) -> Unit
+    primaryButtonBar: (CustomListButtonBar) -> Unit
 ) {
-    Column(
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(15.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(
-                modifier = Modifier.width(75.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                ),
-                onClick = { onAddClick(true) }) {
-                Icon(
-                    modifier = Modifier.size(30.dp),
-                    imageVector = Icons.Filled.AddCircle,
-                    contentDescription = null
-                )
-            }
-            Button(
-                modifier = Modifier.width(75.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                ),
-                onClick = { primaryButtonBar(ButtonBar.Delete) }) {
-                Icon(
-                    modifier = Modifier.size(30.dp),
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = null
-                )
-            }
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                ),
-                onClick = { primaryButtonBar(ButtonBar.Transfer) }) {
-                Icon(
-                    modifier = Modifier.size(30.dp),
-                    imageVector = Icons.Filled.DriveFileMoveRtl,
-                    contentDescription = null
-                )
-            }
+        Button(
+            modifier = Modifier.width(75.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ),
+            onClick = { onAddClick(true) }) {
+            Icon(
+                modifier = Modifier.size(30.dp),
+                imageVector = Icons.Filled.AddCircle,
+                contentDescription = null
+            )
+        }
+        Button(
+            modifier = Modifier.width(75.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ),
+            onClick = { primaryButtonBar(CustomListButtonBar.Delete) }) {
+            Icon(
+                modifier = Modifier.size(30.dp),
+                imageVector = Icons.Filled.Delete,
+                contentDescription = null
+            )
+        }
+        Button(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ),
+            onClick = { primaryButtonBar(CustomListButtonBar.Transfer) }) {
+            Icon(
+                modifier = Modifier.size(30.dp),
+                imageVector = Icons.Filled.DriveFileMoveRtl,
+                contentDescription = null
+            )
         }
     }
 }
 
+
 @Composable
 fun FinalDeleteListButtonBar(
-    primaryButtonBar: (ButtonBar) -> Unit,
+    primaryButtonBar: (CustomListButtonBar) -> Unit,
     onDeleteClick: () -> Unit,
 ) {
     Row(
@@ -171,7 +165,7 @@ fun FinalDeleteListButtonBar(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
-            onClick = { primaryButtonBar(ButtonBar.Default) },
+            onClick = { primaryButtonBar(CustomListButtonBar.Default) },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -205,7 +199,7 @@ fun FinalDeleteListButtonBar(
 fun AddToGroceryListButtonBar(
     transferList: MutableList<List<Food>>,
     addLists: (Boolean) -> Unit,
-    primaryButtonBar: (ButtonBar) -> Unit
+    primaryButtonBar: (CustomListButtonBar) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -213,7 +207,7 @@ fun AddToGroceryListButtonBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Button(
-            onClick = { primaryButtonBar(ButtonBar.Default) },
+            onClick = { primaryButtonBar(CustomListButtonBar.Default) },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -247,7 +241,7 @@ fun AddToGroceryListButtonBar(
     }
 }
 
-enum class ButtonBar {
+enum class CustomListButtonBar {
     Default,
     Delete,
     Transfer;

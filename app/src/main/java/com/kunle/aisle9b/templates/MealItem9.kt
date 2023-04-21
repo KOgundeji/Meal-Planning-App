@@ -1,29 +1,39 @@
 package com.kunle.aisle9b.templates
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowCircleLeft
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
+import com.kunle.aisle9b.screens.CustomListButtonBar
+import com.kunle.aisle9b.screens.MealButtonBar
 import com.kunle.aisle9b.screens.ShoppingVM
+import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.ui.theme.DM_DarkishGray
 import com.kunle.aisle9b.ui.theme.DM_LightGray
 
 @Composable
 fun MealItem9(
     meal: Meal,
-    deleteEnabled: Boolean,
+    primaryButtonBarAction: MealButtonBar,
     shoppingVM: ShoppingVM,
+    transferList: MutableList<List<Food>>
 ) {
     val darkMode = shoppingVM.darkModeSetting.value
     var isChecked by remember { mutableStateOf(false) }
@@ -59,7 +69,7 @@ fun MealItem9(
                 modifier = Modifier.fillMaxWidth(.9f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (deleteEnabled) {
+                if (primaryButtonBarAction == MealButtonBar.Delete) {
                     Checkbox(
                         checked = isChecked,
                         onCheckedChange = {
@@ -77,6 +87,30 @@ fun MealItem9(
                         ),
                         modifier = Modifier.size(36.dp)
                     )
+                } else if (primaryButtonBarAction == MealButtonBar.Transfer) {
+                    Icon(
+                        modifier = Modifier
+                            .clickable {
+                                isChecked = !isChecked
+                                if (isChecked) {
+                                    transferList.add(mwi!!.foods)
+                                } else {
+                                    transferList.remove(mwi!!.foods)
+                                }
+                            }
+                            .size(32.dp)
+                            .border(
+                                border = BorderStroke(
+                                    1.dp,
+                                    color = if (darkMode) Color.White else Color.Black
+                                ),
+                                shape = CircleShape
+                            ),
+                        imageVector = Icons.Filled.ArrowCircleLeft,
+                        contentDescription = "Transfer button",
+                        tint = if (!isChecked) Color.Transparent else BaseOrange
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
                 }
                 Column(
                     modifier = Modifier.padding(horizontal = 3.dp),
@@ -108,10 +142,3 @@ fun MealItem9(
         }
     }
 }
-
-
-//@Composable
-//@Preview
-//fun MealPreview() {
-//    MealItem9(Meal(name = "Delicious Example"))
-//}
