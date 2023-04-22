@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.util
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,12 +13,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
+import com.kunle.aisle9b.screens.CustomListButtonBar
+import com.kunle.aisle9b.screens.MealButtonBar
 import com.kunle.aisle9b.screens.ShoppingVM
 import com.kunle.aisle9b.templates.ListItem9
 
@@ -25,28 +29,33 @@ import com.kunle.aisle9b.templates.ListItem9
 fun ReconciliationDialog(
     items: Map<String, List<Food>>,
     shoppingVM: ShoppingVM,
-    resetListLibraryToDefault: () -> Unit,
-    dialogOpen: (Boolean) -> Unit
+    resetButtonBarToDefault: () -> Unit,
+    closeDialog: () -> Unit
 ) {
+    val context = LocalContext.current
     val keyList = items.keys.toList()
     val totalDialogsNeeded = items.size
 
     var currentDialogIndex by remember { mutableStateOf(0) }
 
-    if (items[keyList[currentDialogIndex]] != null) {
+    if (keyList.isNotEmpty() && items[keyList[currentDialogIndex]] != null) {
         val list = items[keyList[currentDialogIndex]]
         val numOfFoodsToReconcile = list!!.size
-        Dialog(onDismissRequest = { dialogOpen(false) }) {
+        Dialog(onDismissRequest = { closeDialog() }) {
             Surface(color = Color.DarkGray) {
                 Column(
                     modifier = Modifier.padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = "(${currentDialogIndex + 1}/$totalDialogsNeeded)")
+                    Text(
+                        text = "(${currentDialogIndex + 1}/$totalDialogsNeeded)",
+                        fontWeight = FontWeight.Bold
+                    )
                     Text(
                         text = "Some ingredients appear in multiple lists",
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontSize = 14.sp
                     )
                     Column(
                         modifier = Modifier
@@ -54,13 +63,14 @@ fun ReconciliationDialog(
                             .weight(weight = 1f, fill = false)
                     ) {
                         ListItem9(
+                            modifier = Modifier.height(40.dp),
                             food = list[0],
                             shoppingVM = shoppingVM,
                             editPencilShown = false,
                             checkBoxShown = false
                         )
                         repeat(times = numOfFoodsToReconcile - 1) { currentNum ->
-                            Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(7.dp))
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -70,6 +80,7 @@ fun ReconciliationDialog(
                                     contentDescription = "Add symbol"
                                 )
                                 ListItem9(
+                                    modifier = Modifier.height(40.dp),
                                     food = list[currentNum + 1],
                                     shoppingVM = shoppingVM,
                                     editPencilShown = false,
@@ -95,9 +106,10 @@ fun ReconciliationDialog(
                             if ((currentDialogIndex + 1) < totalDialogsNeeded) {
                                 currentDialogIndex += 1
                             } else {
-                                resetListLibraryToDefault()
-                                dialogOpen(false)
+                                resetButtonBarToDefault()
+                                closeDialog()
                             }
+                            Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
                         })
                 }
             }
@@ -105,6 +117,9 @@ fun ReconciliationDialog(
     } else {
         currentDialogIndex += 1
     }
+    resetButtonBarToDefault()
+    shoppingVM.mealPrimaryButtonBar.value = MealButtonBar.Default
+    shoppingVM.listPrimaryButtonBar.value = CustomListButtonBar.Default
 }
 
 

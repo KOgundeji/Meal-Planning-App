@@ -20,9 +20,6 @@ import com.kunle.aisle9b.templates.PreMadeListItem9
 import com.kunle.aisle9b.util.ReconciliationDialog
 import com.kunle.aisle9b.util.filterForReconciliation
 
-//this will be a screen that houses custom grocery lists that users can
-//jumpstart their grocery lists
-//option to add list to grocery list only shows up when grocery list is empty
 @Composable
 fun ListLibrary(
     shoppingVM: ShoppingVM,
@@ -32,11 +29,9 @@ fun ListLibrary(
     shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.PremadeListScreen)
     shoppingVM.topBar.value = TopBarOptions.SearchEnabled
     shoppingVM.searchSource.value = GroceryScreens.PremadeListScreen.name
-
-    val context = LocalContext.current
     shoppingVM.filteredCustomLists.value = shoppingVM.customLists.collectAsState().value
 
-    var primaryButtonBar by remember { mutableStateOf(CustomListButtonBar.Default) }
+    var primaryButtonBar by remember { mutableStateOf(shoppingVM.listPrimaryButtonBar.value) }
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
     val listsToAddToGroceryList = remember { mutableStateListOf(shoppingVM.groceryList.value) }
 
@@ -48,11 +43,10 @@ fun ListLibrary(
         ReconciliationDialog(
             items = foodsForReconciliation,
             shoppingVM = shoppingVM,
-            resetListLibraryToDefault = { primaryButtonBar = CustomListButtonBar.Default }
+            resetButtonBarToDefault = { primaryButtonBar = CustomListButtonBar.Default }
         ) {
-            transferFoodsToGroceryList = it
+            transferFoodsToGroceryList = false
         }
-        Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
     }
 
     Column(

@@ -22,6 +22,7 @@ import com.kunle.aisle9b.screens.ShoppingVM
 
 @Composable
 fun ListItem9(
+    modifier: Modifier = Modifier,
     food: Food,
     shoppingVM: ShoppingVM,
     checkBoxShown: Boolean = true,
@@ -55,7 +56,7 @@ fun ListItem9(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.padding(3.dp)
+            modifier = modifier.padding(3.dp)
         ) {
             if (checkBoxShown) {
                 Checkbox(

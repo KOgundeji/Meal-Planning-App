@@ -24,16 +24,14 @@ import com.kunle.aisle9b.util.filterForReconciliation
 fun MealScreen(
     shoppingVM: ShoppingVM,
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
 ) {
     shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.MealScreen)
     shoppingVM.topBar.value = TopBarOptions.SearchEnabled
     shoppingVM.searchSource.value = GroceryScreens.MealScreen.name
-
-    val context = LocalContext.current
     shoppingVM.filteredMeals.value = shoppingVM.mealList.collectAsState().value
 
-    var primaryButtonBar by remember { mutableStateOf(MealButtonBar.Default) }
+    var primaryButtonBar by remember { mutableStateOf(shoppingVM.mealPrimaryButtonBar.value) }
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
     val listsToAddToGroceryList = remember { mutableStateListOf(shoppingVM.groceryList.value) }
 
@@ -45,11 +43,10 @@ fun MealScreen(
         ReconciliationDialog(
             items = foodsForReconciliation,
             shoppingVM = shoppingVM,
-            resetListLibraryToDefault = { primaryButtonBar = MealButtonBar.Default }
+            resetButtonBarToDefault = { primaryButtonBar = MealButtonBar.Default }
         ) {
-            transferFoodsToGroceryList = it
+            transferFoodsToGroceryList = false
         }
-        Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
     }
 
     Column(
@@ -79,7 +76,7 @@ fun MealScreen(
             MealButtonBar.Transfer -> {
                 AddMealToGroceryList_ButtonBar(
                     transferList = listsToAddToGroceryList,
-                    addLists = { transferFoodsToGroceryList = it }
+                    addLists = { transferFoodsToGroceryList = true }
                 ) {
                     primaryButtonBar = MealButtonBar.Default
                 }
@@ -156,7 +153,6 @@ fun FinalDeleteMeal_ButtonBar(
     primaryButtonBar: (MealButtonBar) -> Unit,
     onDeleteClick: () -> Unit,
 ) {
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -194,7 +190,7 @@ fun FinalDeleteMeal_ButtonBar(
 @Composable
 fun AddMealToGroceryList_ButtonBar(
     transferList: MutableList<List<Food>>,
-    addLists: (Boolean) -> Unit,
+    addLists: () -> Unit,
     primaryButtonBar: (MealButtonBar) -> Unit
 ) {
     Row(
@@ -219,7 +215,7 @@ fun AddMealToGroceryList_ButtonBar(
         Button(
             onClick = {
                 if (transferList.isNotEmpty()) {
-                    addLists(true)
+                    addLists()
                 }
             },
             modifier = Modifier.width(75.dp),

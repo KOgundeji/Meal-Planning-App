@@ -30,6 +30,8 @@ class ShoppingVM @Inject constructor(private val repository: ShoppingRepository)
 
     var screenHeader = mutableStateOf("")
     var topBar = mutableStateOf(TopBarOptions.Default)
+    var mealPrimaryButtonBar = mutableStateOf(MealButtonBar.Default)
+    var listPrimaryButtonBar = mutableStateOf(CustomListButtonBar.Default)
     var searchSource = mutableStateOf("")
     val tempIngredientList = mutableStateListOf<Food>()
     val tempGroceryList = mutableStateListOf<Food>()

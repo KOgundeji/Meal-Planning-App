@@ -26,11 +26,12 @@ fun Aisle9Navigation(
     shoppingVM: ShoppingVM,
     modifier: Modifier = Modifier
 ) {
-    NavHost(navController = navController, startDestination = GroceryScreens.MealScreen.name) {
+    NavHost(navController = navController, startDestination = GroceryScreens.ListScreen.name) {
         composable(route = GroceryScreens.ListScreen.name) {
             ListScreen(
                 shoppingVM = shoppingVM,
-                modifier = modifier
+                modifier = modifier,
+                navController = navController
             )
         }
         composable(route = GroceryScreens.MealScreen.name) {
