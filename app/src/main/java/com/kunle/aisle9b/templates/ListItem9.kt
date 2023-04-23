@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.ShoppingVM
+import com.kunle.aisle9b.ui.theme.DM_LightGray
+import com.kunle.aisle9b.ui.theme.DM_MediumGray
 
 @Composable
 fun ListItem9(
@@ -47,7 +49,7 @@ fun ListItem9(
     }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 6.dp),
@@ -67,9 +69,9 @@ fun ListItem9(
                         shoppingVM.updateFood(food)
                     },
                     colors = CheckboxDefaults.colors(
-                        checkedColor = MaterialTheme.colorScheme.background,
-                        uncheckedColor = MaterialTheme.colorScheme.outline,
-                        checkmarkColor = MaterialTheme.colorScheme.outline
+                        checkedColor = MaterialTheme.colorScheme.secondaryContainer,
+                        uncheckedColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        checkmarkColor = MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.size(36.dp)
                 )
@@ -103,7 +105,7 @@ fun ListItem9(
                         },
                     imageVector = Icons.Filled.Edit,
                     contentDescription = "Edit Icon",
-                    tint = MaterialTheme.colorScheme.outline
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Spacer(modifier = Modifier.width(5.dp))
             }

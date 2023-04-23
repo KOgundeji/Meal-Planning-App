@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -51,14 +52,13 @@ fun AddPreMadeListScreen(
     }
     Column(
         modifier = modifier
-            .padding(20.dp)
             .fillMaxSize()
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = RoundedCornerShape(16.dp),
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         TextField(
             value = customListName,
@@ -67,59 +67,72 @@ fun AddPreMadeListScreen(
             colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
         )
-        Spacer(modifier = Modifier.height(15.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Icon(
-                imageVector = Icons.Filled.AddCircle,
-                contentDescription = "Add button",
-                tint = BaseOrange,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable {
-                        showAddGroceryDialog = true
+            Button(
+                onClick = { showAddGroceryDialog = true },
+                modifier = Modifier.width(75.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = Icons.Filled.AddCircle,
+                    contentDescription = "Add button"
+                )
+            }
+            Button(
+                onClick = { },
+                modifier = Modifier.width(75.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Delete button"
+                )
+            }
+            Button(
+                onClick = {
+                    shoppingVM.tempGroceryList.forEach {
+                        shoppingVM.insertFood(it)
+                        shoppingVM.insertList(
+                            list = GroceryList(listId = list.listId, name = customListName)
+                        )
+                        shoppingVM.insertPair(
+                            ListFoodMap(listId = list.listId, foodId = it.foodId)
+                        )
                     }
-            )
-            Spacer(modifier = Modifier.width(40.dp))
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                contentDescription = "Delete button",
-                tint = BaseOrange,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable {
-
-                    }
-            )
-            Spacer(modifier = Modifier.width(40.dp))
-            Icon(
-                imageVector = Icons.Filled.CheckCircle,
-                contentDescription = "Save button",
-                tint = BaseOrange,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable {
-                        shoppingVM.tempGroceryList.forEach {
-                            shoppingVM.insertFood(it)
-                            shoppingVM.insertList(
-                                list = GroceryList(listId = list.listId, name = customListName)
-                            )
-                            shoppingVM.insertPair(
-                                ListFoodMap(listId = list.listId, foodId = it.foodId)
-                            )
-                        }
-                        shoppingVM.tempGroceryList.clear()
-                        navController.navigate(GroceryScreens.PremadeListScreen.name)
-                    }
-            )
-
+                    shoppingVM.tempGroceryList.clear()
+                    navController.navigate(GroceryScreens.PremadeListScreen.name)
+                },
+                modifier = Modifier.width(75.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = Icons.Filled.Save,
+                    contentDescription = "Save button"
+                )
+            }
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.padding(horizontal = 15.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             items(items = shoppingVM.tempGroceryList) {
                 ListItem9(
+                    modifier = Modifier.padding(vertical = 3.dp),
                     food = it,
                     shoppingVM = shoppingVM,
                     checkBoxShown = false,

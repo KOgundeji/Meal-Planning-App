@@ -1,12 +1,17 @@
 package com.kunle.aisle9b.navigation
 
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -82,31 +87,37 @@ fun Aisle9Navigation(
 fun BottomNavigationBar9(
     items: List<BottomNavItem>,
     navController: NavController,
-    shoppingVM: ShoppingVM,
     badgeCount: Int,
     onItemClick: (BottomNavItem) -> Unit
 ) {
-    val darkMode = shoppingVM.darkModeSetting.value
     val backStackEntry = navController.currentBackStackEntryAsState()
 
     NavigationBar(
-        containerColor = if (darkMode) DM_DarkGray else OrangeTintDark,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        tonalElevation = 5.dp
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        tonalElevation = 5.dp,
+        modifier = Modifier.border(border = BorderStroke(width = Dp.Hairline, Color.LightGray))
     ) {
         items.forEach { item ->
             val selected = item.route == backStackEntry.value?.destination?.route
             //its checking if the current navController route is the same as the selected route. If it is, highlight the item
             NavigationBarItem(
                 selected = selected,
-                colors = NavigationBarItemDefaults.colors(indicatorColor = if (darkMode) DM_MediumGray else OrangeTintLight),
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                    selectedIconColor = MaterialTheme.colorScheme.primary
+                ),
                 onClick = { onItemClick(item) },
                 icon = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (item.name == "Grocery List") {
+                        if (item.name == GroceryScreens.headerTitle(GroceryScreens.ListScreen)) {
                             BadgedBox(badge = {
-                                Badge(containerColor = DM_BaseOrange) {
-                                    Text(text = badgeCount.toString()) }
+                                Badge(containerColor = MaterialTheme.colorScheme.primary) {
+                                    Text(
+                                        text = badgeCount.toString(),
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
                             }) {
                                 Icon(imageVector = item.icon, contentDescription = item.name)
                             }

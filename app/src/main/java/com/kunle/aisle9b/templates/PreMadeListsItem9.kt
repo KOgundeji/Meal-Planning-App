@@ -34,7 +34,6 @@ fun PreMadeListItem9(
     shoppingVM: ShoppingVM,
     transferList: MutableList<List<Food>>
 ) {
-    val darkMode = shoppingVM.darkModeSetting.value
     var isChecked by remember { mutableStateOf(false) }
     var showEditMealDialog by remember { mutableStateOf(false) }
     val lwg = shoppingVM.listsWithGroceries.collectAsState().value.find { LWG ->
@@ -55,7 +54,7 @@ fun PreMadeListItem9(
         modifier = Modifier
             .padding(horizontal = 6.dp)
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         shape = RoundedCornerShape(corner = CornerSize(6.dp))
     ) {
         Row(
@@ -81,9 +80,9 @@ fun PreMadeListItem9(
                             }
                         },
                         colors = CheckboxDefaults.colors(
-                            checkedColor = MaterialTheme.colorScheme.background,
-                            uncheckedColor = MaterialTheme.colorScheme.outline,
-                            checkmarkColor = MaterialTheme.colorScheme.outline
+                            checkedColor = MaterialTheme.colorScheme.secondaryContainer,
+                            uncheckedColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            checkmarkColor = MaterialTheme.colorScheme.primary
                         ),
                         modifier = Modifier.size(36.dp)
                     )
@@ -102,13 +101,13 @@ fun PreMadeListItem9(
                             .border(
                                 border = BorderStroke(
                                     1.dp,
-                                    color = if (darkMode) Color.White else Color.Black
+                                    color = MaterialTheme.colorScheme.tertiary
                                 ),
                                 shape = CircleShape
                             ),
                         imageVector = Icons.Filled.ArrowCircleLeft,
                         contentDescription = "Transfer button",
-                        tint = if (!isChecked) Color.Transparent else BaseOrange
+                        tint = if (!isChecked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                 }
@@ -118,13 +117,13 @@ fun PreMadeListItem9(
                 ) {
                     Text(
                         text = list.name,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = listedGroceries,
-                        color = if (darkMode) DM_LightGray else DM_DarkishGray,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         fontSize = 14.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -137,7 +136,7 @@ fun PreMadeListItem9(
                     .clickable { showEditMealDialog = true },
                 imageVector = Icons.Filled.Edit,
                 contentDescription = "Edit Icon",
-                tint = MaterialTheme.colorScheme.outline
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
     }

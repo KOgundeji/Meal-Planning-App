@@ -146,7 +146,7 @@ fun SettingsScreen(
                 modifier = Modifier.padding(start = 15.dp, bottom = 1.dp)
             )
             Text(
-                text = "Version 1.1.0",
+                text = "Version 2.0.0",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 14.sp,

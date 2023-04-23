@@ -50,9 +50,7 @@ fun ListLibrary(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(top = 15.dp),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
@@ -109,8 +107,8 @@ fun AddDeleteButtonBar(
         Button(
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
             onClick = { onAddClick(true) }) {
             Icon(
@@ -122,8 +120,8 @@ fun AddDeleteButtonBar(
         Button(
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
             onClick = { primaryButtonBar(CustomListButtonBar.Delete) }) {
             Icon(
@@ -134,8 +132,8 @@ fun AddDeleteButtonBar(
         }
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
             onClick = { primaryButtonBar(CustomListButtonBar.Transfer) }) {
             Icon(
@@ -162,8 +160,8 @@ fun FinalDeleteListButtonBar(
             onClick = { primaryButtonBar(CustomListButtonBar.Default) },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             )
         ) {
             Icon(
@@ -176,8 +174,8 @@ fun FinalDeleteListButtonBar(
             onClick = { onDeleteClick() },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             )
         ) {
             Icon(
@@ -204,8 +202,8 @@ fun AddToGroceryListButtonBar(
             onClick = { primaryButtonBar(CustomListButtonBar.Default) },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             )
         ) {
             Icon(
@@ -222,8 +220,8 @@ fun AddToGroceryListButtonBar(
             },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             )
         ) {
             Icon(

@@ -50,12 +50,20 @@ fun MealScreen(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(top = 15.dp),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            items(items = shoppingVM.filteredMeals.value) {
+                MealItem9(
+                    meal = it,
+                    primaryButtonBarAction = primaryButtonBar,
+                    shoppingVM = shoppingVM,
+                    transferList = listsToAddToGroceryList
+                )
+            }
+        }
         when (primaryButtonBar) {
             MealButtonBar.Default -> {
                 AddDeleteBar(
@@ -82,18 +90,6 @@ fun MealScreen(
                 }
             }
         }
-        Column {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                items(items = shoppingVM.filteredMeals.value) {
-                    MealItem9(
-                        meal = it,
-                        primaryButtonBarAction = primaryButtonBar,
-                        shoppingVM = shoppingVM,
-                        transferList = listsToAddToGroceryList
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -103,15 +99,15 @@ fun AddDeleteBar(
     primaryButtonBar: (MealButtonBar) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
             onClick = { navController.navigate(GroceryScreens.AddMealsScreen.name) }) {
             Icon(
@@ -123,8 +119,8 @@ fun AddDeleteBar(
         Button(
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
             onClick = { primaryButtonBar(MealButtonBar.Delete) }) {
             Icon(
@@ -135,8 +131,8 @@ fun AddDeleteBar(
         }
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
             onClick = { primaryButtonBar(MealButtonBar.Transfer) }) {
             Icon(
@@ -154,15 +150,15 @@ fun FinalDeleteMeal_ButtonBar(
     onDeleteClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
             onClick = { primaryButtonBar(MealButtonBar.Default) }) {
             Icon(
@@ -174,8 +170,8 @@ fun FinalDeleteMeal_ButtonBar(
         Button(
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
             onClick = { onDeleteClick() }) {
             Icon(
@@ -194,7 +190,7 @@ fun AddMealToGroceryList_ButtonBar(
     primaryButtonBar: (MealButtonBar) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -202,8 +198,8 @@ fun AddMealToGroceryList_ButtonBar(
             onClick = { primaryButtonBar(MealButtonBar.Default) },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             )
         ) {
             Icon(
@@ -220,8 +216,8 @@ fun AddMealToGroceryList_ButtonBar(
             },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             )
         ) {
             Icon(

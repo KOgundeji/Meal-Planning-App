@@ -35,7 +35,7 @@ fun DefaultTopAppBar(
             Icon(
                 imageVector = Icons.Filled.Menu,
                 contentDescription = "Open navigation",
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .clickable {
                         scope.launch { drawerState.open() }
@@ -50,8 +50,8 @@ fun DefaultTopAppBar(
             )
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.onBackground
         )
     )
 }
@@ -69,7 +69,7 @@ fun SearchableTopAppBar(
             Icon(
                 imageVector = Icons.Filled.Menu,
                 contentDescription = "Open navigation",
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .clickable {
                         scope.launch { drawerState.open() }
@@ -87,7 +87,7 @@ fun SearchableTopAppBar(
             Icon(
                 imageVector = Icons.Filled.Search,
                 contentDescription = "Search Bar",
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .clickable {
                         topBarOption(TopBarOptions.Searchbar)
@@ -95,8 +95,8 @@ fun SearchableTopAppBar(
             )
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.onBackground
         )
     )
 }
@@ -112,7 +112,7 @@ fun BackTopAppBar(
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Go back",
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .clickable {
                         navController.popBackStack()
@@ -127,8 +127,8 @@ fun BackTopAppBar(
             )
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.onBackground
         )
     )
 }
@@ -151,7 +151,7 @@ fun SearchBar(
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back Arrow",
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .clickable {
                             topBarOption(TopBarOptions.SearchEnabled)
@@ -198,8 +198,8 @@ fun SearchBar(
                 )
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                titleContentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = MaterialTheme.colorScheme.background,
+                titleContentColor = MaterialTheme.colorScheme.onBackground
             )
         )
     } else {
@@ -212,7 +212,7 @@ fun SearchBar(
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Back Arrow",
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .clickable {
                             topBarOption(TopBarOptions.SearchEnabled)
@@ -259,8 +259,8 @@ fun SearchBar(
                 )
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                titleContentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = MaterialTheme.colorScheme.background,
+                titleContentColor = MaterialTheme.colorScheme.onBackground
             )
         )
     }

@@ -10,9 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -52,18 +50,15 @@ fun AddMealScreen(
             setFood = { shoppingVM.tempIngredientList.add(it) },
         )
     }
-
-//    Dialog(onDismissRequest = { setShowAddMealDialog(false) }) {
     Column(
         modifier = modifier
-            .padding(20.dp)
             .fillMaxSize()
             .background(
                 color = MaterialTheme.colorScheme.background,
                 shape = RoundedCornerShape(16.dp),
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         TextField(
             value = mealName,
@@ -72,61 +67,71 @@ fun AddMealScreen(
             colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
         )
-
-        Spacer(modifier = Modifier.height(15.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Icon(
-                imageVector = Icons.Filled.AddCircle,
-                contentDescription = "Add button",
-                tint = BaseOrange,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable {
-                        showEditFoodDialog = true
+            Button(
+                onClick = { showEditFoodDialog = true },
+                modifier = Modifier.width(75.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = Icons.Filled.AddCircle,
+                    contentDescription = "Add button"
+                )
+            }
+            Button(
+                onClick = { },
+                modifier = Modifier.width(75.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Delete button"
+                )
+            }
+            Button(
+                onClick = {
+                    shoppingVM.tempIngredientList.forEach {
+                        shoppingVM.insertFood(it)
+                        shoppingVM.insertMeal(
+                            meal = Meal(mealId = meal.mealId, name = mealName)
+                        )
+                        shoppingVM.insertPair(
+                            MealFoodMap(mealId = meal.mealId, foodId = it.foodId)
+                        )
                     }
-            )
-            Spacer(modifier = Modifier.width(40.dp))
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                contentDescription = "Delete button",
-                tint = BaseOrange,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable {
-
-                    }
-            )
-            Spacer(modifier = Modifier.width(40.dp))
-            Icon(
-                imageVector = Icons.Filled.CheckCircle,
-                contentDescription = "Save button",
-                tint = BaseOrange,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clickable {
-                        shoppingVM.tempIngredientList.forEach {
-                            shoppingVM.insertFood(it)
-                            shoppingVM.insertMeal(
-                                meal = Meal(mealId = meal.mealId, name = mealName)
-                            )
-                            shoppingVM.insertPair(
-                                MealFoodMap(mealId = meal.mealId, foodId = it.foodId)
-                            )
-                        }
-                        shoppingVM.tempIngredientList.clear()
-                        navController.navigate(GroceryScreens.MealScreen.name)
-                    }
-            )
-
+                    shoppingVM.tempIngredientList.clear()
+                    navController.navigate(GroceryScreens.MealScreen.name)
+                },
+                modifier = Modifier.width(75.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = Icons.Filled.Save,
+                    contentDescription = "Save button"
+                )
+            }
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.padding(horizontal = 15.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)) {
             items(items = shoppingVM.tempIngredientList) {
-                Log.d("Test", "lazyColumn: activated: $it")
                 ListItem9(
+                    modifier = Modifier.padding(vertical = 3.dp),
                     food = it,
                     shoppingVM = shoppingVM,
                     checkBoxShown = false,
@@ -135,5 +140,4 @@ fun AddMealScreen(
             }
         }
     }
-//    }
 }

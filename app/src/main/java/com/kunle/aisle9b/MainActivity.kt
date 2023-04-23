@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -77,7 +78,9 @@ fun ShoppingApp(shoppingVM: ShoppingVM) {
                 ModalDrawerSheet(
                     modifier = Modifier
                         .width(300.dp)
-                        .fillMaxHeight()
+                        .fillMaxHeight(),
+                    drawerContainerColor = MaterialTheme.colorScheme.background,
+                    drawerContentColor = MaterialTheme.colorScheme.onBackground
                 ) {
                     Column {
                         Text(
@@ -98,6 +101,14 @@ fun ShoppingApp(shoppingVM: ShoppingVM) {
                                     )
                                 },
                                 shape = RoundedCornerShape(bottomEnd = 40.dp, topEnd = 40.dp),
+                                colors = NavigationDrawerItemDefaults.colors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                    unselectedContainerColor = Color.Transparent,
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    unselectedTextColor = MaterialTheme.colorScheme.onSurface
+                                ),
                                 selected = it == selectedItem,
                                 onClick = {
                                     scope.launch { drawerState.close() }
@@ -141,7 +152,6 @@ fun ShoppingApp(shoppingVM: ShoppingVM) {
                     BottomNavigationBar9(
                         items = shoppingVM.screenList,
                         navController = navController,
-                        shoppingVM = shoppingVM,
                         badgeCount = shoppingVM.groceryBadgeCount.value,
                         onItemClick = {
                             navController.navigate(it.route)
@@ -157,7 +167,6 @@ fun ShoppingApp(shoppingVM: ShoppingVM) {
 
     }
 }
-
 
 
 enum class TopBarOptions {
