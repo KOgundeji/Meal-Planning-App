@@ -12,6 +12,7 @@ fun RecipeScreen(
     shoppingVM: ShoppingVM
 ) {
     shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.RecipeScreen)
-    shoppingVM.topBar.value = TopBarOptions.BackButton
+    shoppingVM.topBar.value = TopBarOptions.Default
+    shoppingVM.fabEnabled.value = false
 
 }

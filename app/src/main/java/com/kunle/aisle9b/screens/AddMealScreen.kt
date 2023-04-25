@@ -37,6 +37,7 @@ fun AddMealScreen(
 ) {
     shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.AddMealsScreen)
     shoppingVM.topBar.value = TopBarOptions.BackButton
+    shoppingVM.fabEnabled.value = false
 
     val meal = Meal(name = "")
     var mealName by remember { mutableStateOf("") }

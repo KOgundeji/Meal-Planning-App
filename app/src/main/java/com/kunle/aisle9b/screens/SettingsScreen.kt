@@ -23,7 +23,8 @@ fun SettingsScreen(
     shoppingVM: ShoppingVM
 ) {
     shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.SettingsScreen)
-    shoppingVM.topBar.value = TopBarOptions.BackButton
+    shoppingVM.topBar.value = TopBarOptions.Default
+    shoppingVM.fabEnabled.value = false
 
     var darkMode by remember { mutableStateOf(shoppingVM.darkModeSetting.value) }
     var screenPermOn by remember { mutableStateOf(shoppingVM.keepScreenOn.value) }
@@ -35,7 +36,7 @@ fun SettingsScreen(
         Text(
             text = "Display options",
             fontWeight = FontWeight.Bold,
-            color = BaseOrange,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 16.sp,
             modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 15.dp)
         )
@@ -127,7 +128,7 @@ fun SettingsScreen(
             Text(
                 text = "About",
                 fontWeight = FontWeight.Bold,
-                color = BaseOrange,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(start = 10.dp, bottom = 4.dp)
             )
@@ -158,11 +159,5 @@ fun SettingsScreen(
 
 @Composable
 fun KeepScreenOn() = AndroidView({ View(it).apply { keepScreenOn = true } })
-
-@Preview
-@Composable
-fun SettingsPreview() {
-//    SettingsScreen()
-}
 
 

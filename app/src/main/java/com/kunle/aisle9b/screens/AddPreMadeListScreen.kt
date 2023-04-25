@@ -37,6 +37,7 @@ fun AddPreMadeListScreen(
 ) {
     shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.AddCustomListScreen)
     shoppingVM.topBar.value = TopBarOptions.BackButton
+    shoppingVM.fabEnabled.value = false
 
     val list = GroceryList(name = "")
     var customListName by remember { mutableStateOf("") }

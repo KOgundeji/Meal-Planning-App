@@ -10,23 +10,6 @@ import androidx.compose.ui.graphics.Color
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
-    val categories = arrayOf(
-        "Baking/Spices",
-        "Beverages",
-        "Bread/Grain",
-        "Canned Goods",
-        "Condiments",
-        "Dairy",
-        "For the Home",
-        "Frozen Food",
-        "Fruit",
-        "Meat/Fish",
-        "Pet Supplies",
-        "Produce",
-        "Snacks",
-        "Toiletries",
-        "Uncategorized"
-    )
 
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(category) }
@@ -67,3 +50,21 @@ fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
         }
     }
 }
+
+val categories = arrayOf(
+    "Baking/Spices",
+    "Beverages",
+    "Bread/Grain",
+    "Canned Goods",
+    "Condiments",
+    "Dairy",
+    "For the Home",
+    "Frozen Food",
+    "Fruit",
+    "Meat/Fish",
+    "Pet Supplies",
+    "Produce",
+    "Snacks",
+    "Toiletries",
+    "Uncategorized"
+)

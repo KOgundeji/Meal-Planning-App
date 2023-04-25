@@ -1,6 +1,8 @@
 package com.kunle.aisle9b.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -28,12 +30,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
+import com.kunle.aisle9b.models.AppSetting
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
+import com.kunle.aisle9b.templates.Headline
 import com.kunle.aisle9b.templates.ListItem9
 import com.kunle.aisle9b.ui.theme.DM_MediumGray
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ListScreen(
     shoppingVM: ShoppingVM,
@@ -42,18 +47,17 @@ fun ListScreen(
 ) {
     shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.ListScreen)
     shoppingVM.topBar.value = TopBarOptions.Default
+    shoppingVM.fabEnabled.value = false
 
     val groceryList = shoppingVM.groceryList.collectAsState().value
-    val darkMode = shoppingVM.darkModeSetting.value
+    val categoriesOn = shoppingVM.categoriesOn.value
     shoppingVM.groceryBadgeCount.value = groceryList.size
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = modifier.fillMaxSize()) {
-        GroceryInputTextField(
-            darkMode = darkMode
-        ) {
+        GroceryInputTextField() {
             shoppingVM.insertFood(it)
             shoppingVM.groceryBadgeCount.value += 1
             coroutineScope.launch { listState.animateScrollToItem(index = 0) }
@@ -75,8 +79,8 @@ fun ListScreen(
                         .width(275.dp)
                         .height(50.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
@@ -108,8 +112,8 @@ fun ListScreen(
                         .width(275.dp)
                         .height(50.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
@@ -138,17 +142,30 @@ fun ListScreen(
             }
         } else {
             LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                items(items = groceryList) {
-                    ListItem9(food = it, shoppingVM = shoppingVM)
+                if (categoriesOn) {
+                    val groupedGroceries = groceryList.groupBy { it.category }
+                    groupedGroceries.forEach { (category, groceries) ->
+                        stickyHeader {
+                            Headline(string = category)
+                        }
+                        items(items = groceries, key = { it.name }) {
+                            ListItem9(food = it, shoppingVM = shoppingVM, modifier = Modifier.animateItemPlacement())
+                        }
+                    }
+                } else {
+                    items(items = groceryList, key = { it.name }) {
+                        ListItem9(food = it, shoppingVM = shoppingVM, modifier = Modifier.animateItemPlacement())
+                    }
                 }
             }
         }
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroceryInputTextField(darkMode: Boolean, onAddGrocery: (Food) -> Unit) {
+fun GroceryInputTextField(onAddGrocery: (Food) -> Unit) {
 
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -190,8 +207,10 @@ fun GroceryInputTextField(darkMode: Boolean, onAddGrocery: (Food) -> Unit) {
                     interactionSource = nameInteractionSource,
                     contentPadding = PaddingValues(horizontal = 15.dp),
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = if (darkMode) DM_MediumGray else Color.White,
-                        textColor = if (darkMode) Color.White else Color.Black
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        textColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
                     )
                 )
             }
@@ -223,8 +242,10 @@ fun GroceryInputTextField(darkMode: Boolean, onAddGrocery: (Food) -> Unit) {
                     interactionSource = quantityInteractionSource,
                     contentPadding = PaddingValues(horizontal = 15.dp),
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = if (darkMode) DM_MediumGray else Color.White,
-                        textColor = if (darkMode) Color.White else Color.Black
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        textColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
                     )
                 )
             }
@@ -275,6 +296,6 @@ fun GroceryInputTextField(darkMode: Boolean, onAddGrocery: (Food) -> Unit) {
 @Preview(widthDp = 393, heightDp = 830, showBackground = true)
 @Composable
 fun ListPreview() {
-    GroceryInputTextField(true) {}
+    GroceryInputTextField() {}
 }
 

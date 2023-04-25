@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kunle.aisle9b.MultiFloatingState
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.BottomNavItem
@@ -32,12 +33,15 @@ class ShoppingVM @Inject constructor(private val repository: ShoppingRepository)
     var topBar = mutableStateOf(TopBarOptions.Default)
     var mealPrimaryButtonBar = mutableStateOf(MealButtonBar.Default)
     var listPrimaryButtonBar = mutableStateOf(CustomListButtonBar.Default)
+    var multiFloatingState =  mutableStateOf(MultiFloatingState.Collapsed)
+    var fabEnabled = mutableStateOf(false)
+    var fabSource = mutableStateOf("")
     var searchSource = mutableStateOf("")
     val tempIngredientList = mutableStateListOf<Food>()
     val tempGroceryList = mutableStateListOf<Food>()
     var darkModeSetting = mutableStateOf(false)
     var keepScreenOn = mutableStateOf(false)
-    var categoriesOn = mutableStateOf(false)
+    var categoriesOn = mutableStateOf(true)
     val groceryBadgeCount = mutableStateOf(0)
 
     private var _foodList = MutableStateFlow<List<Food>>(emptyList())

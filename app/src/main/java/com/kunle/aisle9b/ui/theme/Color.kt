@@ -2,7 +2,8 @@ package com.kunle.aisle9b.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val BaseOrange = Color(0xFFF27405)
+val BaseOrange = Color(0xFFEDA33B)
+//val oldBaseOrange = Color(0xFFF27405)
 val OrangeTintDark = Color(0xFFF29E55)
 val OrangeTintLight = Color(0xFFF2E5DA)
 val BaseYellow = Color(0xFFF5B904)

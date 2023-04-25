@@ -1,8 +1,13 @@
 package com.kunle.aisle9b.util
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
@@ -11,8 +16,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -141,34 +148,43 @@ fun SearchBar(
 ) {
     var searchWord by remember { mutableStateOf("") }
 
-    if (shoppingVM.searchSource.value == GroceryScreens.MealScreen.name) {
-        val mealList = shoppingVM.mealList.collectAsState().value
-        val filteredList = remember { mutableStateOf(mealList) }
-        shoppingVM.filteredMeals.value = filteredList.value
+    val customGroceryList = shoppingVM.customLists.collectAsState().value
+    var filteredList by remember { mutableStateOf(customGroceryList) }
+    val interactionSource = remember { MutableInteractionSource() }
+    shoppingVM.filteredCustomLists.value = filteredList
 
-        CenterAlignedTopAppBar(
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back Arrow",
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier
-                        .clickable {
-                            topBarOption(TopBarOptions.SearchEnabled)
-                        }
-                )
-            },
-            title = {
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(.8f),
+    CenterAlignedTopAppBar(
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Back Arrow",
+                tint = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .clickable {
+                        topBarOption(TopBarOptions.SearchEnabled)
+                    }
+            )
+        },
+        title = {
+            BasicTextField(
+                modifier = Modifier
+                    .height(45.dp)
+                    .fillMaxWidth(0.85f),
+                value = searchWord,
+                singleLine = true,
+                onValueChange = {
+                    searchWord = it
+                    filteredList = customGroceryList.filter { list ->
+                        list.name.lowercase().contains(searchWord.lowercase())
+                    }
+                },
+                interactionSource = interactionSource
+            ) {
+                TextFieldDefaults.TextFieldDecorationBox(
                     value = searchWord,
-                    onValueChange = {
-                        searchWord = it
-                        filteredList.value = mealList.filter { list ->
-                            list.name.lowercase().contains(searchWord.lowercase())
-                        }
-                    },
-                    placeholder = { Text(text = "Search in lists") },
+                    innerTextField = it,
+                    enabled = true,
+                    singleLine = true,
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Search,
@@ -180,7 +196,7 @@ fun SearchBar(
                         if (searchWord.isNotEmpty()) {
                             IconButton(onClick = {
                                 searchWord = ""
-                                filteredList.value = mealList.filter { list ->
+                                filteredList = customGroceryList.filter { list ->
                                     list.name.lowercase().contains(searchWord.lowercase())
                                 }
                             }) {
@@ -192,76 +208,23 @@ fun SearchBar(
                             }
                         }
                     },
-                    singleLine = true,
-                    shape = RectangleShape,
-                    colors = TextFieldDefaults.textFieldColors(cursorColor = BaseOrange)
+                    shape = RoundedCornerShape(40.dp),
+                    label = { Text(text = "Search in Meals") },
+                    visualTransformation = VisualTransformation.None,
+                    interactionSource = interactionSource,
+                    contentPadding = PaddingValues(horizontal = 15.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        textColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
                 )
-            },
-            colors = TopAppBarDefaults.smallTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                titleContentColor = MaterialTheme.colorScheme.onBackground
-            )
+            }
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.onBackground
         )
-    } else {
-        val customGroceryList = shoppingVM.customLists.collectAsState().value
-        val filteredList = remember { mutableStateOf(customGroceryList) }
-        shoppingVM.filteredCustomLists.value = filteredList.value
-
-        CenterAlignedTopAppBar(
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Back Arrow",
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier
-                        .clickable {
-                            topBarOption(TopBarOptions.SearchEnabled)
-                        }
-                )
-            },
-            title = {
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(.8f),
-                    value = searchWord,
-                    onValueChange = {
-                        searchWord = it
-                        filteredList.value = customGroceryList.filter { list ->
-                            list.name.lowercase().contains(searchWord.lowercase())
-                        }
-                    },
-                    placeholder = { Text(text = "Search in lists") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search Icon",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    trailingIcon = {
-                        if (searchWord.isNotEmpty()) {
-                            IconButton(onClick = {
-                                searchWord = ""
-                                filteredList.value = customGroceryList.filter { list ->
-                                    list.name.lowercase().contains(searchWord.lowercase())
-                                }
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Cancel,
-                                    contentDescription = "Cancel button",
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-                        }
-                    },
-                    singleLine = true,
-                    shape = RectangleShape,
-                    colors = TextFieldDefaults.textFieldColors(cursorColor = BaseOrange)
-                )
-            },
-            colors = TopAppBarDefaults.smallTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                titleContentColor = MaterialTheme.colorScheme.onBackground
-            )
-        )
-    }
+    )
 }

@@ -22,7 +22,6 @@ fun filterForReconciliation(
     }
 
     foodMap.forEach { (key, value) ->
-        Log.d("Test", "key: $key, value: $value")
         if (value.size == 1) {
             val newFood = Food(
                 foodId = value[0].foodId,

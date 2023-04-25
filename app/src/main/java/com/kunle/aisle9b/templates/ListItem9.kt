@@ -22,6 +22,7 @@ import com.kunle.aisle9b.screens.ShoppingVM
 import com.kunle.aisle9b.ui.theme.DM_LightGray
 import com.kunle.aisle9b.ui.theme.DM_MediumGray
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListItem9(
     modifier: Modifier = Modifier,
@@ -47,7 +48,6 @@ fun ListItem9(
                 }
             })
     }
-
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         modifier = Modifier
