@@ -179,12 +179,7 @@ fun MealScreen(
                 )
             }
             when (primaryButtonBar) {
-                MealButtonBar.Default -> {
-                    AddDeleteBar(
-                        navController = navController,
-                        topAppBar = { newTop -> topBar = newTop },
-                        primaryButtonBar = { bar -> primaryButtonBar = bar })
-                }
+                MealButtonBar.Default -> {}
                 MealButtonBar.Delete -> {
                     FinalDeleteMeal_ButtonBar(
                         primaryButtonBar = { bar -> primaryButtonBar = bar },
@@ -217,64 +212,6 @@ fun MealScreen(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun AddDeleteBar(
-    navController: NavController,
-    topAppBar: (TopBarOptions) -> Unit,
-    primaryButtonBar: (MealButtonBar) -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Button(
-            modifier = Modifier.width(75.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            ),
-            onClick = { navController.navigate(GroceryScreens.AddMealsScreen.name) }) {
-            Icon(
-                imageVector = Icons.Filled.AddCircle,
-                contentDescription = "Add button",
-                modifier = Modifier.size(30.dp)
-            )
-        }
-        Button(
-            modifier = Modifier.width(75.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            ),
-            onClick = {
-                primaryButtonBar(MealButtonBar.Delete)
-                topAppBar(TopBarOptions.BackButton)
-            }) {
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                contentDescription = "Delete button",
-                modifier = Modifier.size(30.dp)
-            )
-        }
-        Button(
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            ),
-            onClick = {
-                primaryButtonBar(MealButtonBar.Transfer)
-                topAppBar(TopBarOptions.BackButton)
-            }) {
-            Icon(
-                modifier = Modifier.size(30.dp),
-                imageVector = Icons.Filled.DriveFileMoveRtl,
-                contentDescription = null
-            )
         }
     }
 }

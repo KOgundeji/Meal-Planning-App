@@ -1,6 +1,7 @@
 package com.kunle.aisle9b.templates
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,26 +9,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowCircleLeft
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kunle.aisle9b.R
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
-import com.kunle.aisle9b.screens.CustomListButtonBar
 import com.kunle.aisle9b.screens.MealButtonBar
 import com.kunle.aisle9b.screens.ShoppingVM
-import com.kunle.aisle9b.ui.theme.BaseOrange
-import com.kunle.aisle9b.ui.theme.DM_DarkishGray
-import com.kunle.aisle9b.ui.theme.DM_LightGray
-import com.kunle.aisle9b.ui.theme.DM_MediumGray
 
 @Composable
 fun MealItem9(
@@ -45,10 +43,11 @@ fun MealItem9(
         ?.joinToString(separator = ", ") { it.name } ?: "" //its the default separator, but wanted to include anyway
 
     if (showEditMealDialog) {
-        EditMealDialog9(
-            meal = meal,
+        ModifyIngredientsDialog9(
+            id = meal.mealId,
+            source = EditSource.Meal,
             shoppingVM = shoppingVM,
-            setShowDialog = { showEditMealDialog = it })
+            setShowDialog = { showEditMealDialog = false })
     }
 
     Card(
@@ -69,48 +68,60 @@ fun MealItem9(
                 modifier = Modifier.fillMaxWidth(.9f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (primaryButtonBarAction == MealButtonBar.Delete) {
-                    Checkbox(
-                        checked = isChecked,
-                        onCheckedChange = {
-                            isChecked = !isChecked
-                            if (isChecked) {
-                                shoppingVM.mealDeleteList.add(meal)
-                            } else {
-                                shoppingVM.mealDeleteList.remove(meal)
-                            }
-                        },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = MaterialTheme.colorScheme.secondaryContainer,
-                            uncheckedColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            checkmarkColor = MaterialTheme.colorScheme.primary
-                        ),
-                        modifier = Modifier.size(36.dp)
-                    )
-                } else if (primaryButtonBarAction == MealButtonBar.Transfer) {
-                    Icon(
-                        modifier = Modifier
-                            .clickable {
+                when (primaryButtonBarAction) {
+                    MealButtonBar.Delete -> {
+                        Checkbox(
+                            checked = isChecked,
+                            onCheckedChange = {
                                 isChecked = !isChecked
                                 if (isChecked) {
-                                    transferList.add(mwi!!.foods)
+                                    shoppingVM.mealDeleteList.add(meal)
                                 } else {
-                                    transferList.remove(mwi!!.foods)
+                                    shoppingVM.mealDeleteList.remove(meal)
                                 }
-                            }
-                            .size(32.dp)
-                            .border(
-                                border = BorderStroke(
-                                    1.dp,
-                                    color = MaterialTheme.colorScheme.tertiary
-                                ),
-                                shape = CircleShape
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = MaterialTheme.colorScheme.secondaryContainer,
+                                uncheckedColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                checkmarkColor = MaterialTheme.colorScheme.primary
                             ),
-                        imageVector = Icons.Filled.ArrowCircleLeft,
-                        contentDescription = "Transfer button",
-                        tint = if (!isChecked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                    MealButtonBar.Transfer -> {
+                        Icon(
+                            modifier = Modifier
+                                .clickable {
+                                    isChecked = !isChecked
+                                    if (isChecked) {
+                                        transferList.add(mwi!!.foods)
+                                    } else {
+                                        transferList.remove(mwi!!.foods)
+                                    }
+                                }
+                                .size(32.dp)
+                                .border(
+                                    border = BorderStroke(
+                                        1.dp,
+                                        color = MaterialTheme.colorScheme.tertiary
+                                    ),
+                                    shape = CircleShape
+                                ),
+                            imageVector = Icons.Filled.ArrowCircleLeft,
+                            contentDescription = "Transfer button",
+                            tint = if (!isChecked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                    }
+                    else -> {
+                        Image(
+                            painter = painterResource(id = R.drawable.food),
+                            contentDescription = "food",
+                            modifier = Modifier.size(30.dp),
+                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary)
+                        )
+                        Spacer(modifier = Modifier.width(2.dp))
+                    }
                 }
                 Column(
                     modifier = Modifier.padding(horizontal = 3.dp),

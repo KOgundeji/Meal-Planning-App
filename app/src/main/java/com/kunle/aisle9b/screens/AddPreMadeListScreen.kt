@@ -1,7 +1,6 @@
 package com.kunle.aisle9b.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,7 +9,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
@@ -21,15 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.EditFoodDialog9
 import com.kunle.aisle9b.templates.ListItem9
-import com.kunle.aisle9b.ui.theme.BaseOrange
 import com.kunle.aisle9b.util.BackTopAppBar
-import com.kunle.aisle9b.util.DefaultTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +56,7 @@ fun AddPreMadeListScreen(
         if (showAddGroceryDialog) {
             EditFoodDialog9(
                 food = Food(name = "", quantity = "", isInGroceryList = false),
-                setShowSelfDialog = { showAddGroceryDialog = it },
+                closeDialog = { showAddGroceryDialog = false },
                 setFood = { shoppingVM.tempGroceryList.add(it) }
             )
         }

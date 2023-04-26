@@ -180,12 +180,7 @@ fun ListLibrary(
                 )
             }
             when (primaryButtonBar) {
-                CustomListButtonBar.Default -> {
-                    AddDeleteButtonBar(
-                        onAddClick = { navController.navigate(GroceryScreens.AddCustomListScreen.name) },
-                        topAppBar = { newTop -> topBar = newTop },
-                        primaryButtonBar = { newBar -> primaryButtonBar = newBar })
-                }
+                CustomListButtonBar.Default -> {}
                 CustomListButtonBar.Delete -> {
                     FinalDeleteListButtonBar(
                         primaryButtonBar = { newBar -> primaryButtonBar = newBar },
@@ -220,65 +215,6 @@ fun ListLibrary(
                     )
                 }
             }
-        }
-    }
-}
-
-
-@Composable
-fun AddDeleteButtonBar(
-    onAddClick: (Boolean) -> Unit,
-    topAppBar: (TopBarOptions) -> Unit,
-    primaryButtonBar: (CustomListButtonBar) -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Button(
-            modifier = Modifier.width(75.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            ),
-            onClick = { onAddClick(true) }) {
-            Icon(
-                modifier = Modifier.size(30.dp),
-                imageVector = Icons.Filled.AddCircle,
-                contentDescription = null
-            )
-        }
-        Button(
-            modifier = Modifier.width(75.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            ),
-            onClick = {
-                topAppBar(TopBarOptions.BackButton)
-                primaryButtonBar(CustomListButtonBar.Delete)
-            }) {
-            Icon(
-                modifier = Modifier.size(30.dp),
-                imageVector = Icons.Filled.Delete,
-                contentDescription = null
-            )
-        }
-        Button(
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            ),
-            onClick = {
-                topAppBar(TopBarOptions.BackButton)
-                primaryButtonBar(CustomListButtonBar.Transfer)
-            }) {
-            Icon(
-                modifier = Modifier.size(30.dp),
-                imageVector = Icons.Filled.DriveFileMoveRtl,
-                contentDescription = null
-            )
         }
     }
 }

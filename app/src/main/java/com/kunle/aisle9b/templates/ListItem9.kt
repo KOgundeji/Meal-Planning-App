@@ -19,8 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.ShoppingVM
-import com.kunle.aisle9b.ui.theme.DM_LightGray
-import com.kunle.aisle9b.ui.theme.DM_MediumGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +36,7 @@ fun ListItem9(
     if (showEditFoodDialog) {
         EditFoodDialog9(
             food = food,
-            setShowSelfDialog = { showEditFoodDialog = it },
+            closeDialog = { showEditFoodDialog = false },
             setFood = {
                 if (!onEditClickNewFood) {
                     shoppingVM.updateFood(it)
