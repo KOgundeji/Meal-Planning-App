@@ -16,19 +16,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.screens.*
 import com.kunle.aisle9b.screens.AddMealScreen
 import com.kunle.aisle9b.screens.AddPreMadeListScreen
 import com.kunle.aisle9b.ui.theme.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Aisle9Navigation(
     navController: NavHostController,
     shoppingVM: ShoppingVM,
+    drawerState: DrawerState,
     modifier: Modifier = Modifier
 ) {
     NavHost(navController = navController, startDestination = GroceryScreens.ListScreen.name) {
@@ -36,33 +40,40 @@ fun Aisle9Navigation(
             ListScreen(
                 shoppingVM = shoppingVM,
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                drawerState = drawerState
             )
         }
         composable(route = GroceryScreens.MealScreen.name) {
             MealScreen(
                 shoppingVM = shoppingVM,
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                drawerState = drawerState,
             )
         }
         composable(route = GroceryScreens.SettingsScreen.name) {
             SettingsScreen(
                 shoppingVM = shoppingVM,
-                modifier = modifier
+                modifier = modifier,
+                navController = navController,
+                drawerState = drawerState
             )
         }
         composable(route = GroceryScreens.RecipeScreen.name) {
             RecipeScreen(
                 shoppingVM = shoppingVM,
-                modifier = modifier
+                modifier = modifier,
+                navController = navController,
+                drawerState = drawerState
             )
         }
         composable(route = GroceryScreens.PremadeListScreen.name) {
             ListLibrary(
                 shoppingVM = shoppingVM,
                 modifier = modifier,
-                navController = navController
+                navController = navController,
+                drawerState = drawerState,
             )
         }
         composable(route = GroceryScreens.AddMealsScreen.name) {

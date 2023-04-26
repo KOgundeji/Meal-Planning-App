@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.kunle.aisle9b.data.addFakeToDatabase
+import com.kunle.aisle9b.data.sampleFoodData
 import com.kunle.aisle9b.models.AppSetting
 import com.kunle.aisle9b.navigation.Aisle9Navigation
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
@@ -44,7 +46,6 @@ fun ShoppingApp(shoppingVM: ShoppingVM) {
     val navController = rememberNavController()
     var selectedItem by remember { mutableStateOf(navDrawerList[0]) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    var fab by remember { mutableStateOf(shoppingVM.multiFloatingState.value)}
 
     val scope = rememberCoroutineScope()
     val settings = shoppingVM.settingsList.collectAsState().value
@@ -54,7 +55,7 @@ fun ShoppingApp(shoppingVM: ShoppingVM) {
     shoppingVM.screenList[2].name =
         "Meals (${shoppingVM.mealList.collectAsState().value.size})"
 
-//    addFakeToDatabase(list = sampleFoodData,viewModel = shoppingViewModel)
+//    addFakeToDatabase(list = sampleFoodData,viewModel = shoppingVM)
     shoppingVM.darkModeSetting.value = settings.firstOrNull() {
         it.settingsName == AppSetting.DarkMode.name
     }?.value ?: isSystemInDarkTheme()
@@ -116,60 +117,11 @@ fun ShoppingApp(shoppingVM: ShoppingVM) {
                     }
                 }
             }) {
-            Scaffold(
-                topBar = {
-                    when (shoppingVM.topBar.value) {
-                        TopBarOptions.SearchEnabled -> {
-                            SearchableTopAppBar(
-                                drawerState = drawerState,
-                                screenHeader = shoppingVM.screenHeader.value,
-                                topBarOption = { shoppingVM.topBar.value = it }
-                            )
-                        }
-                        TopBarOptions.Searchbar -> {
-                            SearchBar(
-                                shoppingVM = shoppingVM,
-                                topBarOption = { shoppingVM.topBar.value = it }
-                            )
-                        }
-                        TopBarOptions.BackButton -> {
-                            BackTopAppBar(
-                                navController = navController,
-                                screenHeader = shoppingVM.screenHeader.value
-                            )
-                        }
-                        TopBarOptions.Default -> {
-                            DefaultTopAppBar(
-                                drawerState = drawerState,
-                                screenHeader = shoppingVM.screenHeader.value
-                            )
-                        }
-                    }
-                }, bottomBar = {
-                    BottomNavigationBar9(
-                        items = shoppingVM.screenList,
-                        navController = navController,
-                        badgeCount = shoppingVM.groceryBadgeCount.value,
-                        onItemClick = {
-                            navController.navigate(it.route)
-                        })
-                },
-                floatingActionButton = {
-                    if (shoppingVM.fabEnabled.value) {
-                        FAB(
-                            navController = navController,
-                            shoppingVM = shoppingVM,
-                            multiFloatingState = fab,
-                            onMultiFabStateChange = { fab = it }
-                        )
-                    }
-                }) {
-                Aisle9Navigation(
-                    navController = navController,
-                    shoppingVM = shoppingVM,
-                    modifier = Modifier.padding(it)
-                )
-            }
+            Aisle9Navigation(
+                navController = navController,
+                shoppingVM = shoppingVM,
+                drawerState = drawerState
+            )
         }
     }
 }
@@ -177,8 +129,6 @@ fun ShoppingApp(shoppingVM: ShoppingVM) {
 
 enum class TopBarOptions {
     Default,
-    SearchEnabled,
-    Searchbar,
     BackButton;
 }
 

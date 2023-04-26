@@ -22,17 +22,17 @@ import com.kunle.aisle9b.screens.ShoppingVM
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun FAB(
-    navController: NavController,
-    shoppingVM: ShoppingVM,
+    onAddClick: () -> Unit,
+    onTransferClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     multiFloatingState: MultiFloatingState,
-    onMultiFabStateChange: (MultiFloatingState) -> Unit
+    onMultiFabStateChange: (MultiFloatingState) -> Unit,
 ) {
     val transition = updateTransition(targetState = multiFloatingState, label = "transition")
     val rotate by transition.animateFloat(label = "rotate") {
         if (it == MultiFloatingState.Expanded) 360f else 0f
     }
     var expanded by remember { mutableStateOf(false) }
-    val mealScreen = shoppingVM.fabSource.value == GroceryScreens.MealScreen.name
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -48,8 +48,9 @@ fun FAB(
                         exit = scaleOut(animationSpec = tween(durationMillis = 500))
                     ),
                     onClick = {
-                        navController.navigate(GroceryScreens.MealScreen.name)
-                        shoppingVM.mealPrimaryButtonBar.value = MealButtonBar.Delete
+                        onDeleteClick()
+                        expanded = false
+                        onMultiFabStateChange(MultiFloatingState.Collapsed)
                     },
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     shape = CircleShape
@@ -66,13 +67,9 @@ fun FAB(
                         exit = scaleOut(animationSpec = tween(durationMillis = 500))
                     ),
                     onClick = {
-                        if (mealScreen) {
-                            navController.navigate(GroceryScreens.MealScreen.name)
-                            shoppingVM.mealPrimaryButtonBar.value = MealButtonBar.Transfer
-                        } else {
-                            navController.navigate(GroceryScreens.PremadeListScreen.name)
-                            shoppingVM.listPrimaryButtonBar.value = CustomListButtonBar.Transfer
-                        }
+                        onTransferClick()
+                        expanded = false
+                        onMultiFabStateChange(MultiFloatingState.Collapsed)
                     },
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     shape = CircleShape
@@ -88,13 +85,7 @@ fun FAB(
                         enter = scaleIn(animationSpec = tween(durationMillis = 500)),
                         exit = scaleOut(animationSpec = tween(durationMillis = 500))
                     ),
-                    onClick = {
-                        if (mealScreen) {
-                            navController.navigate(GroceryScreens.AddMealsScreen.name)
-                        } else {
-                            navController.navigate(GroceryScreens.AddCustomListScreen.name)
-                        }
-                    },
+                    onClick = { onAddClick() },
                     containerColor = MaterialTheme.colorScheme.primary,
                     shape = CircleShape
                 ) {

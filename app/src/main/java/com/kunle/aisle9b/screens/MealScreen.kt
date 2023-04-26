@@ -22,10 +22,10 @@ import androidx.navigation.NavController
 import com.kunle.aisle9b.MultiFloatingState
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
+import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.templates.MealItem9
-import com.kunle.aisle9b.util.ReconciliationDialog
-import com.kunle.aisle9b.util.filterForReconciliation
+import com.kunle.aisle9b.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,16 +33,16 @@ fun MealScreen(
     shoppingVM: ShoppingVM,
     modifier: Modifier = Modifier,
     navController: NavController,
+    drawerState: DrawerState,
 ) {
-    shoppingVM.screenHeader.value = GroceryScreens.headerTitle(GroceryScreens.MealScreen)
-    shoppingVM.topBar.value = TopBarOptions.Default
-    shoppingVM.searchSource.value = GroceryScreens.MealScreen.name
-    shoppingVM.multiFloatingState.value = MultiFloatingState.Collapsed
-    shoppingVM.fabEnabled.value = true
-    shoppingVM.fabSource.value = GroceryScreens.MealScreen.name
-    shoppingVM.filteredMeals.value = shoppingVM.mealList.collectAsState().value
+    val context = LocalContext.current
+    val transfer = shoppingVM.mealStartAsTransfer.value
+    var topBar by remember { mutableStateOf(if (transfer) TopBarOptions.BackButton else TopBarOptions.Default) }
+    var primaryButtonBar by remember { mutableStateOf(if (transfer) MealButtonBar.Transfer else MealButtonBar.Default) }
+    shoppingVM.mealStartAsTransfer.value = false
 
-    var primaryButtonBar by remember { mutableStateOf(shoppingVM.mealPrimaryButtonBar.value) }
+    var multiFloatingState by remember { mutableStateOf(MultiFloatingState.Collapsed) }
+
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
     val listsToAddToGroceryList = remember { mutableStateListOf(shoppingVM.groceryList.value) }
     var searchWord by remember { mutableStateOf("") }
@@ -50,114 +50,172 @@ fun MealScreen(
     val mealList = shoppingVM.mealList.collectAsState().value
     var filteredMealLists by remember { mutableStateOf(mealList) }
 
-    if (transferFoodsToGroceryList) {
-        val foodsForReconciliation = filterForReconciliation(
-            lists = listsToAddToGroceryList,
-            shoppingVM = shoppingVM
-        )
-        ReconciliationDialog(
-            items = foodsForReconciliation,
-            shoppingVM = shoppingVM,
-            resetButtonBarToDefault = { primaryButtonBar = MealButtonBar.Default }
-        ) {
-            transferFoodsToGroceryList = false
-        }
-    }
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(15.dp)
-    ) {
-        BasicTextField(
-            modifier = Modifier
-                .height(45.dp)
-                .fillMaxWidth(0.85f),
-            value = searchWord,
-            singleLine = true,
-            onValueChange = {
-                searchWord = it
-                filteredMealLists = mealList.filter { meal ->
-                    meal.name.lowercase().contains(searchWord.lowercase())
+
+    Scaffold(
+        topBar = {
+            when (topBar) {
+                TopBarOptions.BackButton -> {
+                    BackTopAppBar(
+                        screenHeader = GroceryScreens.headerTitle(GroceryScreens.MealScreen)
+                    ) {
+                        topBar = TopBarOptions.Default
+                        primaryButtonBar = MealButtonBar.Default
+                    }
                 }
-            },
-            interactionSource = interactionSource
-        ) {
-            TextFieldDefaults.TextFieldDecorationBox(
-                value = searchWord,
-                innerTextField = it,
-                enabled = true,
-                singleLine = true,
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search Icon",
-                        modifier = Modifier.size(24.dp)
+                TopBarOptions.Default -> {
+                    DefaultTopAppBar(
+                        drawerState = drawerState,
+                        screenHeader = GroceryScreens.headerTitle(GroceryScreens.MealScreen)
                     )
+                }
+            }
+        }, bottomBar = {
+            BottomNavigationBar9(
+                items = shoppingVM.screenList,
+                navController = navController,
+                badgeCount = shoppingVM.groceryBadgeCount.value,
+                onItemClick = {
+                    navController.navigate(it.route)
+                })
+        },
+        floatingActionButton = {
+            FAB(
+                onAddClick = { navController.navigate(GroceryScreens.AddMealsScreen.name) },
+                onTransferClick = {
+                    primaryButtonBar = MealButtonBar.Transfer
+                    topBar = TopBarOptions.BackButton
                 },
-                trailingIcon = {
-                    if (searchWord.isNotEmpty()) {
-                        IconButton(onClick = {
-                            searchWord = ""
-                            filteredMealLists = mealList.filter { meal ->
-                                meal.name.lowercase().contains(searchWord.lowercase())
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Cancel,
-                                contentDescription = "Cancel button",
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
+                onDeleteClick = {
+                    primaryButtonBar = MealButtonBar.Delete
+                    topBar = TopBarOptions.BackButton
+                },
+                multiFloatingState = multiFloatingState,
+                onMultiFabStateChange = { multiFloatingState = it }
+            )
+        }) {
+
+        if (transferFoodsToGroceryList) {
+            val foodsForReconciliation = filterForReconciliation(
+                lists = listsToAddToGroceryList,
+                shoppingVM = shoppingVM
+            )
+            if (foodsForReconciliation.isNotEmpty()) {
+                ReconciliationDialog(
+                    items = foodsForReconciliation,
+                    shoppingVM = shoppingVM,
+                    resetButtonBarToDefault = {
+                        topBar = TopBarOptions.Default
+                        primaryButtonBar = MealButtonBar.Default
+                    }
+                ) {
+                    transferFoodsToGroceryList = false
+                }
+            } else {
+                topBar = TopBarOptions.Default
+                primaryButtonBar = MealButtonBar.Default
+            }
+            Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
+        }
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(it),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(15.dp)
+        ) {
+            BasicTextField(
+                modifier = Modifier
+                    .height(45.dp)
+                    .fillMaxWidth(0.85f),
+                value = searchWord,
+                singleLine = true,
+                onValueChange = { string ->
+                    searchWord = string
+                    filteredMealLists = mealList.filter { meal ->
+                        meal.name.lowercase().contains(searchWord.lowercase())
                     }
                 },
-                shape = RoundedCornerShape(40.dp),
-                label = { Text(text = "Search in Meals") },
-                visualTransformation = VisualTransformation.None,
-                interactionSource = interactionSource,
-                contentPadding = PaddingValues(horizontal = 15.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    textColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                )
-            )
-        }
-        when (primaryButtonBar) {
-            MealButtonBar.Default -> {
-                AddDeleteBar(
-                    navController = navController,
-                    primaryButtonBar = { primaryButtonBar = it })
-            }
-            MealButtonBar.Delete -> {
-                FinalDeleteMeal_ButtonBar(
-                    primaryButtonBar = { primaryButtonBar = it },
-                    onDeleteClick = {
-                        shoppingVM.mealDeleteList.forEach { meal ->
-                            shoppingVM.deleteMeal(meal)
-                            shoppingVM.deleteSpecificMealIngredients(meal.mealId)
+                interactionSource = interactionSource
+            ) { onValueChange ->
+                TextFieldDefaults.TextFieldDecorationBox(
+                    value = searchWord,
+                    innerTextField = onValueChange,
+                    enabled = true,
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search Icon",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    trailingIcon = {
+                        if (searchWord.isNotEmpty()) {
+                            IconButton(onClick = {
+                                searchWord = ""
+                                filteredMealLists = mealList.filter { meal ->
+                                    meal.name.lowercase().contains(searchWord.lowercase())
+                                }
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Cancel,
+                                    contentDescription = "Cancel button",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         }
-                        primaryButtonBar = MealButtonBar.Default
-                    })
+                    },
+                    shape = RoundedCornerShape(40.dp),
+                    label = { Text(text = "Search in Meals") },
+                    visualTransformation = VisualTransformation.None,
+                    interactionSource = interactionSource,
+                    contentPadding = PaddingValues(horizontal = 15.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        textColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
             }
-            MealButtonBar.Transfer -> {
-                AddMealToGroceryList_ButtonBar(
-                    transferList = listsToAddToGroceryList,
-                    addLists = { transferFoodsToGroceryList = true }
-                ) {
-                    shoppingVM.mealPrimaryButtonBar.value = MealButtonBar.Default
-                    primaryButtonBar = MealButtonBar.Default
+            when (primaryButtonBar) {
+                MealButtonBar.Default -> {
+                    AddDeleteBar(
+                        navController = navController,
+                        topAppBar = { newTop -> topBar = newTop },
+                        primaryButtonBar = { bar -> primaryButtonBar = bar })
+                }
+                MealButtonBar.Delete -> {
+                    FinalDeleteMeal_ButtonBar(
+                        primaryButtonBar = { bar -> primaryButtonBar = bar },
+                        topAppBar = { newTop -> topBar = newTop },
+                        onDeleteClick = {
+                            shoppingVM.mealDeleteList.forEach { meal ->
+                                shoppingVM.deleteMeal(meal)
+                                shoppingVM.deleteSpecificMealIngredients(meal.mealId)
+                            }
+                            primaryButtonBar = MealButtonBar.Default
+                        })
+                }
+                MealButtonBar.Transfer -> {
+                    AddMealToGroceryList_ButtonBar(
+                        transferList = listsToAddToGroceryList,
+                        topAppBar = { newTop -> topBar = newTop },
+                        addLists = { transferFoodsToGroceryList = true }
+                    ) {
+                        primaryButtonBar = MealButtonBar.Default
+                    }
                 }
             }
-        }
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            items(items = filteredMealLists) {
-                MealItem9(
-                    meal = it,
-                    primaryButtonBarAction = primaryButtonBar,
-                    shoppingVM = shoppingVM,
-                    transferList = listsToAddToGroceryList
-                )
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                items(items = filteredMealLists) { meal ->
+                    MealItem9(
+                        meal = meal,
+                        primaryButtonBarAction = primaryButtonBar,
+                        shoppingVM = shoppingVM,
+                        transferList = listsToAddToGroceryList
+                    )
+                }
             }
         }
     }
@@ -166,6 +224,7 @@ fun MealScreen(
 @Composable
 fun AddDeleteBar(
     navController: NavController,
+    topAppBar: (TopBarOptions) -> Unit,
     primaryButtonBar: (MealButtonBar) -> Unit
 ) {
     Row(
@@ -192,7 +251,10 @@ fun AddDeleteBar(
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
-            onClick = { primaryButtonBar(MealButtonBar.Delete) }) {
+            onClick = {
+                primaryButtonBar(MealButtonBar.Delete)
+                topAppBar(TopBarOptions.BackButton)
+            }) {
             Icon(
                 imageVector = Icons.Filled.Delete,
                 contentDescription = "Delete button",
@@ -204,7 +266,10 @@ fun AddDeleteBar(
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
-            onClick = { primaryButtonBar(MealButtonBar.Transfer) }) {
+            onClick = {
+                primaryButtonBar(MealButtonBar.Transfer)
+                topAppBar(TopBarOptions.BackButton)
+            }) {
             Icon(
                 modifier = Modifier.size(30.dp),
                 imageVector = Icons.Filled.DriveFileMoveRtl,
@@ -217,6 +282,7 @@ fun AddDeleteBar(
 @Composable
 fun FinalDeleteMeal_ButtonBar(
     primaryButtonBar: (MealButtonBar) -> Unit,
+    topAppBar: (TopBarOptions) -> Unit,
     onDeleteClick: () -> Unit,
 ) {
     Row(
@@ -230,7 +296,10 @@ fun FinalDeleteMeal_ButtonBar(
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
-            onClick = { primaryButtonBar(MealButtonBar.Default) }) {
+            onClick = {
+                topAppBar(TopBarOptions.Default)
+                primaryButtonBar(MealButtonBar.Default)
+            }) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Back button",
@@ -256,6 +325,7 @@ fun FinalDeleteMeal_ButtonBar(
 @Composable
 fun AddMealToGroceryList_ButtonBar(
     transferList: MutableList<List<Food>>,
+    topAppBar: (TopBarOptions) -> Unit,
     addLists: () -> Unit,
     primaryButtonBar: (MealButtonBar) -> Unit
 ) {
@@ -265,7 +335,10 @@ fun AddMealToGroceryList_ButtonBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Button(
-            onClick = { primaryButtonBar(MealButtonBar.Default) },
+            onClick = {
+                topAppBar(TopBarOptions.Default)
+                primaryButtonBar(MealButtonBar.Default)
+            },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,

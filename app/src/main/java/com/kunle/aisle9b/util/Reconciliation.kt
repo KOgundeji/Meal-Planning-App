@@ -109,7 +109,7 @@ fun ReconciliationDialog(
                                 resetButtonBarToDefault()
                                 closeDialog()
                             }
-                            Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "$it added to Grocery List", Toast.LENGTH_SHORT).show()
                         })
                 }
             }
@@ -117,9 +117,7 @@ fun ReconciliationDialog(
     } else {
         currentDialogIndex += 1
     }
-    resetButtonBarToDefault()
-    shoppingVM.mealPrimaryButtonBar.value = MealButtonBar.Default
-    shoppingVM.listPrimaryButtonBar.value = CustomListButtonBar.Default
+//    resetButtonBarToDefault()
 }
 
 
@@ -129,7 +127,7 @@ fun ReplacementFoodSection(
     name: String,
     setFood: (Food) -> Unit,
     takeOriginalFoodOutOfGroceryList: () -> Unit,
-    onNextClick: () -> Unit
+    onNextClick: (String) -> Unit
 ) {
     var ingredientQuantity by remember { mutableStateOf("") }
     var ingredientCategory by remember { mutableStateOf("") }
@@ -171,7 +169,7 @@ fun ReplacementFoodSection(
                     ingredientCategory = ""
 
                     takeOriginalFoodOutOfGroceryList()
-                    onNextClick()
+                    onNextClick(name)
                 },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier

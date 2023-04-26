@@ -65,54 +65,9 @@ fun DefaultTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchableTopAppBar(
-    screenHeader: String,
-    drawerState: DrawerState,
-    topBarOption: (TopBarOptions) -> Unit
-) {
-    val scope = rememberCoroutineScope()
-    CenterAlignedTopAppBar(
-        navigationIcon = {
-            Icon(
-                imageVector = Icons.Filled.Menu,
-                contentDescription = "Open navigation",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .clickable {
-                        scope.launch { drawerState.open() }
-                    }
-            )
-        },
-        title = {
-            Text(
-                text = screenHeader,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-        },
-        actions = {
-            Icon(
-                imageVector = Icons.Filled.Search,
-                contentDescription = "Search Bar",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .clickable {
-                        topBarOption(TopBarOptions.Searchbar)
-                    }
-            )
-        },
-        colors = TopAppBarDefaults.smallTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            titleContentColor = MaterialTheme.colorScheme.onBackground
-        )
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 fun BackTopAppBar(
-    navController: NavController,
-    screenHeader: String
+    screenHeader: String,
+    onBackClick: () -> Unit
 ) {
     CenterAlignedTopAppBar(
         navigationIcon = {
@@ -122,7 +77,7 @@ fun BackTopAppBar(
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .clickable {
-                        navController.popBackStack()
+                        onBackClick()
                     }
             )
         },
@@ -140,91 +95,4 @@ fun BackTopAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SearchBar(
-    shoppingVM: ShoppingVM,
-    topBarOption: (TopBarOptions) -> Unit
-) {
-    var searchWord by remember { mutableStateOf("") }
 
-    val customGroceryList = shoppingVM.customLists.collectAsState().value
-    var filteredList by remember { mutableStateOf(customGroceryList) }
-    val interactionSource = remember { MutableInteractionSource() }
-    shoppingVM.filteredCustomLists.value = filteredList
-
-    CenterAlignedTopAppBar(
-        navigationIcon = {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "Back Arrow",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .clickable {
-                        topBarOption(TopBarOptions.SearchEnabled)
-                    }
-            )
-        },
-        title = {
-            BasicTextField(
-                modifier = Modifier
-                    .height(45.dp)
-                    .fillMaxWidth(0.85f),
-                value = searchWord,
-                singleLine = true,
-                onValueChange = {
-                    searchWord = it
-                    filteredList = customGroceryList.filter { list ->
-                        list.name.lowercase().contains(searchWord.lowercase())
-                    }
-                },
-                interactionSource = interactionSource
-            ) {
-                TextFieldDefaults.TextFieldDecorationBox(
-                    value = searchWord,
-                    innerTextField = it,
-                    enabled = true,
-                    singleLine = true,
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search Icon",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    trailingIcon = {
-                        if (searchWord.isNotEmpty()) {
-                            IconButton(onClick = {
-                                searchWord = ""
-                                filteredList = customGroceryList.filter { list ->
-                                    list.name.lowercase().contains(searchWord.lowercase())
-                                }
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Cancel,
-                                    contentDescription = "Cancel button",
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-                        }
-                    },
-                    shape = RoundedCornerShape(40.dp),
-                    label = { Text(text = "Search in Meals") },
-                    visualTransformation = VisualTransformation.None,
-                    interactionSource = interactionSource,
-                    contentPadding = PaddingValues(horizontal = 15.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        textColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    )
-                )
-            }
-        },
-        colors = TopAppBarDefaults.smallTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            titleContentColor = MaterialTheme.colorScheme.onBackground
-        )
-    )
-}
