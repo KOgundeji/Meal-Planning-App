@@ -1,12 +1,11 @@
 package com.kunle.aisle9b.util
 
-import android.util.Log
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.screens.ShoppingVM
+import com.kunle.aisle9b.screens.SharedVM
 
 fun filterForReconciliation(
     lists: List<List<Food>>,
-    shoppingVM: ShoppingVM
+    shoppingVM: SharedVM
 ): Map<String, List<Food>> {
     val foodMap: MutableMap<String, MutableList<Food>> = mutableMapOf()
     val filteredFoodMap: MutableMap<String, MutableList<Food>> = mutableMapOf()

@@ -20,15 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.screens.CustomListButtonBar
-import com.kunle.aisle9b.screens.MealButtonBar
-import com.kunle.aisle9b.screens.ShoppingVM
+import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.templates.ListItem9
 
 @Composable
 fun ReconciliationDialog(
     items: Map<String, List<Food>>,
-    shoppingVM: ShoppingVM,
+    shoppingVM: SharedVM,
     resetButtonBarToDefault: () -> Unit,
     closeDialog: () -> Unit
 ) {

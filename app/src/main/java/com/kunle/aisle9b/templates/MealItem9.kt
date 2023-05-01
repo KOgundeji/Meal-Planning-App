@@ -14,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -24,19 +23,21 @@ import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.R
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
-import com.kunle.aisle9b.screens.MealButtonBar
-import com.kunle.aisle9b.screens.ShoppingVM
+import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.meals.MealButtonBar
+import com.kunle.aisle9b.screens.meals.MealVM
 
 @Composable
 fun MealItem9(
     meal: Meal,
     primaryButtonBarAction: MealButtonBar,
-    shoppingVM: ShoppingVM,
+    shoppingVM: SharedVM,
+    mealVM: MealVM,
     transferList: MutableList<List<Food>>
 ) {
     var isChecked by remember { mutableStateOf(false) }
     var showEditMealDialog by remember { mutableStateOf(false) }
-    val mwi = shoppingVM.mealWithIngredientsList.collectAsState().value.find { MWI ->
+    val mwi = mealVM.mealsWithIngredients.collectAsState().value.find { MWI ->
         MWI.meal.mealId == meal.mealId
     }
     val listedIngredients: String = mwi?.foods
@@ -47,6 +48,7 @@ fun MealItem9(
             id = meal.mealId,
             source = EditSource.Meal,
             shoppingVM = shoppingVM,
+            mealVM = mealVM,
             setShowDialog = { showEditMealDialog = false })
     }
 

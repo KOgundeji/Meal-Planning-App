@@ -1,7 +1,10 @@
 package com.kunle.aisle9b.data
 
 import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.screens.ShoppingVM
+import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.customLists.CustomListVM
+import com.kunle.aisle9b.screens.groceries.GroceryVM
+import com.kunle.aisle9b.screens.meals.MealVM
 
 var oranges =
     Food(name = "Oranges", quantity = "4 bunches", category = "Fruit", isInGroceryList = true)
@@ -37,24 +40,28 @@ val sampleFoodData = listOf(
     brownrice
 )
 
-fun addFakeToDatabase(list: List<Food>, viewModel: ShoppingVM) {
+fun addFakeToDatabase(
+    sharedVM: SharedVM,
+    mealVM: MealVM,
+    customListVM: CustomListVM
+) {
     sampleFoodData.forEach {
-        viewModel.insertFood(it)
+        sharedVM.insertFood(it)
     }
     fakeMealList.forEach {
-        viewModel.insertMeal(it)
+        mealVM.insertMeal(it)
     }
     fakeGroceryLists.forEach {
-        viewModel.insertList(it)
+        customListVM.insertList(it)
     }
     fakeCustomGroceryList.forEach { lwg ->
         lwg.groceries.forEach { groceries ->
-            viewModel.insertPair(ListFoodMap(lwg.list.listId, groceries.foodId))
+            customListVM.insertPair(ListFoodMap(lwg.list.listId, groceries.foodId))
         }
     }
     fakeMealWithIngredients.forEach { mwi ->
         mwi.foods.forEach { groceries ->
-            viewModel.insertPair(MealFoodMap(mwi.meal.mealId, groceries.foodId))
+            mealVM.insertPair(MealFoodMap(mwi.meal.mealId, groceries.foodId))
         }
     }
 }

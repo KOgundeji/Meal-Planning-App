@@ -24,10 +24,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.ListFoodMap
 import com.kunle.aisle9b.models.MealFoodMap
-import com.kunle.aisle9b.screens.ShoppingVM
+import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.customLists.CustomListVM
+import com.kunle.aisle9b.screens.meals.MealVM
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,19 +38,21 @@ import java.util.UUID
 fun ModifyIngredientsDialog9(
     id: UUID,
     source: EditSource,
-    shoppingVM: ShoppingVM,
+    shoppingVM: SharedVM,
+    customListVM: CustomListVM = viewModel(),
+    mealVM: MealVM = viewModel(),
     setShowDialog: () -> Unit
 ) {
     val food = if (source == EditSource.CustomList) {
-        shoppingVM.listsWithGroceries.collectAsState().value.first { it.list.listId == id }.groceries
+        customListVM.groceriesOfCustomLists.collectAsState().value.first { it.list.listId == id }.groceries
     } else {
-        shoppingVM.mealWithIngredientsList.collectAsState().value.first { it.meal.mealId == id }.foods
+        mealVM.mealsWithIngredients.collectAsState().value.first { it.meal.mealId == id }.foods
     }
 
     val sourceName = if (source == EditSource.CustomList) {
-        shoppingVM.listsWithGroceries.collectAsState().value.first { it.list.listId == id }.list.name
+        customListVM.groceriesOfCustomLists.collectAsState().value.first { it.list.listId == id }.list.name
     } else {
-        shoppingVM.mealWithIngredientsList.collectAsState().value.first { it.meal.mealId == id }.meal.name
+        mealVM.mealsWithIngredients.collectAsState().value.first { it.meal.mealId == id }.meal.name
     }
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -62,9 +67,9 @@ fun ModifyIngredientsDialog9(
             setFood = {
                 shoppingVM.insertFood(it)
                 if (source == EditSource.CustomList) {
-                    shoppingVM.insertPair(ListFoodMap(listId = id, foodId = it.foodId))
+                    customListVM.insertPair(ListFoodMap(listId = id, foodId = it.foodId))
                 } else {
-                    shoppingVM.insertPair(MealFoodMap(mealId = id, foodId = it.foodId))
+                    mealVM.insertPair(MealFoodMap(mealId = id, foodId = it.foodId))
                 }
             })
     }

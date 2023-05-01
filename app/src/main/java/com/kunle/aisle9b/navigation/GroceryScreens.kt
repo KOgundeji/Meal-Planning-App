@@ -1,22 +1,24 @@
 package com.kunle.aisle9b.navigation
 
 enum class GroceryScreens {
-    ListScreen,
+    SplashScreen,
+    GroceryListScreen,
     MealScreen,
     SettingsScreen,
     RecipeScreen,
-    PremadeListScreen,
+    CustomListScreen,
     AddMealsScreen,
     AddCustomListScreen;
 
     companion object {
         fun headerTitle(header: GroceryScreens): String =
             when (header) {
-                ListScreen -> "Grocery List"
+                SplashScreen -> ""
+                GroceryListScreen -> "Grocery List"
                 MealScreen -> "Meals"
                 SettingsScreen -> "Settings"
                 RecipeScreen -> "Recipes"
-                PremadeListScreen -> "Saved Grocery Lists"
+                CustomListScreen -> "Saved Grocery Lists"
                 AddMealsScreen -> "Add New Meal"
                 AddCustomListScreen -> "Create Custom Grocery List"
             }

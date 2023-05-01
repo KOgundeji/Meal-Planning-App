@@ -18,14 +18,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.screens.ShoppingVM
+import com.kunle.aisle9b.screens.SharedVM
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListItem9(
     modifier: Modifier = Modifier,
     food: Food,
-    shoppingVM: ShoppingVM,
+    shoppingVM: SharedVM,
     checkBoxShown: Boolean = true,
     editPencilShown: Boolean = true,
     onEditClickNewFood: Boolean = false

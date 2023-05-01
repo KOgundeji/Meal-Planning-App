@@ -1,7 +1,6 @@
 package com.kunle.aisle9b.templates
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,33 +15,27 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kunle.aisle9b.R
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.GroceryList
-import com.kunle.aisle9b.screens.CustomListButtonBar
-import com.kunle.aisle9b.screens.ShoppingVM
-import com.kunle.aisle9b.ui.theme.BaseOrange
-import com.kunle.aisle9b.ui.theme.DM_DarkishGray
-import com.kunle.aisle9b.ui.theme.DM_LightGray
+import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
+import com.kunle.aisle9b.screens.customLists.CustomListVM
 
 @Composable
 fun PreMadeListItem9(
     list: GroceryList,
     primaryButtonBarAction: CustomListButtonBar,
-    shoppingVM: ShoppingVM,
+    shoppingVM: SharedVM,
+    customListVM: CustomListVM,
     transferList: MutableList<List<Food>>
 ) {
     var isChecked by remember { mutableStateOf(false) }
     var showEditMealDialog by remember { mutableStateOf(false) }
-    val lwg = shoppingVM.listsWithGroceries.collectAsState().value.find { LWG ->
+    val lwg = customListVM.groceriesOfCustomLists.collectAsState().value.find { LWG ->
         LWG.list.listId == list.listId
     }
     val listedGroceries: String = lwg?.groceries
@@ -54,6 +47,7 @@ fun PreMadeListItem9(
             id = list.listId,
             source = EditSource.CustomList,
             shoppingVM = shoppingVM,
+            customListVM = customListVM,
             setShowDialog = { showEditMealDialog = false }
         )
     }
