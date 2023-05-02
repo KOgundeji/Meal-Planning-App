@@ -1,44 +1,43 @@
 package com.kunle.aisle9b.util
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.kunle.aisle9b.navigation.GroceryScreens
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultTopAppBar(
     source: GroceryScreens,
-    drawerState: DrawerState,
+    navController: NavController,
 ) {
-    val title = GroceryScreens.headerTitle(source)
-    val scope = rememberCoroutineScope()
-    CenterAlignedTopAppBar(
-        navigationIcon = {
-            Icon(
-                imageVector = Icons.Filled.Menu,
-                contentDescription = "Open navigation",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .clickable {
-                        scope.launch { drawerState.open() }
-                    }
-            )
-        },
+    TopAppBar(
         title = {
-            Text(
-                text = title,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = GroceryScreens.headerTitle(source),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+                AdditionalScreenOptions(navController = navController)
+            }
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
@@ -53,9 +52,8 @@ fun BackTopAppBar(
     source: GroceryScreens,
     onBackClick: () -> Unit
 ) {
-    val title = GroceryScreens.headerTitle(source)
 
-    CenterAlignedTopAppBar(
+    TopAppBar(
         navigationIcon = {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
@@ -69,7 +67,8 @@ fun BackTopAppBar(
         },
         title = {
             Text(
-                text = title,
+                modifier = Modifier.padding(start = 10.dp),
+                text = GroceryScreens.headerTitle(source),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )

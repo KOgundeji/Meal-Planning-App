@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import com.kunle.aisle9b.MultiFloatingState
+import com.kunle.aisle9b.navigation.GroceryScreens
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -80,7 +81,11 @@ fun FAB(
                         enter = scaleIn(animationSpec = tween(durationMillis = 500)),
                         exit = scaleOut(animationSpec = tween(durationMillis = 500))
                     ),
-                    onClick = { onAddClick() },
+                    onClick = {
+                        onAddClick()
+                        expanded = false
+                        onMultiFabStateChange(MultiFloatingState.Collapsed)
+                    },
                     containerColor = MaterialTheme.colorScheme.primary,
                     shape = CircleShape
                 ) {

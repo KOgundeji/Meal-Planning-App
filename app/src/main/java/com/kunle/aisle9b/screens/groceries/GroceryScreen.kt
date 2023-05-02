@@ -31,6 +31,8 @@ import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
+import com.kunle.aisle9b.screens.meals.MealButtonBar
 import com.kunle.aisle9b.templates.Headline
 import com.kunle.aisle9b.templates.ListItem9
 import com.kunle.aisle9b.util.*
@@ -51,7 +53,6 @@ fun GroceryScreen(
 
     val groceryList = groceryVM.groceryList.collectAsState().value
     val categoriesOn = shoppingVM.categoriesOn.value
-    shoppingVM.groceryBadgeCount.value = groceryList.size
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -61,7 +62,6 @@ fun GroceryScreen(
     ) {
         GroceryInputTextField { food ->
             shoppingVM.insertFood(food)
-//            shoppingVM.groceryBadgeCount.value += 1
             coroutineScope.launch { listState.animateScrollToItem(index = 0) }
         }
         if (groceryList.isEmpty()) {
@@ -87,7 +87,7 @@ fun GroceryScreen(
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
                     onClick = {
-                        shoppingVM.customListStartAsTransfer.value = true
+                        shoppingVM.customListButtonBar.value = CustomListButtonBar.Transfer
                         navController.navigate(GroceryScreens.CustomListScreen.name)
                     }) {
                     Row(
@@ -118,7 +118,7 @@ fun GroceryScreen(
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
                     onClick = {
-                        shoppingVM.mealStartAsTransfer.value = true
+                        shoppingVM.mealButtonBar.value = MealButtonBar.Transfer
                         navController.navigate(GroceryScreens.MealScreen.name)
                     }) {
                     Row(

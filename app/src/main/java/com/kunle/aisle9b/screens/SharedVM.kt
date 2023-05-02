@@ -10,6 +10,8 @@ import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.BottomNavItem
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.repository.ShoppingRepository
+import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
+import com.kunle.aisle9b.screens.meals.MealButtonBar
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -24,21 +26,21 @@ class SharedVM @Inject constructor(private val repository: ShoppingRepository) :
     val mealDeleteList: MutableList<Meal> = mutableListOf()
     val groceryListDeleteList: MutableList<GroceryList> = mutableListOf()
 
-    val mealStartAsTransfer = mutableStateOf(false)
-    val customListStartAsTransfer = mutableStateOf(false)
     val tempIngredientList = mutableStateListOf<Food>()
     val tempGroceryList = mutableStateListOf<Food>()
     var darkModeSetting = mutableStateOf(false)
     var keepScreenOn = mutableStateOf(false)
     var categoriesOn = mutableStateOf(true)
 
-    private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
-    val groceryList = _groceryList.asStateFlow()
+    var mealButtonBar = mutableStateOf(MealButtonBar.Default)
+    var customListButtonBar = mutableStateOf(CustomListButtonBar.Default)
 
+    private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
     private val _groceryBadgeCount = MutableStateFlow(0)
     private val _numOfMeals = MutableStateFlow(0)
-    val groceryBadgeCount = mutableStateOf(_groceryBadgeCount.value)
-    val numOfMeals = mutableStateOf(_numOfMeals.value)
+    val groceryList = _groceryList.asStateFlow()
+    val groceryBadgeCount = _groceryBadgeCount.asStateFlow()
+    val numOfMeals = _numOfMeals.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -54,7 +56,6 @@ class SharedVM @Inject constructor(private val repository: ShoppingRepository) :
         }
     }
 
-
     fun insertFood(food: Food) = viewModelScope.launch { repository.insertFood(food) }
     fun deleteFood(food: Food) = viewModelScope.launch { repository.deleteFood(food) }
     fun updateFood(food: Food) = viewModelScope.launch { repository.updateFood(food) }
@@ -64,8 +65,6 @@ class SharedVM @Inject constructor(private val repository: ShoppingRepository) :
             repository.getFood(name)
         }.await()
     }
-
-
 
 
 }

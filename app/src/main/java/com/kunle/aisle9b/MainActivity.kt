@@ -17,6 +17,8 @@ import com.kunle.aisle9b.navigation.Aisle9Navigation
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
+import com.kunle.aisle9b.screens.meals.MealButtonBar
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
 import com.kunle.aisle9b.util.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,14 +38,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ShoppingApp(sharedVM: SharedVM) {
     val navController = rememberNavController()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var topBar by remember { mutableStateOf(TopBarOptions.Default) }
     var multiFloatingState by remember { mutableStateOf(MultiFloatingState.Collapsed) }
     var source by remember { mutableStateOf(GroceryScreens.GroceryListScreen) }
 
 //    val settings = sharedVM.settingsList.collectAsState().value
-
-//    sharedVM.groceryBadgeCount.value = sharedVM.groceryList.collectAsState().value.size
 
 //    sharedVM.darkModeSetting.value = settings.firstOrNull() {
 //        it.settingsName == AppSetting.DarkMode.name
@@ -61,52 +60,85 @@ fun ShoppingApp(sharedVM: SharedVM) {
         Scaffold(
             topBar = {
                 when (topBar) {
-                    TopBarOptions.BackButton -> {
+                    TopBarOptions.BackButton ->
                         BackTopAppBar(
                             source = source
                         ) {
+                            when (source) {
+                                GroceryScreens.MealScreen ->
+                                    sharedVM.mealButtonBar.value = MealButtonBar.Default
+                                GroceryScreens.CustomListScreen ->
+                                    sharedVM.customListButtonBar.value = CustomListButtonBar.Default
+                                else ->
+                                    navController.popBackStack()
+                            }
                             topBar = TopBarOptions.Default
                         }
-                    }
-                    TopBarOptions.Default -> {
+                    TopBarOptions.Default ->
                         DefaultTopAppBar(
-                            drawerState = drawerState,
+                            navController = navController,
                             source = source
                         )
-                    }
                 }
             },
             floatingActionButton = {
-                FAB(
-                    onAddClick = { navController.navigate(GroceryScreens.AddMealsScreen.name) },
-                    onTransferClick = {
-                        topBar = TopBarOptions.BackButton
-                    },
-                    onDeleteClick = {
-                        topBar = TopBarOptions.BackButton
-                    },
-                    multiFloatingState = multiFloatingState,
-                    onMultiFabStateChange = { multiFloatingState = it }
-                )
+                when (source) {
+                    GroceryScreens.CustomListScreen ->
+                        FAB(
+                            onAddClick = { navController.navigate(GroceryScreens.AddCustomListScreen.name) },
+                            onTransferClick = {
+                                sharedVM.customListButtonBar.value = CustomListButtonBar.Transfer
+                                topBar = TopBarOptions.BackButton
+                            },
+                            onDeleteClick = {
+                                sharedVM.customListButtonBar.value = CustomListButtonBar.Delete
+                                topBar = TopBarOptions.BackButton
+                            },
+                            multiFloatingState = multiFloatingState,
+                            onMultiFabStateChange = { multiFloatingState = it }
+                        )
+                    GroceryScreens.MealScreen ->
+                        FAB(
+                            onAddClick = { navController.navigate(GroceryScreens.AddMealsScreen.name) },
+                            onTransferClick = {
+                                sharedVM.mealButtonBar.value = MealButtonBar.Transfer
+                                topBar = TopBarOptions.BackButton
+                            },
+                            onDeleteClick = {
+                                sharedVM.mealButtonBar.value = MealButtonBar.Delete
+                                topBar = TopBarOptions.BackButton
+                            },
+                            multiFloatingState = multiFloatingState,
+                            onMultiFabStateChange = { multiFloatingState = it }
+                        )
+                    else -> {}
+
+                }
             },
             bottomBar = {
                 BottomNavigationBar9(
-                    mealsName = "Meals (${sharedVM.numOfMeals.value})",
+                    mealsName = "Meals (${sharedVM.numOfMeals.collectAsState().value})",
                     navController = navController,
-                    badgeCount = sharedVM.groceryBadgeCount.value,
+                    badgeCount = sharedVM.groceryBadgeCount.collectAsState().value,
                     onItemClick = {
                         navController.navigate(it.route)
                     })
             })
         {
-            Aisle9Navigation(
-                modifier = Modifier.padding(it),
-                source = { screen -> source = screen },
-                topBar = {top -> topBar = top },
-                navController = navController,
-                sharedVM = sharedVM,
-            )
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                Aisle9Navigation(
+                    modifier = Modifier.padding(it),
+                    source = { screen -> source = screen },
+                    topBar = { top -> topBar = top },
+                    navController = navController,
+                    sharedVM = sharedVM,
+                )
+            }
         }
+
     }
 }
 

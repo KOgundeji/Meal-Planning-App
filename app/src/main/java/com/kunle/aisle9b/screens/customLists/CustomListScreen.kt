@@ -40,10 +40,8 @@ fun CustomListScreen(
     source(GroceryScreens.CustomListScreen)
 
     val context = LocalContext.current
-    val transfer = shoppingVM.customListStartAsTransfer.value
 
-    var primaryButtonBar by remember { mutableStateOf(if (transfer) CustomListButtonBar.Transfer else CustomListButtonBar.Default) }
-    shoppingVM.customListStartAsTransfer.value = false
+    var primaryButtonBar = shoppingVM.customListButtonBar.value
 
     var searchWord by remember { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
@@ -64,14 +62,14 @@ fun CustomListScreen(
                 shoppingVM = shoppingVM,
                 resetButtonBarToDefault = {
                     topBar(TopBarOptions.Default)
-                    primaryButtonBar = CustomListButtonBar.Default
+                    shoppingVM.customListButtonBar.value = CustomListButtonBar.Default
                 }
             ) {
                 transferFoodsToGroceryList = false
             }
         } else {
             topBar(TopBarOptions.Default)
-            primaryButtonBar = CustomListButtonBar.Default
+            shoppingVM.customListButtonBar.value = CustomListButtonBar.Default
         }
         Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT)
             .show()
@@ -141,15 +139,18 @@ fun CustomListScreen(
             CustomListButtonBar.Default -> {}
             CustomListButtonBar.Delete -> {
                 FinalDeleteListButtonBar(
-                    primaryButtonBar = { newBar -> primaryButtonBar = newBar },
                     topAppBar = topBar,
+                    onBackClick = {
+                        topBar(TopBarOptions.Default)
+                        shoppingVM.customListButtonBar.value = CustomListButtonBar.Default
+                    },
                     onDeleteClick = {
                         shoppingVM.groceryListDeleteList.forEach { customList ->
                             customListVM.deleteList(customList)
                             customListVM.deleteSpecificListWithGroceries(customList.listId)
                         }
                         topBar(TopBarOptions.Default)
-                        primaryButtonBar = CustomListButtonBar.Default
+                        shoppingVM.customListButtonBar.value = CustomListButtonBar.Default
                     })
             }
             CustomListButtonBar.Transfer -> {
@@ -159,7 +160,7 @@ fun CustomListScreen(
                     addLists = { food -> transferFoodsToGroceryList = food }
                 ) {
                     topBar(TopBarOptions.Default)
-                    primaryButtonBar = CustomListButtonBar.Default
+                    shoppingVM.customListButtonBar.value = CustomListButtonBar.Default
                 }
             }
         }
@@ -180,10 +181,11 @@ fun CustomListScreen(
 
 @Composable
 fun FinalDeleteListButtonBar(
-    primaryButtonBar: (CustomListButtonBar) -> Unit,
     topAppBar: (TopBarOptions) -> Unit,
     onDeleteClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
+    topAppBar(TopBarOptions.BackButton)
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -191,8 +193,7 @@ fun FinalDeleteListButtonBar(
     ) {
         Button(
             onClick = {
-                topAppBar(TopBarOptions.Default)
-                primaryButtonBar(CustomListButtonBar.Default)
+                onBackClick()
             },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
@@ -228,8 +229,9 @@ fun AddToGroceryListButtonBar(
     transferList: MutableList<List<Food>>,
     topAppBar: (TopBarOptions) -> Unit,
     addLists: (Boolean) -> Unit,
-    primaryButtonBar: (CustomListButtonBar) -> Unit
+    onBackClick: () -> Unit
 ) {
+    topAppBar(TopBarOptions.BackButton)
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -237,8 +239,7 @@ fun AddToGroceryListButtonBar(
     ) {
         Button(
             onClick = {
-                topAppBar(TopBarOptions.Default)
-                primaryButtonBar(CustomListButtonBar.Default)
+                onBackClick()
             },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(

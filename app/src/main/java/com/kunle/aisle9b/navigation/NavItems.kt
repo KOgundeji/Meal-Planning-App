@@ -18,16 +18,3 @@ data class ModalNavItem(
     val route: String,
     val icon: ImageVector
 )
-
-val navDrawerList = listOf(
-    ModalNavItem(
-        name = "Settings",
-        route = GroceryScreens.SettingsScreen.name,
-        icon = Icons.Filled.Settings,
-    ),
-    ModalNavItem(
-        name = "Recipes",
-        route = GroceryScreens.RecipeScreen.name,
-        icon = Icons.Filled.MenuBook,
-    )
-)

@@ -38,9 +38,7 @@ fun MealScreen(
 ) {
     source(GroceryScreens.MealScreen)
 
-    val transfer = shoppingVM.mealStartAsTransfer.value
-    var primaryButtonBar by remember { mutableStateOf(if (transfer) MealButtonBar.Transfer else MealButtonBar.Default) }
-    shoppingVM.mealStartAsTransfer.value = false
+    var primaryButtonBar = shoppingVM.mealButtonBar.value
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
 
     val listsToAddToGroceryList = remember { mutableStateListOf(shoppingVM.groceryList.value) }
@@ -62,14 +60,14 @@ fun MealScreen(
                 shoppingVM = shoppingVM,
                 resetButtonBarToDefault = {
                     topBar(TopBarOptions.Default)
-                    primaryButtonBar = MealButtonBar.Default
+                    shoppingVM.mealButtonBar.value = MealButtonBar.Default
                 }
             ) {
                 transferFoodsToGroceryList = false
             }
         } else {
             topBar(TopBarOptions.Default)
-            primaryButtonBar = MealButtonBar.Default
+            shoppingVM.mealButtonBar.value = MealButtonBar.Default
         }
         Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
     }
@@ -137,14 +135,17 @@ fun MealScreen(
             MealButtonBar.Default -> {}
             MealButtonBar.Delete -> {
                 FinalDeleteMeal_ButtonBar(
-                    primaryButtonBar = { bar -> primaryButtonBar = bar },
                     topAppBar = topBar,
+                    onBackClick = {
+                        topBar(TopBarOptions.Default)
+                        shoppingVM.mealButtonBar.value = MealButtonBar.Default
+                    },
                     onDeleteClick = {
                         shoppingVM.mealDeleteList.forEach { meal ->
                             mealVM.deleteMeal(meal)
                             mealVM.deleteSpecificMealIngredients(meal.mealId)
                         }
-                        primaryButtonBar = MealButtonBar.Default
+                        shoppingVM.mealButtonBar.value = MealButtonBar.Default
                     })
             }
             MealButtonBar.Transfer -> {
@@ -153,7 +154,8 @@ fun MealScreen(
                     topAppBar = topBar,
                     addLists = { transferFoodsToGroceryList = true }
                 ) {
-                    primaryButtonBar = MealButtonBar.Default
+                    topBar(TopBarOptions.Default)
+                    shoppingVM.mealButtonBar.value = MealButtonBar.Default
                 }
             }
         }
@@ -173,8 +175,8 @@ fun MealScreen(
 
 @Composable
 fun FinalDeleteMeal_ButtonBar(
-    primaryButtonBar: (MealButtonBar) -> Unit,
     topAppBar: (TopBarOptions) -> Unit,
+    onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
     topAppBar(TopBarOptions.BackButton)
@@ -190,8 +192,7 @@ fun FinalDeleteMeal_ButtonBar(
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ),
             onClick = {
-                topAppBar(TopBarOptions.Default)
-                primaryButtonBar(MealButtonBar.Default)
+                onBackClick()
             }) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
@@ -220,7 +221,7 @@ fun AddMealToGroceryList_ButtonBar(
     transferList: MutableList<List<Food>>,
     topAppBar: (TopBarOptions) -> Unit,
     addLists: () -> Unit,
-    primaryButtonBar: (MealButtonBar) -> Unit
+    onBackClick: () -> Unit
 ) {
     topAppBar(TopBarOptions.BackButton)
     Row(
@@ -230,8 +231,7 @@ fun AddMealToGroceryList_ButtonBar(
     ) {
         Button(
             onClick = {
-                topAppBar(TopBarOptions.Default)
-                primaryButtonBar(MealButtonBar.Default)
+                onBackClick()
             },
             modifier = Modifier.width(75.dp),
             colors = ButtonDefaults.buttonColors(
