@@ -15,14 +15,18 @@ import javax.inject.Singleton
 @Module
 object AppModule {
 
+
     @Singleton
     @Provides
-    fun provideAppDatabase(@ApplicationContext context: Context): ShoppingRoomDB =
+    fun provideAppDatabase(
+        @ApplicationContext context: Context
+    ): ShoppingRoomDB =
         Room.databaseBuilder(
             context = context,
             klass = ShoppingRoomDB::class.java,
             name = "shopping_db"
         ).fallbackToDestructiveMigration().build()
+
 
     @Singleton
     @Provides
@@ -56,3 +60,4 @@ object AppModule {
 
 
 }
+

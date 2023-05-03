@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
@@ -52,7 +51,7 @@ fun GroceryScreen(
     source(GroceryScreens.GroceryListScreen)
 
     val groceryList = groceryVM.groceryList.collectAsState().value
-    val categoriesOn = shoppingVM.categoriesOn.value
+    val categoriesOn = shoppingVM.categoriesOnSetting.value
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -146,7 +145,7 @@ fun GroceryScreen(
                         stickyHeader {
                             Headline(string = category)
                         }
-                        items(items = groceries, key = { food -> food.name }) { foodItem ->
+                        items(items = groceries) { foodItem ->
                             ListItem9(
                                 food = foodItem,
                                 shoppingVM = shoppingVM,
@@ -155,7 +154,7 @@ fun GroceryScreen(
                         }
                     }
                 } else {
-                    items(items = groceryList, key = { food -> food.foodId }) { foodItem ->
+                    items(items = groceryList) { foodItem ->
                         ListItem9(
                             food = foodItem,
                             shoppingVM = shoppingVM,

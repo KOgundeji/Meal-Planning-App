@@ -8,7 +8,7 @@ import com.kunle.aisle9b.util.UUIDConverter
 
 @Database(
     entities = [Food::class, GroceryList::class, Meal::class, AppSettings::class, ListFoodMap::class, MealFoodMap::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(UUIDConverter::class)

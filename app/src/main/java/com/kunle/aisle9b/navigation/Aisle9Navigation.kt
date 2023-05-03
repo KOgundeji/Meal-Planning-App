@@ -25,12 +25,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.data.addFakeToDatabase
-import com.kunle.aisle9b.data.sampleFoodData
 import com.kunle.aisle9b.screens.*
 import com.kunle.aisle9b.screens.AddMealScreen
 import com.kunle.aisle9b.screens.AddPreMadeListScreen
 import com.kunle.aisle9b.screens.appSettings.SettingsScreen
-import com.kunle.aisle9b.screens.appSettings.SettingsVM
 import com.kunle.aisle9b.screens.customLists.CustomListVM
 import com.kunle.aisle9b.screens.customLists.CustomListScreen
 import com.kunle.aisle9b.screens.groceries.GroceryVM
@@ -49,7 +47,6 @@ fun Aisle9Navigation(
     source: (GroceryScreens) -> Unit,
     topBar: (TopBarOptions) -> Unit
 ) {
-    val settingsVM = viewModel<SettingsVM>()
     val recipeVM = viewModel<RecipesVM>()
     val groceryVM = viewModel<GroceryVM>()
     val customListVM = viewModel<CustomListVM>()
@@ -86,8 +83,7 @@ fun Aisle9Navigation(
         composable(route = GroceryScreens.SettingsScreen.name) {
             SettingsScreen(
                 modifier = modifier,
-                shoppingVM = sharedVM,
-                settingsVM = settingsVM,
+                sharedVM = sharedVM,
                 source = source,
                 topBar = topBar
             )

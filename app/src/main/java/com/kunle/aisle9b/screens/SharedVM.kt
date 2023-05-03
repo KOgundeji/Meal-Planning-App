@@ -1,14 +1,9 @@
 package com.kunle.aisle9b.screens
 
-import android.util.Log
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.navigation.BottomNavItem
-import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.repository.ShoppingRepository
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
 import com.kunle.aisle9b.screens.meals.MealButtonBar
@@ -28,17 +23,20 @@ class SharedVM @Inject constructor(private val repository: ShoppingRepository) :
 
     val tempIngredientList = mutableStateListOf<Food>()
     val tempGroceryList = mutableStateListOf<Food>()
+
     var darkModeSetting = mutableStateOf(false)
-    var keepScreenOn = mutableStateOf(false)
-    var categoriesOn = mutableStateOf(true)
+    var keepScreenOnSetting = mutableStateOf(false)
+    var categoriesOnSetting = mutableStateOf(true)
 
     var mealButtonBar = mutableStateOf(MealButtonBar.Default)
     var customListButtonBar = mutableStateOf(CustomListButtonBar.Default)
 
     private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
+    private val _settings = MutableStateFlow<List<AppSettings>>(emptyList())
     private val _groceryBadgeCount = MutableStateFlow(0)
     private val _numOfMeals = MutableStateFlow(0)
     val groceryList = _groceryList.asStateFlow()
+    val settingsList = _settings.asStateFlow()
     val groceryBadgeCount = _groceryBadgeCount.asStateFlow()
     val numOfMeals = _numOfMeals.asStateFlow()
 
@@ -54,6 +52,11 @@ class SharedVM @Inject constructor(private val repository: ShoppingRepository) :
                 _numOfMeals.value = listOfMeals.size
             }
         }
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getAllSettings().distinctUntilChanged().collect { listOfSettings ->
+                _settings.value = listOfSettings
+            }
+        }
     }
 
     fun insertFood(food: Food) = viewModelScope.launch { repository.insertFood(food) }
@@ -63,6 +66,14 @@ class SharedVM @Inject constructor(private val repository: ShoppingRepository) :
     suspend fun getFood(name: String): Food {
         return viewModelScope.async {
             repository.getFood(name)
+        }.await()
+    }
+
+    fun insertSettings(settings: AppSettings) = viewModelScope.launch { repository.insertSettings(settings) }
+    fun updateSettings(settings: AppSettings) = viewModelScope.launch { repository.updateSettings(settings) }
+    suspend fun checkSetting(name: String): Int {
+        return viewModelScope.async(Dispatchers.Default) {
+            repository.checkSetting(name)
         }.await()
     }
 
