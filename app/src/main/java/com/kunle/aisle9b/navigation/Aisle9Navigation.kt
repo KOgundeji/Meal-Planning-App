@@ -91,7 +91,6 @@ fun Aisle9Navigation(
         composable(route = GroceryScreens.RecipeScreen.name) {
             RecipeScreen(
                 modifier = modifier,
-                shoppingVM = sharedVM,
                 recipesVM = recipeVM,
                 source = source,
                 topBar = topBar

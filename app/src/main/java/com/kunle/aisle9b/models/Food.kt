@@ -18,3 +18,4 @@ data class Food(
     @ColumnInfo
     var isInGroceryList: Boolean
 ) {}
+

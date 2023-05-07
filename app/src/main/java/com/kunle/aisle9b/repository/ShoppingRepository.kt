@@ -1,7 +1,12 @@
 package com.kunle.aisle9b.repository
 
+import com.kunle.aisle9b.api.SearchedRecipeAPI
+import com.kunle.aisle9b.api.TrendingRecipeAPI
 import com.kunle.aisle9b.data.*
 import com.kunle.aisle9b.models.*
+import com.kunle.aisle9b.models.apiModels.DataOrException
+import com.kunle.aisle9b.models.apiModels.searchedRecipeModels.SearchedRawAPIData
+import com.kunle.aisle9b.models.apiModels.trendingRecipeModels.TrendingRawAPIData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
@@ -16,8 +21,31 @@ class ShoppingRepository @Inject constructor(
     private val mealDao: MealDao,
     private val settingsDao: SettingsDao,
     private val listWithGroceriesDao: ListWithGroceriesDao,
-    private val mealWithIngredientsDao: MealWithIngredientsDao
+    private val mealWithIngredientsDao: MealWithIngredientsDao,
+    private val searchedAPI: SearchedRecipeAPI,
+    private val trendingAPI: TrendingRecipeAPI
 ) {
+
+    suspend fun getTrendingRecipes(vegetarian: Boolean): DataOrException<TrendingRawAPIData, Boolean, Exception> {
+        val response =
+            try {
+                trendingAPI.getTrendingRecipes(vegetarian = vegetarian)
+            } catch (e: Exception) {
+                return DataOrException(e = e)
+            }
+        return DataOrException(data = response)
+    }
+
+    suspend fun getSearchedRecipes(tags: String, query: String): DataOrException<SearchedRawAPIData, Boolean, Exception> {
+        val response =
+            try {
+                searchedAPI.getSearchedRecipes(tags = tags, query = query)
+            } catch (e: Exception) {
+                return DataOrException(e = e)
+            }
+        return DataOrException(data = response)
+    }
+
     suspend fun insertFood(food: Food) = foodDao.insertFood(food)
     suspend fun deleteFood(food: Food) = foodDao.deleteFood(food)
     suspend fun updateFood(food: Food) = foodDao.updateFood(food)
@@ -25,6 +53,7 @@ class ShoppingRepository @Inject constructor(
     suspend fun getFood(name: String) = foodDao.getFood(name)
     fun getAllGroceries(): Flow<List<Food>> =
         foodDao.getAllGroceries().flowOn(Dispatchers.IO).conflate()
+
     fun getAllFood(): Flow<List<Food>> = foodDao.getAllFood().flowOn(Dispatchers.IO).conflate()
 
     suspend fun insertList(list: GroceryList) = listDao.insertList(list)
@@ -32,7 +61,8 @@ class ShoppingRepository @Inject constructor(
     suspend fun updateList(list: GroceryList) = listDao.updateList(list)
     suspend fun deleteAllLists() = listDao.deleteAllLists()
     suspend fun getLists(name: String) = listDao.getList(name)
-    fun getAllLists(): Flow<List<GroceryList>> = listDao.getAllLists().flowOn(Dispatchers.IO).conflate()
+    fun getAllLists(): Flow<List<GroceryList>> =
+        listDao.getAllLists().flowOn(Dispatchers.IO).conflate()
 
     suspend fun insertMeal(meal: Meal) = mealDao.insertMeal(meal)
     suspend fun deleteMeal(meal: Meal) = mealDao.deleteMeal(meal)
@@ -54,10 +84,13 @@ class ShoppingRepository @Inject constructor(
     suspend fun updatePair(crossRef: ListFoodMap) = listWithGroceriesDao.updatePair(crossRef)
     suspend fun deleteSpecificGroceryList(listId: UUID) =
         listWithGroceriesDao.deleteSpecificGroceryList(listId)
+
     suspend fun deleteAllListWithGroceries() =
         listWithGroceriesDao.deleteAllGroceryLists()
+
     suspend fun getSpecificListWithGroceries(listId: Long): ListWithGroceries =
         listWithGroceriesDao.getSpecificListWithGroceries(listId)
+
     fun getAllListWithGroceries(): Flow<List<ListWithGroceries>> =
         listWithGroceriesDao.getAllListWithGroceries().flowOn(Dispatchers.IO).conflate()
 
@@ -66,10 +99,13 @@ class ShoppingRepository @Inject constructor(
     suspend fun updatePair(crossRef: MealFoodMap) = mealWithIngredientsDao.updatePair(crossRef)
     suspend fun deleteSpecificMealIngredients(mealId: UUID) =
         mealWithIngredientsDao.deleteSpecificMealIngredients(mealId)
+
     suspend fun deleteAllMealWithIngredients() =
         mealWithIngredientsDao.deleteAllMealWithIngredients()
+
     suspend fun getSpecificMealWithIngredients(mealId: Long): MealWithIngredients =
         mealWithIngredientsDao.getSpecificMealWithIngredients(mealId)
+
     fun getAllMealsWithIngredients(): Flow<List<MealWithIngredients>> =
         mealWithIngredientsDao.getAllMealsWithIngredients().flowOn(Dispatchers.IO).conflate()
 

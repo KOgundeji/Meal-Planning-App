@@ -59,6 +59,8 @@ class SharedVM @Inject constructor(private val repository: ShoppingRepository) :
         }
     }
 
+
+
     fun insertFood(food: Food) = viewModelScope.launch { repository.insertFood(food) }
     fun deleteFood(food: Food) = viewModelScope.launch { repository.deleteFood(food) }
     fun updateFood(food: Food) = viewModelScope.launch { repository.updateFood(food) }
@@ -69,8 +71,12 @@ class SharedVM @Inject constructor(private val repository: ShoppingRepository) :
         }.await()
     }
 
-    fun insertSettings(settings: AppSettings) = viewModelScope.launch { repository.insertSettings(settings) }
-    fun updateSettings(settings: AppSettings) = viewModelScope.launch { repository.updateSettings(settings) }
+    fun insertSettings(settings: AppSettings) =
+        viewModelScope.launch { repository.insertSettings(settings) }
+
+    fun updateSettings(settings: AppSettings) =
+        viewModelScope.launch { repository.updateSettings(settings) }
+
     suspend fun checkSetting(name: String): Int {
         return viewModelScope.async(Dispatchers.Default) {
             repository.checkSetting(name)

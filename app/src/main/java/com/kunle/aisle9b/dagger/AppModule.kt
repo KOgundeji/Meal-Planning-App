@@ -2,12 +2,19 @@ package com.kunle.aisle9b.dagger
 
 import android.content.Context
 import androidx.room.Room
+import com.kunle.aisle9b.api.SearchedRecipeAPI
+import com.kunle.aisle9b.api.TrendingRecipeAPI
 import com.kunle.aisle9b.data.*
+import com.kunle.aisle9b.models.apiModels.searchedRecipeModels.SearchedRawAPIData
+import com.kunle.aisle9b.models.apiModels.trendingRecipeModels.TrendingRawAPIData
+import com.kunle.aisle9b.util.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 //dependency injection
@@ -27,6 +34,26 @@ object AppModule {
             name = "shopping_db"
         ).fallbackToDestructiveMigration().build()
 
+
+    @Singleton
+    @Provides
+    fun provideSearchedRecipeAPI(): SearchedRecipeAPI {
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(SearchedRecipeAPI::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideTrendingRecipeAPI(): TrendingRecipeAPI {
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(TrendingRecipeAPI::class.java)
+    }
 
     @Singleton
     @Provides
