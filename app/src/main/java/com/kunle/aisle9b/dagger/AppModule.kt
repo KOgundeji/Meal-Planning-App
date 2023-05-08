@@ -2,11 +2,9 @@ package com.kunle.aisle9b.dagger
 
 import android.content.Context
 import androidx.room.Room
-import com.kunle.aisle9b.api.SearchedRecipeAPI
-import com.kunle.aisle9b.api.TrendingRecipeAPI
+import com.kunle.aisle9b.api.RandomRecipeAPI
+import com.kunle.aisle9b.api.RecipeAPI
 import com.kunle.aisle9b.data.*
-import com.kunle.aisle9b.models.apiModels.searchedRecipeModels.SearchedRawAPIData
-import com.kunle.aisle9b.models.apiModels.trendingRecipeModels.TrendingRawAPIData
 import com.kunle.aisle9b.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -37,22 +35,22 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSearchedRecipeAPI(): SearchedRecipeAPI {
+    fun provideRecipeAPI(): RecipeAPI {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(SearchedRecipeAPI::class.java)
+            .create(RecipeAPI::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideTrendingRecipeAPI(): TrendingRecipeAPI {
+    fun provideRandomRecipeAPI(): RandomRecipeAPI {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(TrendingRecipeAPI::class.java)
+            .create(RandomRecipeAPI::class.java)
     }
 
     @Singleton

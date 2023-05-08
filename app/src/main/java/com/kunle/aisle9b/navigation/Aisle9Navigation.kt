@@ -18,8 +18,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
+import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -35,8 +34,10 @@ import com.kunle.aisle9b.screens.groceries.GroceryVM
 import com.kunle.aisle9b.screens.groceries.GroceryScreen
 import com.kunle.aisle9b.screens.meals.MealScreen
 import com.kunle.aisle9b.screens.meals.MealVM
+import com.kunle.aisle9b.screens.recipes.RecipeDetailsScreen
 import com.kunle.aisle9b.screens.recipes.RecipeScreen
 import com.kunle.aisle9b.screens.recipes.RecipesVM
+import com.kunle.aisle9b.screens.splash.SplashScreen
 import com.kunle.aisle9b.ui.theme.*
 
 @Composable
@@ -59,14 +60,28 @@ fun Aisle9Navigation(
 //    )
     NavHost(
         navController = navController,
-        startDestination = GroceryScreens.GroceryListScreen.name
+        startDestination = GroceryScreens.RecipeScreen.name
     ) {
+        composable(route = GroceryScreens.SplashScreen.name) {
+            SplashScreen(
+                navController = navController
+            )
+        }
         composable(route = GroceryScreens.GroceryListScreen.name) {
             GroceryScreen(
                 modifier = modifier,
                 shoppingVM = sharedVM,
                 groceryVM = groceryVM,
                 navController = navController,
+                source = source,
+                topBar = topBar
+            )
+        }
+        composable(route = GroceryScreens.CustomListScreen.name) {
+            CustomListScreen(
+                shoppingVM = sharedVM,
+                customListVM = customListVM,
+                modifier = modifier,
                 source = source,
                 topBar = topBar
             )
@@ -92,15 +107,7 @@ fun Aisle9Navigation(
             RecipeScreen(
                 modifier = modifier,
                 recipesVM = recipeVM,
-                source = source,
-                topBar = topBar
-            )
-        }
-        composable(route = GroceryScreens.CustomListScreen.name) {
-            CustomListScreen(
-                shoppingVM = sharedVM,
-                customListVM = customListVM,
-                modifier = modifier,
+                navController = navController,
                 source = source,
                 topBar = topBar
             )
@@ -123,6 +130,18 @@ fun Aisle9Navigation(
                 navController = navController,
                 source = source,
                 topBar = topBar
+            )
+        }
+        composable(
+            route = GroceryScreens.RecipeDetailsScreen.name + "/{recipeIndex}",
+            arguments = listOf(
+                navArgument(name = "recipeIndex") {
+                    type = NavType.IntType
+                })
+        ) { backStack ->
+            RecipeDetailsScreen(
+                recipeIndex = backStack.arguments?.getInt("recipeIndex"),
+                recipesVM = recipeVM
             )
         }
     }

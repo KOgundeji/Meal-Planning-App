@@ -1,12 +1,12 @@
 package com.kunle.aisle9b.repository
 
-import com.kunle.aisle9b.api.SearchedRecipeAPI
-import com.kunle.aisle9b.api.TrendingRecipeAPI
+import com.kunle.aisle9b.api.RandomRecipeAPI
+import com.kunle.aisle9b.api.RecipeAPI
 import com.kunle.aisle9b.data.*
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.models.apiModels.DataOrException
-import com.kunle.aisle9b.models.apiModels.searchedRecipeModels.SearchedRawAPIData
-import com.kunle.aisle9b.models.apiModels.trendingRecipeModels.TrendingRawAPIData
+import com.kunle.aisle9b.models.apiModels.recipeModels.Recipe
+import com.kunle.aisle9b.models.apiModels.recipeModels.RecipeRawAPIData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
@@ -22,24 +22,24 @@ class ShoppingRepository @Inject constructor(
     private val settingsDao: SettingsDao,
     private val listWithGroceriesDao: ListWithGroceriesDao,
     private val mealWithIngredientsDao: MealWithIngredientsDao,
-    private val searchedAPI: SearchedRecipeAPI,
-    private val trendingAPI: TrendingRecipeAPI
+    private val recipeAPI: RecipeAPI,
+    private val randomRecipeAPI: RandomRecipeAPI
 ) {
 
-    suspend fun getTrendingRecipes(vegetarian: Boolean): DataOrException<TrendingRawAPIData, Boolean, Exception> {
+    suspend fun getRecipes(id: Int): DataOrException<Recipe, Boolean, Exception> {
         val response =
             try {
-                trendingAPI.getTrendingRecipes(vegetarian = vegetarian)
+                recipeAPI.getRecipes(id = id)
             } catch (e: Exception) {
                 return DataOrException(e = e)
             }
         return DataOrException(data = response)
     }
 
-    suspend fun getSearchedRecipes(tags: String, query: String): DataOrException<SearchedRawAPIData, Boolean, Exception> {
+    suspend fun getRandomRecipes(tags: String): DataOrException<RecipeRawAPIData, Boolean, Exception> {
         val response =
             try {
-                searchedAPI.getSearchedRecipes(tags = tags, query = query)
+                randomRecipeAPI.getRandomRecipes(tags = tags)
             } catch (e: Exception) {
                 return DataOrException(e = e)
             }
