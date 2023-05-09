@@ -3,7 +3,7 @@ package com.kunle.aisle9b.models.apiModels.recipeModels
 data class ExtendedIngredient(
     val aisle: String,
     val amount: Double,
-    val consitency: String,
+    val consistency: String,
     val id: Int,
     val image: String,
     val measures: Measures,

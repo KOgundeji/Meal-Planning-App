@@ -23,7 +23,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.kunle.aisle9b.TopBarOptions
-import com.kunle.aisle9b.data.addFakeToDatabase
 import com.kunle.aisle9b.screens.*
 import com.kunle.aisle9b.screens.AddMealScreen
 import com.kunle.aisle9b.screens.AddPreMadeListScreen
@@ -140,7 +139,8 @@ fun Aisle9Navigation(
                 })
         ) { backStack ->
             RecipeDetailsScreen(
-                recipeIndex = backStack.arguments?.getInt("recipeIndex"),
+                modifier = modifier,
+                recipeId = backStack.arguments?.getInt("recipeIndex"),
                 recipesVM = recipeVM
             )
         }

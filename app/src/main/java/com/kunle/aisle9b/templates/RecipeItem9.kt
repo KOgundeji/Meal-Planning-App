@@ -1,10 +1,7 @@
 package com.kunle.aisle9b.templates
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.*
@@ -12,14 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.kunle.aisle9b.R
+import com.kunle.aisle9b.navigation.GroceryScreens
 
 @Composable
 fun RecipeItem9(
@@ -36,7 +32,7 @@ fun RecipeItem9(
         modifier = modifier
             .fillMaxSize()
             .clickable {
-//                navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${index}")
+                navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${id}")
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
@@ -107,8 +103,6 @@ fun RecipeItem9(
                     )
                 }
             }
-
-
         }
     }
 }
