@@ -2,10 +2,7 @@ package com.kunle.aisle9b.screens.recipes
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -19,10 +16,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
-import com.kunle.aisle9b.models.apiModels.DataOrException
-import com.kunle.aisle9b.models.apiModels.recipeModels.RecipeRawAPIData
+import com.kunle.aisle9b.api.apiModels.ApiResponseList
+import com.kunle.aisle9b.models.apiModels.queryModels.Result
 import com.kunle.aisle9b.navigation.GroceryScreens
+import com.kunle.aisle9b.screens.utilScreens.ErrorScreen
+import com.kunle.aisle9b.screens.utilScreens.LoadingScreen
 import com.kunle.aisle9b.templates.RecipeItem9
+import kotlinx.coroutines.launch
 
 @Composable
 fun RecipeScreen(
@@ -35,7 +35,7 @@ fun RecipeScreen(
     topBar(TopBarOptions.Default)
     source(GroceryScreens.RecipeScreen)
 
-    val listState = rememberLazyGridState()
+    val scope = rememberCoroutineScope()
 
     Surface(color = MaterialTheme.colorScheme.background) {
         Column(
@@ -43,41 +43,61 @@ fun RecipeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            SearchBar(recipesVM = recipesVM)
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(count = 2),
-                state = listState,
-            ) {
-                items(items = recipesVM.recipeList.value) {
-                    RecipeItem9(
-                        modifier = Modifier.padding(6.dp),
-                        navController = navController,
-                        id = it.id,
-                        imageURL = it.image,
-                        name = it.title,
-                        numOfLikes = it.aggregateLikes,
-                        source = it.sourceName,
-                        readyTimeInMinutes = it.readyInMinutes
-                    )
+            SearchBar(onSearchClick = {search ->
+                scope.launch {
+                    recipesVM.getSearchResults(query = search)
                 }
+            })
+            when (val searchState = recipesVM.searchState.collectAsState().value) {
+                is ApiResponseList.Error -> ErrorScreen(errorText = searchState.getMessage())
+                is ApiResponseList.Loading -> LoadingScreen()
+                is ApiResponseList.Success ->
+                    Screen(
+                        recipeList = searchState.recipes,
+                        navController = navController,
+                    )
+                ApiResponseList.Neutral -> {}
             }
         }
     }
 }
 
+@Composable
+private fun Screen(
+    recipeList: List<Result>,
+    navController: NavController
+) {
+    val listState = rememberLazyGridState()
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(count = 2),
+        state = listState,
+    ) {
+        items(items = recipeList) {
+            RecipeItem9(
+                modifier = Modifier.padding(6.dp),
+                navController = navController,
+                id = it.id,
+                imageURL = it.image,
+                name = it.title,
+                numOfLikes = it.aggregateLikes,
+                source = it.sourceName,
+                readyTimeInMinutes = it.readyInMinutes
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar(
-    recipesVM: RecipesVM
-) {
+fun SearchBar(onSearchClick: (String) -> Unit) {
     var searchWord by remember { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
 
     BasicTextField(
         modifier = Modifier
             .height(45.dp)
-            .fillMaxWidth(0.95f),
+            .fillMaxWidth(.95f),
         value = searchWord,
         singleLine = true,
         onValueChange = { searchWord = it },
@@ -102,6 +122,7 @@ fun SearchBar(
                     modifier = Modifier.padding(5.dp),
                     onClick = {
                         if (searchWord.isNotEmpty()) {
+                            onSearchClick(searchWord)
                         }
                     }) {
                     Text(

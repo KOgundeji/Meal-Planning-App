@@ -1,4 +1,4 @@
-package com.kunle.aisle9b.templates
+package com.kunle.aisle9b.templates.dialogs
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -31,6 +31,8 @@ import com.kunle.aisle9b.models.MealFoodMap
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.customLists.CustomListVM
 import com.kunle.aisle9b.screens.meals.MealVM
+import com.kunle.aisle9b.templates.EditFoodDialog9
+import com.kunle.aisle9b.templates.ListItem9
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)

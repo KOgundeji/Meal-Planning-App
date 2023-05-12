@@ -2,7 +2,6 @@ package com.kunle.aisle9b.dagger
 
 import android.content.Context
 import androidx.room.Room
-import com.kunle.aisle9b.api.RandomRecipeAPI
 import com.kunle.aisle9b.api.RecipeAPI
 import com.kunle.aisle9b.data.*
 import com.kunle.aisle9b.util.Constants
@@ -41,16 +40,6 @@ object AppModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(RecipeAPI::class.java)
-    }
-
-    @Singleton
-    @Provides
-    fun provideRandomRecipeAPI(): RandomRecipeAPI {
-        return Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(RandomRecipeAPI::class.java)
     }
 
     @Singleton

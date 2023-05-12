@@ -32,7 +32,7 @@ import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
 import com.kunle.aisle9b.screens.meals.MealButtonBar
-import com.kunle.aisle9b.templates.Headline
+import com.kunle.aisle9b.templates.headers.CategoryHeader
 import com.kunle.aisle9b.templates.ListItem9
 import com.kunle.aisle9b.util.*
 import kotlinx.coroutines.launch
@@ -143,7 +143,7 @@ fun GroceryScreen(
                     val groupedGroceries = groceryList.groupBy { food -> food.category }
                     groupedGroceries.forEach { (category, groceries) ->
                         stickyHeader {
-                            Headline(string = category)
+                            CategoryHeader(string = category)
                         }
                         items(items = groceries) { foodItem ->
                             ListItem9(

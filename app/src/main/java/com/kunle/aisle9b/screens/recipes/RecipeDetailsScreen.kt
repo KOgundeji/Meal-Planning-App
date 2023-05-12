@@ -14,18 +14,27 @@ import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.kunle.aisle9b.api.apiModels.ApiResponseInstructions
+import com.kunle.aisle9b.api.apiModels.ApiResponseRecipe
+import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
 import com.kunle.aisle9b.models.apiModels.recipeModels.Recipe
 import com.kunle.aisle9b.models.tabs.TabItem
-import com.kunle.aisle9b.util.parseHtml
+import com.kunle.aisle9b.screens.utilScreens.ErrorScreen
+import com.kunle.aisle9b.screens.utilScreens.LoadingScreen
+import com.kunle.aisle9b.templates.headers.IngredientHeader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -35,46 +44,57 @@ fun RecipeDetailsScreen(
     recipeId: Int?,
     recipesVM: RecipesVM
 ) {
-    val targetRecipe = recipesVM.recipeList.collectAsState().value.firstOrNull {
-        it.id == recipeId
+    if (recipeId != null) {
+        LaunchedEffect(key1 = recipeId) {
+            recipesVM.getRecipe(id = recipeId)
+            recipesVM.getInstructions(id = recipeId)
+        }
     }
 
-    if (targetRecipe != null) {
-        Column(
-            modifier = modifier.fillMaxSize()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(.42f),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = targetRecipe.image, contentDescription = null,
-                    contentScale = ContentScale.FillHeight,
-                    alignment = Alignment.Center
-                )
-            }
-            Tabs(recipe = targetRecipe)
-        }
-    } else {
-        Column(
-            modifier = modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Recipe not found",
-                fontSize = 30.sp
+    val retrievedRecipeState = recipesVM.retrievedRecipeState.collectAsState().value
+    val retrievedInstructionState = recipesVM.instructions.collectAsState().value
+
+    when {
+        retrievedRecipeState is ApiResponseRecipe.Error -> ErrorScreen(errorText = retrievedRecipeState.getMessage())
+        retrievedRecipeState is ApiResponseRecipe.Loading -> LoadingScreen()
+        retrievedRecipeState is ApiResponseRecipe.Success && retrievedInstructionState is ApiResponseInstructions.Success ->
+            DetailsScreen(
+                modifier = modifier,
+                recipe = retrievedRecipeState.recipe,
+                instructions = retrievedInstructionState.instructions
             )
-        }
+        else -> {}
     }
 }
 
+@Composable
+private fun DetailsScreen(
+    modifier: Modifier,
+    recipe: Recipe,
+    instructions: Instructions
+) {
+    Column(modifier = modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(.42f),
+            contentAlignment = Alignment.Center
+        ) {
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = recipe.image, contentDescription = null,
+                contentScale = ContentScale.FillHeight,
+                alignment = Alignment.Center
+            )
+        }
+        Tabs(recipe = recipe, instructions = instructions)
+    }
+}
+
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Tabs(recipe: Recipe) {
+fun Tabs(recipe: Recipe, instructions: Instructions) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -90,7 +110,7 @@ fun Tabs(recipe: Recipe) {
         TabItem(
             title = "Instructions",
             icon = Icons.Default.FormatListNumbered,
-            screen = { InstructionsScreen(recipe = recipe)})
+            screen = { InstructionsScreen(instructions = instructions) })
     )
 
     TabRow(
@@ -125,7 +145,8 @@ fun SummaryScreen(recipe: Recipe) {
     ) {
         Text(
             text = recipe.title,
-            fontSize = 20.sp,
+            modifier = Modifier.padding(5.dp),
+            fontSize = 24.sp,
             maxLines = 2,
             fontWeight = FontWeight.Bold,
             letterSpacing = 1.sp
@@ -133,50 +154,75 @@ fun SummaryScreen(recipe: Recipe) {
         Text(
             modifier = Modifier.padding(horizontal = 8.dp),
             text = "Source: ${recipe.sourceName}",
-            fontSize = 12.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
-        Text(text = recipe.summary.parseHtml())
+
     }
 }
 
 @Composable
 fun IngredientsTab(recipe: Recipe) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        items(items = recipe.extendedIngredients) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 6.dp),
-            ) {
-                Text(text = it.original)
+    val ingredients = recipe.extendedIngredients.map {
+        it.original
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            modifier = Modifier.padding(start = 4.dp),
+            text = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                ) {
+                    append("Ingredients")
+                }
+                withStyle(
+                    style = SpanStyle(
+                        fontSize = 20.sp
+                    )
+                ) {
+                    append(" for ${recipe.servings} servings")
+                }
             }
-            Divider(thickness = 1.dp)
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 6.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(items = ingredients) {
+                Text(text = it, fontSize = 14.sp)
+            }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun InstructionsScreen(recipe: Recipe) {
+fun InstructionsScreen(instructions: Instructions) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        items(items = recipe.extendedIngredients) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 6.dp),
-            ) {
-                Text(text = it.original)
+        instructions.forEach {
+            stickyHeader {
+                IngredientHeader(string = it.name.ifBlank { "Preparation" })
             }
-            Divider(thickness = 1.dp)
+            items(items = it.steps) { stepItem ->
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = stepItem.number.toString(),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(text = stepItem.step, fontSize = 14.sp)
+                }
+                Spacer(modifier = Modifier.height(5.dp))
+            }
         }
     }
 }

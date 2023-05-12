@@ -1,4 +1,4 @@
-package com.kunle.aisle9b.models.apiModels.instructionModels
+package com.kunle.aisle9b.models.apiModels.queryModels
 
 data class Step(
     val equipment: List<Equipment>,

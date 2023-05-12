@@ -26,6 +26,8 @@ import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.meals.MealButtonBar
 import com.kunle.aisle9b.screens.meals.MealVM
+import com.kunle.aisle9b.templates.dialogs.EditSource
+import com.kunle.aisle9b.templates.dialogs.ModifyIngredientsDialog9
 
 @Composable
 fun MealItem9(

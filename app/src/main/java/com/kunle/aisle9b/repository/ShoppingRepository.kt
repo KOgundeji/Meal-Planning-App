@@ -1,12 +1,13 @@
 package com.kunle.aisle9b.repository
 
-import com.kunle.aisle9b.api.RandomRecipeAPI
 import com.kunle.aisle9b.api.RecipeAPI
 import com.kunle.aisle9b.data.*
 import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.models.apiModels.DataOrException
+import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
+import com.kunle.aisle9b.models.apiModels.recipeModels.BatchRecipes
 import com.kunle.aisle9b.models.apiModels.recipeModels.Recipe
 import com.kunle.aisle9b.models.apiModels.recipeModels.RecipeRawAPIData
+import com.kunle.aisle9b.models.apiModels.queryModels.RawJSON
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
@@ -23,28 +24,23 @@ class ShoppingRepository @Inject constructor(
     private val listWithGroceriesDao: ListWithGroceriesDao,
     private val mealWithIngredientsDao: MealWithIngredientsDao,
     private val recipeAPI: RecipeAPI,
-    private val randomRecipeAPI: RandomRecipeAPI
 ) {
 
-    suspend fun getRecipes(id: Int): DataOrException<Recipe, Boolean, Exception> {
-        val response =
-            try {
-                recipeAPI.getRecipes(id = id)
-            } catch (e: Exception) {
-                return DataOrException(e = e)
-            }
-        return DataOrException(data = response)
-    }
+    suspend fun getRecipe(id: Int): Recipe =
+        recipeAPI.getRecipe(id = id)
 
-    suspend fun getRandomRecipes(tags: String): DataOrException<RecipeRawAPIData, Boolean, Exception> {
-        val response =
-            try {
-                randomRecipeAPI.getRandomRecipes(tags = tags)
-            } catch (e: Exception) {
-                return DataOrException(e = e)
-            }
-        return DataOrException(data = response)
-    }
+    suspend fun getRandomRecipes(tags: String): RecipeRawAPIData =
+        recipeAPI.getRandomRecipes(tags = tags)
+
+    suspend fun getBatchRecipes(ids: String): BatchRecipes =
+        recipeAPI.getBatchRecipes(ids = ids)
+
+    suspend fun getSearchResults(query: String): RawJSON =
+        recipeAPI.getSearchResults(query = query)
+
+    suspend fun getInstructions(id: Int): Instructions =
+        recipeAPI.getInstructions(id = id)
+
 
     suspend fun insertFood(food: Food) = foodDao.insertFood(food)
     suspend fun deleteFood(food: Food) = foodDao.deleteFood(food)
