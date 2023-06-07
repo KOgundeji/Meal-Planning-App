@@ -39,7 +39,7 @@ fun DefaultTopAppBar(
                 AdditionalScreenOptions(navController = navController)
             }
         },
-        colors = TopAppBarDefaults.smallTopAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.onBackground
         )
@@ -52,7 +52,6 @@ fun BackTopAppBar(
     source: GroceryScreens,
     onBackClick: () -> Unit
 ) {
-
     TopAppBar(
         navigationIcon = {
             Icon(
@@ -73,7 +72,7 @@ fun BackTopAppBar(
                 fontSize = 20.sp
             )
         },
-        colors = TopAppBarDefaults.smallTopAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.onBackground
         )

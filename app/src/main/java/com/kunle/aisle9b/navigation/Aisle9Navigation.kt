@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.DinnerDining
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -24,13 +25,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.screens.*
-import com.kunle.aisle9b.screens.AddMealScreen
-import com.kunle.aisle9b.screens.AddPreMadeListScreen
 import com.kunle.aisle9b.screens.appSettings.SettingsScreen
-import com.kunle.aisle9b.screens.customLists.CustomListVM
 import com.kunle.aisle9b.screens.customLists.CustomListScreen
-import com.kunle.aisle9b.screens.groceries.GroceryVM
+import com.kunle.aisle9b.screens.customLists.CustomListVM
 import com.kunle.aisle9b.screens.groceries.GroceryScreen
+import com.kunle.aisle9b.screens.groceries.GroceryVM
+import com.kunle.aisle9b.screens.meals.MealDetailsScreen
 import com.kunle.aisle9b.screens.meals.MealScreen
 import com.kunle.aisle9b.screens.meals.MealVM
 import com.kunle.aisle9b.screens.recipes.RecipeDetailsScreen
@@ -69,7 +69,7 @@ fun Aisle9Navigation(
         composable(route = GroceryScreens.GroceryListScreen.name) {
             GroceryScreen(
                 modifier = modifier,
-                shoppingVM = sharedVM,
+                sharedVM = sharedVM,
                 groceryVM = groceryVM,
                 navController = navController,
                 source = source,
@@ -90,6 +90,7 @@ fun Aisle9Navigation(
                 modifier = modifier,
                 shoppingVM = sharedVM,
                 mealVM = mealVM,
+                navController = navController,
                 source = source,
                 topBar = topBar
             )
@@ -111,12 +112,11 @@ fun Aisle9Navigation(
                 topBar = topBar
             )
         }
-        composable(route = GroceryScreens.AddMealsScreen.name) {
-            AddMealScreen(
+        composable(route = GroceryScreens.AddMealsScreenTEST.name) {
+            AddMealScreenTest(
                 modifier = modifier,
-                shoppingVM = sharedVM,
+                sharedVM = sharedVM,
                 mealVM = mealVM,
-                navController = navController,
                 source = source,
                 topBar = topBar
             )
@@ -141,7 +141,26 @@ fun Aisle9Navigation(
             RecipeDetailsScreen(
                 modifier = modifier,
                 recipeId = backStack.arguments?.getInt("recipeIndex"),
-                recipesVM = recipeVM
+                recipesVM = recipeVM,
+                sharedVM = sharedVM,
+                source = source,
+                topBar = topBar
+            )
+        }
+        composable(
+            route = GroceryScreens.MealDetailsScreen.name + "/{mealIndex}",
+            arguments = listOf(
+                navArgument(name = "mealIndex") {
+                    type = NavType.IntType
+                })
+        ) { backStack ->
+            MealDetailsScreen(
+                modifier = modifier,
+                mealIndex = backStack.arguments?.getInt("mealIndex"),
+                mealVM = mealVM,
+                sharedVM = sharedVM,
+                source = source,
+                topBar = topBar
             )
         }
     }
@@ -205,7 +224,7 @@ val screenList = listOf(
         icon = Icons.Filled.Checklist
     ),
     BottomNavItem(
-        name = GroceryScreens.headerTitle(GroceryScreens.CustomListScreen),
+        name = "Saved Lists",
         route = GroceryScreens.CustomListScreen.name,
         icon = Icons.Filled.PlaylistAdd
     ),
@@ -213,5 +232,10 @@ val screenList = listOf(
         name = "",
         route = GroceryScreens.MealScreen.name,
         icon = Icons.Filled.DinnerDining
+    ),
+    BottomNavItem(
+        name = GroceryScreens.headerTitle(GroceryScreens.RecipeScreen),
+        route = GroceryScreens.RecipeScreen.name,
+        icon = Icons.Filled.MenuBook
     )
 )

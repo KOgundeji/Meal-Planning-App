@@ -9,7 +9,6 @@ import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
 import com.kunle.aisle9b.screens.meals.MealButtonBar
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,6 +29,11 @@ class SharedVM @Inject constructor(private val repository: ShoppingRepository) :
 
     var mealButtonBar = mutableStateOf(MealButtonBar.Default)
     var customListButtonBar = mutableStateOf(CustomListButtonBar.Default)
+
+    var mealToBeSaved: Meal? = null
+    var foodListToBeSaved: List<Food>? = null
+    var instructionsToBeSaved: List<Instruction>? = null
+    var apiMealToBeSaved: Meal? = null
 
     private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
     private val _settings = MutableStateFlow<List<AppSettings>>(emptyList())
@@ -59,29 +63,47 @@ class SharedVM @Inject constructor(private val repository: ShoppingRepository) :
         }
     }
 
-
-
-    fun insertFood(food: Food) = viewModelScope.launch { repository.insertFood(food) }
-    fun deleteFood(food: Food) = viewModelScope.launch { repository.deleteFood(food) }
-    fun updateFood(food: Food) = viewModelScope.launch { repository.updateFood(food) }
-    fun deleteAllFood() = viewModelScope.launch { repository.deleteAllFood() }
-    suspend fun getFood(name: String): Food {
-        return viewModelScope.async {
-            repository.getFood(name)
-        }.await()
+    fun saveCreatedMealonFABClick() {
+        if (mealToBeSaved != null) {
+            viewModelScope.launch {
+                repository.upsertMeal(mealToBeSaved!!)
+                if (foodListToBeSaved != null) {
+                    foodListToBeSaved!!.forEach { food ->
+                        repository.upsertFood(food)
+                        repository.insertPair(
+                            MealFoodMap(
+                                mealId = mealToBeSaved!!.mealId,
+                                foodId = food.foodId
+                            )
+                        )
+                    }
+                }
+            }
+            if (instructionsToBeSaved != null) {
+                viewModelScope.launch {
+                    instructionsToBeSaved!!.forEach {
+                        repository.upsertInstruction(it)
+                    }
+                }
+            }
+        }
     }
+
+    fun saveAPIMealonFABClick() {
+        if (apiMealToBeSaved != null) {
+            viewModelScope.launch {
+                repository.upsertMeal(apiMealToBeSaved!!)
+            }
+        }
+    }
+
+    fun upsertFood(food: Food) = viewModelScope.launch { repository.upsertFood(food) }
+    fun deleteFood(food: Food) = viewModelScope.launch { repository.deleteFood(food) }
+    fun deleteAllFood() = viewModelScope.launch { repository.deleteAllFood() }
 
     fun insertSettings(settings: AppSettings) =
         viewModelScope.launch { repository.insertSettings(settings) }
 
     fun updateSettings(settings: AppSettings) =
         viewModelScope.launch { repository.updateSettings(settings) }
-
-    suspend fun checkSetting(name: String): Int {
-        return viewModelScope.async(Dispatchers.Default) {
-            repository.checkSetting(name)
-        }.await()
-    }
-
-
 }

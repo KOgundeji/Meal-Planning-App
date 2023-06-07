@@ -7,14 +7,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FoodDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertFood(food: Food)
+    @Upsert
+    suspend fun upsertFood(food: Food)
 
     @Delete
     suspend fun deleteFood(food: Food)
-
-    @Update
-    suspend fun updateFood(food: Food)
 
     @Query("DELETE FROM food_table")
     suspend fun deleteAllFood()

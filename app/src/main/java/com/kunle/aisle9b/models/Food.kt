@@ -17,5 +17,11 @@ data class Food(
     var category: String = "",
     @ColumnInfo
     var isInGroceryList: Boolean
-) {}
+) {
+    companion object {
+        fun createBlank(): Food {
+            return Food(name = "", quantity = "", isInGroceryList = false)
+        }
+    }
+}
 

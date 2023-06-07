@@ -7,9 +7,10 @@ enum class GroceryScreens {
     SettingsScreen,
     RecipeScreen,
     CustomListScreen,
-    AddMealsScreen,
+    AddMealsScreenTEST,
     AddCustomListScreen,
-    RecipeDetailsScreen;
+    RecipeDetailsScreen,
+    MealDetailsScreen;
 
     companion object {
         fun headerTitle(header: GroceryScreens): String =
@@ -20,9 +21,10 @@ enum class GroceryScreens {
                 SettingsScreen -> "Settings"
                 RecipeScreen -> "Recipes"
                 CustomListScreen -> "Saved Grocery Lists"
-                AddMealsScreen -> "Add New Meal"
+                AddMealsScreenTEST -> "Add New Meal"
                 AddCustomListScreen -> "Create Custom Grocery List"
-                RecipeDetailsScreen -> ""
+                RecipeDetailsScreen -> "Recipe Details"
+                MealDetailsScreen -> "Meal Details"
             }
     }
 }

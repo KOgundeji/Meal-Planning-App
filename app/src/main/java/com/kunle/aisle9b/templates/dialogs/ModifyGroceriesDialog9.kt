@@ -1,13 +1,10 @@
 package com.kunle.aisle9b.templates.dialogs
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Close
@@ -16,63 +13,44 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.ListFoodMap
-import com.kunle.aisle9b.models.MealFoodMap
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.customLists.CustomListVM
-import com.kunle.aisle9b.screens.meals.MealVM
-import com.kunle.aisle9b.templates.EditFoodDialog9
-import com.kunle.aisle9b.templates.ListItem9
-import java.util.UUID
+import com.kunle.aisle9b.templates.CustomTextField9
+import com.kunle.aisle9b.templates.items.ListItem9
+import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModifyIngredientsDialog9(
+fun ModifyGroceriesDialog9(
     id: UUID,
-    source: EditSource,
-    shoppingVM: SharedVM,
-    customListVM: CustomListVM = viewModel(),
-    mealVM: MealVM = viewModel(),
+    sharedVM: SharedVM,
+    customListVM: CustomListVM,
     setShowDialog: () -> Unit
 ) {
-    val food = if (source == EditSource.CustomList) {
+    val food =
         customListVM.groceriesOfCustomLists.collectAsState().value.first { it.list.listId == id }.groceries
-    } else {
-        mealVM.mealsWithIngredients.collectAsState().value.first { it.meal.mealId == id }.foods
-    }
 
-    val sourceName = if (source == EditSource.CustomList) {
+    val sourceName =
         customListVM.groceriesOfCustomLists.collectAsState().value.first { it.list.listId == id }.list.name
-    } else {
-        mealVM.mealsWithIngredients.collectAsState().value.first { it.meal.mealId == id }.meal.name
-    }
 
-    val interactionSource = remember { MutableInteractionSource() }
     val foodList by remember { mutableStateOf(food) }
     var name by remember { mutableStateOf(sourceName) }
     var showFoodDialog by remember { mutableStateOf(false) }
 
     if (showFoodDialog) {
         EditFoodDialog9(
-            food = Food(name = "", quantity = "", isInGroceryList = false),
+            oldFood = Food(name = "", quantity = "", isInGroceryList = false),
             closeDialog = { showFoodDialog = false },
-            setFood = {
-                shoppingVM.insertFood(it)
-                if (source == EditSource.CustomList) {
-                    customListVM.insertPair(ListFoodMap(listId = id, foodId = it.foodId))
-                } else {
-                    mealVM.insertPair(MealFoodMap(mealId = id, foodId = it.foodId))
-                }
+            setFood = { _, newFood ->
+                sharedVM.upsertFood(newFood)
+                customListVM.insertPair(ListFoodMap(listId = id, foodId = newFood.foodId))
             })
     }
 
@@ -104,34 +82,16 @@ fun ModifyIngredientsDialog9(
                             .clickable { setShowDialog() }
                     )
                 }
-                BasicTextField(
+                CustomTextField9(
                     modifier = Modifier
                         .height(45.dp)
                         .fillMaxWidth(),
-                    value = name,
-                    textStyle = TextStyle(fontSize = 16.sp),
+                    text = name,
+                    onValueChange = { name = it},
+                    label = "Meal Name",
                     singleLine = true,
-                    onValueChange = { name = it },
-                    interactionSource = interactionSource
-                ) {
-                    TextFieldDefaults.TextFieldDecorationBox(
-                        value = name,
-                        innerTextField = it,
-                        enabled = true,
-                        singleLine = true,
-                        shape = RoundedCornerShape(3.dp),
-                        label = { Text(text = "Meal Name") },
-                        visualTransformation = VisualTransformation.None,
-                        interactionSource = interactionSource,
-                        contentPadding = PaddingValues(horizontal = 15.dp),
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            textColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        )
-                    )
-                }
+                    textStyle = TextStyle(fontSize = 16.sp)
+                )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -171,17 +131,15 @@ fun ModifyIngredientsDialog9(
                         ListItem9(
                             modifier = Modifier.padding(start = 4.dp),
                             food = it,
-                            shoppingVM = shoppingVM,
-                            checkBoxShown = false
+                            sharedVM = sharedVM,
+                            checkBoxShown = false,
+                            onEditFood = { _, newFood ->
+                                sharedVM.upsertFood(newFood )
+                            }
                         )
                     }
                 }
             }
         }
     }
-}
-
-enum class EditSource {
-    Meal,
-    CustomList;
 }

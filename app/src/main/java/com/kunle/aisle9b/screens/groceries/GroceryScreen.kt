@@ -3,13 +3,11 @@ package com.kunle.aisle9b.screens.groceries
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DriveFileMoveRtl
@@ -17,11 +15,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,8 +29,9 @@ import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
 import com.kunle.aisle9b.screens.meals.MealButtonBar
+import com.kunle.aisle9b.templates.CustomTextField9
 import com.kunle.aisle9b.templates.headers.CategoryHeader
-import com.kunle.aisle9b.templates.ListItem9
+import com.kunle.aisle9b.templates.items.ListItem9
 import com.kunle.aisle9b.util.*
 import kotlinx.coroutines.launch
 
@@ -41,7 +39,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroceryScreen(
     modifier: Modifier = Modifier,
-    shoppingVM: SharedVM,
+    sharedVM: SharedVM,
     groceryVM: GroceryVM,
     navController: NavController,
     topBar: (TopBarOptions) -> Unit,
@@ -51,7 +49,7 @@ fun GroceryScreen(
     source(GroceryScreens.GroceryListScreen)
 
     val groceryList = groceryVM.groceryList.collectAsState().value
-    val categoriesOn = shoppingVM.categoriesOnSetting.value
+    val categoriesOn = sharedVM.categoriesOnSetting.value
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -60,7 +58,7 @@ fun GroceryScreen(
         modifier = modifier.fillMaxSize()
     ) {
         GroceryInputTextField { food ->
-            shoppingVM.insertFood(food)
+            sharedVM.upsertFood(food)
             coroutineScope.launch { listState.animateScrollToItem(index = 0) }
         }
         if (groceryList.isEmpty()) {
@@ -86,7 +84,7 @@ fun GroceryScreen(
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
                     onClick = {
-                        shoppingVM.customListButtonBar.value = CustomListButtonBar.Transfer
+                        sharedVM.customListButtonBar.value = CustomListButtonBar.Transfer
                         navController.navigate(GroceryScreens.CustomListScreen.name)
                     }) {
                     Row(
@@ -117,7 +115,7 @@ fun GroceryScreen(
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
                     onClick = {
-                        shoppingVM.mealButtonBar.value = MealButtonBar.Transfer
+                        sharedVM.mealButtonBar.value = MealButtonBar.Transfer
                         navController.navigate(GroceryScreens.MealScreen.name)
                     }) {
                     Row(
@@ -148,8 +146,11 @@ fun GroceryScreen(
                         items(items = groceries) { foodItem ->
                             ListItem9(
                                 food = foodItem,
-                                shoppingVM = shoppingVM,
-                                modifier = Modifier.animateItemPlacement()
+                                sharedVM = sharedVM,
+                                modifier = Modifier.animateItemPlacement(),
+                                onEditFood = { _, newFood ->
+                                    sharedVM.upsertFood(newFood)
+                                }
                             )
                         }
                     }
@@ -157,8 +158,11 @@ fun GroceryScreen(
                     items(items = groceryList) { foodItem ->
                         ListItem9(
                             food = foodItem,
-                            shoppingVM = shoppingVM,
-                            modifier = Modifier.animateItemPlacement()
+                            sharedVM = sharedVM,
+                            modifier = Modifier.animateItemPlacement(),
+                            onEditFood = { _, newFood ->
+                                sharedVM.upsertFood(newFood)
+                            }
                         )
                     }
                 }
@@ -167,15 +171,10 @@ fun GroceryScreen(
     }
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroceryInputTextField(onAddGrocery: (Food) -> Unit) {
-
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    val nameInteractionSource = remember { MutableInteractionSource() }
-    val quantityInteractionSource = remember { MutableInteractionSource() }
     var item by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
 
@@ -192,33 +191,15 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit) {
             elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
             shape = RoundedCornerShape(3.dp)
         ) {
-            BasicTextField(
+            CustomTextField9(
                 modifier = Modifier
                     .height(45.dp)
                     .fillMaxWidth(),
-                value = item,
-                singleLine = true,
+                text = item,
                 onValueChange = { item = it },
-                interactionSource = nameInteractionSource
-            ) {
-                TextFieldDefaults.TextFieldDecorationBox(
-                    value = item,
-                    innerTextField = it,
-                    enabled = true,
-                    singleLine = true,
-                    shape = RoundedCornerShape(3.dp),
-                    label = { Text(text = "Add new item") },
-                    visualTransformation = VisualTransformation.None,
-                    interactionSource = nameInteractionSource,
-                    contentPadding = PaddingValues(horizontal = 15.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        textColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    )
-                )
-            }
+                textStyle = TextStyle(fontSize = 12.sp),
+                label = "Add new item",
+            )
         }
         Spacer(modifier = Modifier.width(10.dp))
         Card(
@@ -227,33 +208,14 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit) {
             elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
             shape = RoundedCornerShape(3.dp)
         ) {
-            BasicTextField(
+            CustomTextField9(
                 modifier = Modifier
                     .height(45.dp)
                     .fillMaxWidth(),
-                value = quantity,
-                singleLine = true,
+                text = quantity,
                 onValueChange = { quantity = it },
-                interactionSource = quantityInteractionSource
-            ) {
-                TextFieldDefaults.TextFieldDecorationBox(
-                    value = quantity,
-                    innerTextField = it,
-                    enabled = true,
-                    singleLine = true,
-                    shape = RoundedCornerShape(3.dp),
-                    label = { Text(text = "#") },
-                    visualTransformation = VisualTransformation.None,
-                    interactionSource = quantityInteractionSource,
-                    contentPadding = PaddingValues(horizontal = 15.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        textColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    )
-                )
-            }
+                label = "#",
+            )
         }
         Spacer(modifier = Modifier.width(10.dp))
         Card(
@@ -296,11 +258,5 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit) {
             }
         }
     }
-}
-
-@Preview(widthDp = 393, heightDp = 830, showBackground = true)
-@Composable
-fun ListPreview() {
-    GroceryInputTextField() {}
 }
 

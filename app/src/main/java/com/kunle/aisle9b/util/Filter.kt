@@ -29,7 +29,7 @@ fun filterForReconciliation(
                 category = value[0].category,
                 isInGroceryList = true
             )
-            shoppingVM.updateFood(newFood)
+            shoppingVM.upsertFood(newFood)
         } else {
             filteredFoodMap[key] = value
         }

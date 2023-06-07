@@ -1,4 +1,4 @@
-package com.kunle.aisle9b.templates
+package com.kunle.aisle9b.templates.items
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,30 +19,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.templates.dialogs.EditFoodDialog9
 
 @Composable
 fun ListItem9(
     modifier: Modifier = Modifier,
     food: Food,
-    shoppingVM: SharedVM,
+    sharedVM: SharedVM,
+    onEditFood: (Food, Food) -> Unit,
     checkBoxShown: Boolean = true,
-    editPencilShown: Boolean = true,
-    onEditClickNewFood: Boolean = false
+    editPencilShown: Boolean = true
 ) {
     var isChecked by remember { mutableStateOf(false) }
     var showEditFoodDialog by remember { mutableStateOf(false) }
 
     if (showEditFoodDialog) {
         EditFoodDialog9(
-            food = food,
+            oldFood = food,
             closeDialog = { showEditFoodDialog = false },
-            setFood = {
-                if (!onEditClickNewFood) {
-                    shoppingVM.updateFood(it)
-                } else {
-                    shoppingVM.tempIngredientList.remove(food)
-                    shoppingVM.tempIngredientList.add(it)
-                }
+            setFood = { oldFood, updatedFood ->
+                onEditFood(oldFood, updatedFood)
             })
     }
     Card(
@@ -63,7 +59,7 @@ fun ListItem9(
                     onCheckedChange = {
                         isChecked = true
                         food.isInGroceryList = false
-                        shoppingVM.updateFood(food)
+                        sharedVM.upsertFood(food)
                     },
                     colors = CheckboxDefaults.colors(
                         checkedColor = MaterialTheme.colorScheme.secondaryContainer,

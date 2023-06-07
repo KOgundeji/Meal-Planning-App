@@ -62,7 +62,7 @@ class RecipesVM @Inject constructor(private val repository: ShoppingRepository) 
         }
     }
 
-    fun insertMeal(meal: Meal) = viewModelScope.launch { repository.insertMeal(meal) }
+    fun insertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }
 
     fun insertPair(crossRef: MealFoodMap) =
         viewModelScope.launch { repository.insertPair(crossRef) }

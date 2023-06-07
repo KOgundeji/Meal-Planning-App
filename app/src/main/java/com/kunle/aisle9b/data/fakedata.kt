@@ -3,7 +3,6 @@ package com.kunle.aisle9b.data
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.customLists.CustomListVM
-import com.kunle.aisle9b.screens.groceries.GroceryVM
 import com.kunle.aisle9b.screens.meals.MealVM
 
 var oranges =
@@ -46,10 +45,10 @@ fun addFakeToDatabase(
     customListVM: CustomListVM
 ) {
     sampleFoodData.forEach {
-        sharedVM.insertFood(it)
+        sharedVM.upsertFood(it)
     }
     fakeMealList.forEach {
-        mealVM.insertMeal(it)
+        mealVM.upsertMeal(it)
     }
     fakeGroceryLists.forEach {
         customListVM.insertList(it)
@@ -66,9 +65,9 @@ fun addFakeToDatabase(
     }
 }
 
-val meal1 = Meal(name = "Pumpkin Pie")
-val meal2 = Meal(name = "Risotto")
-val meal3 = Meal(name = "Meat Lasagna")
+val meal1 = Meal(name = "Pumpkin Pie", servingSize = "1", notes = "Notes")
+val meal2 = Meal(name = "Risotto", servingSize = "1", notes = "Notes")
+val meal3 = Meal(name = "Meat Lasagna", servingSize = "1", notes = "Notes")
 
 val list1 = GroceryList(name = "Regular")
 val list2 = GroceryList(name = "Hungry")

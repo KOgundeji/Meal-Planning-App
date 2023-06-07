@@ -4,15 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.kunle.aisle9b.data.addFakeToDatabase
-import com.kunle.aisle9b.data.sampleFoodData
+import com.kunle.aisle9b.models.SettingsEnum
 import com.kunle.aisle9b.navigation.Aisle9Navigation
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -28,13 +29,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val shoppingVM: SharedVM by viewModels()
-            ShoppingApp(sharedVM = shoppingVM)
+            val sharedVM: SharedVM by viewModels()
+            ShoppingApp(sharedVM = sharedVM)
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingApp(sharedVM: SharedVM) {
     val navController = rememberNavController()
@@ -42,25 +42,25 @@ fun ShoppingApp(sharedVM: SharedVM) {
     var multiFloatingState by remember { mutableStateOf(MultiFloatingState.Collapsed) }
     var source by remember { mutableStateOf(GroceryScreens.GroceryListScreen) }
 
-//    val settings = sharedVM.settingsList.collectAsState().value
+    val settings = sharedVM.settingsList.collectAsState().value
 
-//    sharedVM.darkModeSetting.value = settings.firstOrNull() {
-//        it.settingsName == AppSetting.DarkMode.name
-//    }?.value ?: isSystemInDarkTheme()
-//
-//    sharedVM.categoriesOn.value = settings.firstOrNull {
-//        it.settingsName == AppSetting.Categories.name
-//    }?.value ?: false
-//
-//    sharedVM.keepScreenOn.value = settings.firstOrNull() {
-//        it.settingsName == AppSetting.ScreenPermOn.name
-//    }?.value ?: false
+    sharedVM.darkModeSetting.value = settings.firstOrNull() {
+        it.settingsName == SettingsEnum.DarkMode.name
+    }?.value ?: isSystemInDarkTheme()
+
+    sharedVM.categoriesOnSetting.value = settings.firstOrNull {
+        it.settingsName == SettingsEnum.Categories.name
+    }?.value ?: false
+
+    sharedVM.keepScreenOnSetting.value = settings.firstOrNull() {
+        it.settingsName == SettingsEnum.ScreenPermOn.name
+    }?.value ?: false
 
     Aisle9bTheme(darkTheme = sharedVM.darkModeSetting.value) {
         Scaffold(
             topBar = {
                 when (topBar) {
-                    TopBarOptions.BackButton ->
+                    TopBarOptions.Back ->
                         BackTopAppBar(
                             source = source
                         ) {
@@ -68,7 +68,8 @@ fun ShoppingApp(sharedVM: SharedVM) {
                                 GroceryScreens.MealScreen ->
                                     sharedVM.mealButtonBar.value = MealButtonBar.Default
                                 GroceryScreens.CustomListScreen ->
-                                    sharedVM.customListButtonBar.value = CustomListButtonBar.Default
+                                    sharedVM.customListButtonBar.value =
+                                        CustomListButtonBar.Default
                                 else ->
                                     navController.popBackStack()
                             }
@@ -84,33 +85,40 @@ fun ShoppingApp(sharedVM: SharedVM) {
             floatingActionButton = {
                 when (source) {
                     GroceryScreens.CustomListScreen ->
-                        FAB(
+                        ExpandingFAB(
                             onAddClick = { navController.navigate(GroceryScreens.AddCustomListScreen.name) },
                             onTransferClick = {
-                                sharedVM.customListButtonBar.value = CustomListButtonBar.Transfer
-                                topBar = TopBarOptions.BackButton
+                                sharedVM.customListButtonBar.value =
+                                    CustomListButtonBar.Transfer
+                                topBar = TopBarOptions.Back
                             },
                             onDeleteClick = {
                                 sharedVM.customListButtonBar.value = CustomListButtonBar.Delete
-                                topBar = TopBarOptions.BackButton
+                                topBar = TopBarOptions.Back
                             },
                             multiFloatingState = multiFloatingState,
                             onMultiFabStateChange = { multiFloatingState = it }
                         )
                     GroceryScreens.MealScreen ->
-                        FAB(
-                            onAddClick = { navController.navigate(GroceryScreens.AddMealsScreen.name) },
+                        ExpandingFAB(
+                            onAddClick = { navController.navigate(GroceryScreens.AddMealsScreenTEST.name) },
                             onTransferClick = {
                                 sharedVM.mealButtonBar.value = MealButtonBar.Transfer
-                                topBar = TopBarOptions.BackButton
+                                topBar = TopBarOptions.Back
                             },
                             onDeleteClick = {
                                 sharedVM.mealButtonBar.value = MealButtonBar.Delete
-                                topBar = TopBarOptions.BackButton
+                                topBar = TopBarOptions.Back
                             },
                             multiFloatingState = multiFloatingState,
                             onMultiFabStateChange = { multiFloatingState = it }
                         )
+                    GroceryScreens.AddMealsScreenTEST ->
+                        SaveFAB { sharedVM.saveCreatedMealonFABClick() }
+                    GroceryScreens.RecipeDetailsScreen ->
+                        SaveFAB {
+                            sharedVM.saveAPIMealonFABClick()
+                        }
                     else -> {}
 
                 }
@@ -138,14 +146,13 @@ fun ShoppingApp(sharedVM: SharedVM) {
                 )
             }
         }
-
     }
 }
 
 
 enum class TopBarOptions {
     Default,
-    BackButton;
+    Back;
 }
 
 enum class MultiFloatingState {

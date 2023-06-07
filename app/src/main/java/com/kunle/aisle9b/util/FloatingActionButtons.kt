@@ -10,14 +10,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kunle.aisle9b.MultiFloatingState
-import com.kunle.aisle9b.navigation.GroceryScreens
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun FAB(
+fun ExpandingFAB(
     onAddClick: () -> Unit,
     onTransferClick: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -119,6 +120,46 @@ fun FAB(
                 contentDescription = null
             )
         }
+    }
+}
+
+@Composable
+fun SaveFAB(onSaveClick: () -> Unit) {
+    var saveClicked by remember { mutableStateOf(false) }
+
+    val fadeInOut by animateFloatAsState(
+        targetValue = if (saveClicked) 0f else 1f,
+        animationSpec = tween(
+            durationMillis = 2000,
+            easing = EaseOutQuint
+        ),
+        finishedListener = { saveClicked = false }
+    )
+
+    FloatingActionButton(
+        modifier = Modifier.alpha(1 - fadeInOut),
+        onClick = {},
+        containerColor = Color.Green,
+        shape = CircleShape
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Check,
+            contentDescription = null
+        )
+    }
+    FloatingActionButton(
+        modifier = Modifier.alpha(fadeInOut),
+        onClick = {
+            onSaveClick()
+            saveClicked = true
+        },
+        containerColor = MaterialTheme.colorScheme.primary,
+        shape = CircleShape
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Save,
+            contentDescription = "Save button"
+        )
     }
 }
 

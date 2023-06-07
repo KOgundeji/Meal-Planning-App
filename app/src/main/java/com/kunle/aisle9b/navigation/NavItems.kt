@@ -12,9 +12,3 @@ data class BottomNavItem(
     val icon: ImageVector,
     var badgeCount: Int = 0
 )
-
-data class ModalNavItem(
-    var name: String,
-    val route: String,
-    val icon: ImageVector
-)

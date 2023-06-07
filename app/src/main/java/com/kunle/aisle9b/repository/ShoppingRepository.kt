@@ -5,8 +5,8 @@ import com.kunle.aisle9b.data.*
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
 import com.kunle.aisle9b.models.apiModels.recipeModels.BatchRecipes
-import com.kunle.aisle9b.models.apiModels.recipeModels.Recipe
-import com.kunle.aisle9b.models.apiModels.recipeModels.RecipeRawAPIData
+import com.kunle.aisle9b.api.apiModels.recipeModels.Recipe
+import com.kunle.aisle9b.api.apiModels.recipeModels.RecipeRawAPIData
 import com.kunle.aisle9b.models.apiModels.queryModels.RawJSON
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +21,7 @@ class ShoppingRepository @Inject constructor(
     private val listDao: ListDao,
     private val mealDao: MealDao,
     private val settingsDao: SettingsDao,
+    private val instructionDao: InstructionDao,
     private val listWithGroceriesDao: ListWithGroceriesDao,
     private val mealWithIngredientsDao: MealWithIngredientsDao,
     private val recipeAPI: RecipeAPI,
@@ -42,9 +43,8 @@ class ShoppingRepository @Inject constructor(
         recipeAPI.getInstructions(id = id)
 
 
-    suspend fun insertFood(food: Food) = foodDao.insertFood(food)
+    suspend fun upsertFood(food: Food) = foodDao.upsertFood(food)
     suspend fun deleteFood(food: Food) = foodDao.deleteFood(food)
-    suspend fun updateFood(food: Food) = foodDao.updateFood(food)
     suspend fun deleteAllFood() = foodDao.deleteAllFood()
     suspend fun getFood(name: String) = foodDao.getFood(name)
     fun getAllGroceries(): Flow<List<Food>> =
@@ -60,9 +60,12 @@ class ShoppingRepository @Inject constructor(
     fun getAllLists(): Flow<List<GroceryList>> =
         listDao.getAllLists().flowOn(Dispatchers.IO).conflate()
 
-    suspend fun insertMeal(meal: Meal) = mealDao.insertMeal(meal)
+    suspend fun upsertMeal(meal: Meal) = mealDao.upsertMeal(meal)
     suspend fun deleteMeal(meal: Meal) = mealDao.deleteMeal(meal)
-    suspend fun updateMeal(meal: Meal) = mealDao.updateMeal(meal)
+    suspend fun updateName(obj: MealNameUpdate) = mealDao.updateName(obj)
+    suspend fun updatePic(obj: PicUpdate) = mealDao.updatePic(obj)
+    suspend fun updateServingSize(obj: ServingSizeUpdate) = mealDao.updateServingSize(obj)
+    suspend fun updateNotes(obj: NotesUpdate) = mealDao.updateNotes(obj)
     suspend fun deleteAllMeals() = mealDao.deleteAllMeals()
     suspend fun getMeal(name: String) = mealDao.getMeal(name)
     fun getAllMeals(): Flow<List<Meal>> = mealDao.getAllMeals().flowOn(Dispatchers.IO).conflate()
@@ -74,6 +77,14 @@ class ShoppingRepository @Inject constructor(
     suspend fun checkSetting(name: String): Int = settingsDao.checkSetting(name)
     fun getAllSettings(): Flow<List<AppSettings>> =
         settingsDao.getAllSettings().flowOn(Dispatchers.IO).conflate()
+
+    suspend fun upsertInstruction(instruction: Instruction) = instructionDao.upsertInstruction(instruction)
+    suspend fun deleteInstruction(instruction: Instruction) = instructionDao.deleteInstruction(instruction)
+    fun getAllInstructionsForMeal(mealId: UUID): Flow<List<Instruction>> =
+        instructionDao.getAllInstructionsForMeal(mealId).flowOn(Dispatchers.IO).conflate()
+    fun getAllInstructions(): Flow<List<Instruction>> =
+        instructionDao.getAllInstructions().flowOn(Dispatchers.IO).conflate()
+
 
     suspend fun insertPair(crossRef: ListFoodMap) = listWithGroceriesDao.insertPair(crossRef)
     suspend fun deletePair(crossRef: ListFoodMap) = listWithGroceriesDao.deletePair(crossRef)

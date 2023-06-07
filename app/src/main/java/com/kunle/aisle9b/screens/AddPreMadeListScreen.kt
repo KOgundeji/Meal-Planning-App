@@ -21,12 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.customLists.CustomListVM
-import com.kunle.aisle9b.templates.EditFoodDialog9
-import com.kunle.aisle9b.templates.ListItem9
-import com.kunle.aisle9b.util.BackTopAppBar
+import com.kunle.aisle9b.templates.dialogs.EditFoodDialog9
+import com.kunle.aisle9b.templates.items.ListItem9
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +36,7 @@ fun AddPreMadeListScreen(
     topBar: (TopBarOptions) -> Unit,
     source: (GroceryScreens) -> Unit
 ) {
-    topBar(TopBarOptions.BackButton)
+    topBar(TopBarOptions.Back)
     source(GroceryScreens.AddCustomListScreen)
 
     val list = GroceryList(name = "")
@@ -47,9 +45,10 @@ fun AddPreMadeListScreen(
 
     if (showAddGroceryDialog) {
         EditFoodDialog9(
-            food = Food(name = "", quantity = "", isInGroceryList = false),
+            oldFood = Food.createBlank(),
             closeDialog = { showAddGroceryDialog = false },
-            setFood = { shoppingVM.tempGroceryList.add(it) }
+            setFood = { _, newFood ->
+                shoppingVM.tempGroceryList.add(newFood) }
         )
     }
     Column(
@@ -104,7 +103,7 @@ fun AddPreMadeListScreen(
             Button(
                 onClick = {
                     shoppingVM.tempGroceryList.forEach {
-                        shoppingVM.insertFood(it)
+                        shoppingVM.upsertFood(it)
                         customListVM.insertList(
                             list = GroceryList(listId = list.listId, name = customListName)
                         )
@@ -136,9 +135,12 @@ fun AddPreMadeListScreen(
                 ListItem9(
                     modifier = Modifier.padding(vertical = 3.dp),
                     food = it,
-                    shoppingVM = shoppingVM,
+                    sharedVM = shoppingVM,
                     checkBoxShown = false,
-                    onEditClickNewFood = true
+                    onEditFood = { oldFood, newFood ->
+                        shoppingVM.tempIngredientList.remove(oldFood)
+                        shoppingVM.tempIngredientList.add(newFood)
+                    }
                 )
             }
         }

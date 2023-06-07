@@ -1,4 +1,4 @@
-package com.kunle.aisle9b.templates
+package com.kunle.aisle9b.templates.items
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -24,8 +24,7 @@ import com.kunle.aisle9b.models.GroceryList
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
 import com.kunle.aisle9b.screens.customLists.CustomListVM
-import com.kunle.aisle9b.templates.dialogs.EditSource
-import com.kunle.aisle9b.templates.dialogs.ModifyIngredientsDialog9
+import com.kunle.aisle9b.templates.dialogs.ModifyGroceriesDialog9
 
 @Composable
 fun PreMadeListItem9(
@@ -45,10 +44,9 @@ fun PreMadeListItem9(
         ?: ""  //its the default separator, but wanted to include anyway
 
     if (showEditMealDialog) {
-        ModifyIngredientsDialog9(
+        ModifyGroceriesDialog9(
             id = list.listId,
-            source = EditSource.CustomList,
-            shoppingVM = shoppingVM,
+            sharedVM = shoppingVM,
             customListVM = customListVM,
             setShowDialog = { showEditMealDialog = false }
         )

@@ -1,4 +1,4 @@
-package com.kunle.aisle9b.templates
+package com.kunle.aisle9b.templates.items
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

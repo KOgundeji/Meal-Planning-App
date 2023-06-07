@@ -1,18 +1,15 @@
-package com.kunle.aisle9b.templates
+package com.kunle.aisle9b.templates.dialogs
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -24,16 +21,15 @@ import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.util.CategoryDropDownMenu
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditFoodDialog9(
-    food: Food,
+    oldFood: Food,
     closeDialog: () -> Unit,
-    setFood: (Food) -> Unit
+    setFood: (Food, Food) -> Unit
 ) {
-    var ingredientName by remember { mutableStateOf(food.name) }
-    var ingredientQuantity by remember { mutableStateOf(food.quantity) }
-    var ingredientCategory by remember { mutableStateOf(food.category) }
+    var ingredientName by remember { mutableStateOf(oldFood.name) }
+    var ingredientQuantity by remember { mutableStateOf(oldFood.quantity) }
+    var ingredientCategory by remember { mutableStateOf(oldFood.category) }
 
     Dialog(onDismissRequest = { closeDialog() }) {
         Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.background) {
@@ -66,7 +62,7 @@ fun EditFoodDialog9(
                     onValueChange = { ingredientName = it },
                     label = { Text(text = "Ingredient") },
                     placeholder = { Text(text = "Type food name") },
-                    colors = TextFieldDefaults.textFieldColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.primaryContainer),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     shape = RectangleShape
                 )
@@ -75,24 +71,24 @@ fun EditFoodDialog9(
                     onValueChange = { ingredientQuantity = it },
                     label = { Text(text = "How much/How many?") },
                     placeholder = { Text(text = "Type quantity") },
-                    colors = TextFieldDefaults.textFieldColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.primaryContainer),
                     shape = RectangleShape
                 )
                 CategoryDropDownMenu(
                     category = ingredientCategory,
                     newCategory = { ingredientCategory = it })
                 Spacer(modifier = Modifier.height(20.dp))
-                Box() {
+                Box {
                     Button(
                         onClick = {
                             val newFood = Food(
-                                foodId = food.foodId,
+                                foodId = oldFood.foodId,
                                 name = ingredientName,
                                 quantity = ingredientQuantity,
                                 category = ingredientCategory,
-                                isInGroceryList = food.isInGroceryList
+                                isInGroceryList = oldFood.isInGroceryList
                             )
-                            setFood(newFood)
+                            setFood(oldFood, newFood)
                             closeDialog()
                         },
                         shape = RoundedCornerShape(50.dp),
@@ -104,7 +100,6 @@ fun EditFoodDialog9(
                     }
                 }
             }
-
         }
     }
 }

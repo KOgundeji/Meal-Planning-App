@@ -8,10 +8,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.FormatListNumbered
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,11 +23,15 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.api.apiModels.ApiResponseInstructions
 import com.kunle.aisle9b.api.apiModels.ApiResponseRecipe
 import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
-import com.kunle.aisle9b.models.apiModels.recipeModels.Recipe
+import com.kunle.aisle9b.api.apiModels.recipeModels.Recipe
+import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.models.tabs.TabItem
+import com.kunle.aisle9b.navigation.GroceryScreens
+import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.utilScreens.ErrorScreen
 import com.kunle.aisle9b.screens.utilScreens.LoadingScreen
 import com.kunle.aisle9b.templates.headers.IngredientHeader
@@ -42,8 +42,14 @@ import kotlinx.coroutines.launch
 fun RecipeDetailsScreen(
     modifier: Modifier = Modifier,
     recipeId: Int?,
-    recipesVM: RecipesVM
+    recipesVM: RecipesVM,
+    sharedVM: SharedVM,
+    topBar: (TopBarOptions) -> Unit,
+    source: (GroceryScreens) -> Unit
 ) {
+    topBar(TopBarOptions.Back)
+    source(GroceryScreens.RecipeDetailsScreen)
+
     if (recipeId != null) {
         LaunchedEffect(key1 = recipeId) {
             recipesVM.getRecipe(id = recipeId)
@@ -58,11 +64,12 @@ fun RecipeDetailsScreen(
         retrievedRecipeState is ApiResponseRecipe.Error -> ErrorScreen(errorText = retrievedRecipeState.getMessage())
         retrievedRecipeState is ApiResponseRecipe.Loading -> LoadingScreen()
         retrievedRecipeState is ApiResponseRecipe.Success && retrievedInstructionState is ApiResponseInstructions.Success ->
-            DetailsScreen(
-                modifier = modifier,
-                recipe = retrievedRecipeState.recipe,
-                instructions = retrievedInstructionState.instructions
-            )
+        DetailsScreen(
+            modifier = modifier,
+            sharedVM = sharedVM,
+            recipe = retrievedRecipeState.recipe,
+            instructions = retrievedInstructionState.instructions
+        )
         else -> {}
     }
 }
@@ -70,9 +77,13 @@ fun RecipeDetailsScreen(
 @Composable
 private fun DetailsScreen(
     modifier: Modifier,
+    sharedVM: SharedVM,
     recipe: Recipe,
     instructions: Instructions
 ) {
+    sharedVM.apiMealToBeSaved =
+        Meal(name = recipe.title, apiID = recipe.id)
+
     Column(modifier = modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -101,15 +112,12 @@ fun Tabs(recipe: Recipe, instructions: Instructions) {
     val tabLabels = listOf(
         TabItem(
             title = "Summary",
-            icon = Icons.Default.Description,
             screen = { SummaryScreen(recipe = recipe) }),
         TabItem(
             title = "Ingredients",
-            icon = Icons.Default.ShoppingCart,
             screen = { IngredientsTab(recipe = recipe) }),
         TabItem(
             title = "Instructions",
-            icon = Icons.Default.FormatListNumbered,
             screen = { InstructionsScreen(instructions = instructions) })
     )
 

@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.SharedVM
-import com.kunle.aisle9b.templates.ListItem9
+import com.kunle.aisle9b.templates.items.ListItem9
 
 @Composable
 fun ReconciliationDialog(
@@ -63,9 +63,10 @@ fun ReconciliationDialog(
                         ListItem9(
                             modifier = Modifier.height(40.dp),
                             food = list[0],
-                            shoppingVM = shoppingVM,
+                            sharedVM = shoppingVM,
                             editPencilShown = false,
-                            checkBoxShown = false
+                            checkBoxShown = false,
+                            onEditFood = { _, _ -> }
                         )
                         repeat(times = numOfFoodsToReconcile - 1) { currentNum ->
                             Spacer(modifier = Modifier.height(7.dp))
@@ -80,9 +81,10 @@ fun ReconciliationDialog(
                                 ListItem9(
                                     modifier = Modifier.height(40.dp),
                                     food = list[currentNum + 1],
-                                    shoppingVM = shoppingVM,
+                                    sharedVM = shoppingVM,
                                     editPencilShown = false,
-                                    checkBoxShown = false
+                                    checkBoxShown = false,
+                                    onEditFood = { _, _ -> }
                                 )
                             }
                         }
@@ -93,11 +95,11 @@ fun ReconciliationDialog(
                     )
                     ReplacementFoodSection(
                         name = keyList[currentDialogIndex],
-                        setFood = { shoppingVM.insertFood(it) },
+                        setFood = { shoppingVM.upsertFood(it) },
                         takeOriginalFoodOutOfGroceryList = {
                             list.forEach {
                                 it.isInGroceryList = false
-                                shoppingVM.updateFood(it)
+                                shoppingVM.upsertFood(it)
                             }
                         },
                         onNextClick = {

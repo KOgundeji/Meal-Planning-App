@@ -1,4 +1,4 @@
-package com.kunle.aisle9b.templates
+package com.kunle.aisle9b.templates.items
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -9,7 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowCircleLeft
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,14 +20,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.kunle.aisle9b.R
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
+import com.kunle.aisle9b.models.MealWithIngredients
+import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.meals.MealButtonBar
 import com.kunle.aisle9b.screens.meals.MealVM
-import com.kunle.aisle9b.templates.dialogs.EditSource
-import com.kunle.aisle9b.templates.dialogs.ModifyIngredientsDialog9
 
 @Composable
 fun MealItem9(
@@ -35,24 +36,27 @@ fun MealItem9(
     primaryButtonBarAction: MealButtonBar,
     shoppingVM: SharedVM,
     mealVM: MealVM,
+    navController: NavController,
     transferList: MutableList<List<Food>>
 ) {
     var isChecked by remember { mutableStateOf(false) }
-    var showEditMealDialog by remember { mutableStateOf(false) }
-    val mwi = mealVM.mealsWithIngredients.collectAsState().value.find { MWI ->
+    var apiFlag: Int = -1
+
+    val mwiList = mealVM.mealsWithIngredients.collectAsState().value
+    val mwi = mwiList.find { MWI ->
         MWI.meal.mealId == meal.mealId
     }
-    val listedIngredients: String = mwi?.foods
-        ?.joinToString(separator = ", ") { it.name } ?: "" //its the default separator, but wanted to include anyway
 
-    if (showEditMealDialog) {
-        ModifyIngredientsDialog9(
-            id = meal.mealId,
-            source = EditSource.Meal,
-            shoppingVM = shoppingVM,
-            mealVM = mealVM,
-            setShowDialog = { showEditMealDialog = false })
-    }
+    val listedIngredients: String =
+        if (mwi?.foods?.isNotEmpty() == true) {
+            mwi.foods.joinToString { it.name }
+        } else if (mwi?.meal?.apiID != null) {
+            apiFlag = mwi.meal.apiID
+            "Sourced from Spoonacular API"
+        } else {
+            ""
+        }
+
 
     Card(
         modifier = Modifier
@@ -63,7 +67,6 @@ fun MealItem9(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 10.dp)
                 .fillMaxWidth()
@@ -128,7 +131,22 @@ fun MealItem9(
                     }
                 }
                 Column(
-                    modifier = Modifier.padding(horizontal = 3.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 3.dp)
+                        .clickable {
+                            if (primaryButtonBarAction == MealButtonBar.Default) {
+                                if (apiFlag != -1) {
+                                    val recipeId = mwi!!.meal.apiID
+                                    navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${recipeId}")
+                                } else {
+                                    val index = mwiList.indexOf(mwi)
+                                    navController.navigate(
+                                        GroceryScreens.MealDetailsScreen.name + "/${index}"
+                                    )
+                                }
+                            }
+                        },
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
@@ -146,14 +164,6 @@ fun MealItem9(
                     )
                 }
             }
-            Icon(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clickable { showEditMealDialog = true },
-                imageVector = Icons.Filled.Edit,
-                contentDescription = "Edit Icon",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
         }
     }
 }

@@ -64,6 +64,11 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideInstructionDao(shoppingRoomDB: ShoppingRoomDB): InstructionDao =
+        shoppingRoomDB.instructionDao()
+
+    @Singleton
+    @Provides
     fun provideLWGDao(shoppingRoomDB: ShoppingRoomDB): ListWithGroceriesDao =
         shoppingRoomDB.listWithGroceriesDao()
 

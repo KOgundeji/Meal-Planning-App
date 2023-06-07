@@ -1,18 +1,18 @@
 package com.kunle.aisle9b.screens.recipes
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
@@ -21,7 +21,8 @@ import com.kunle.aisle9b.models.apiModels.queryModels.Result
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.utilScreens.ErrorScreen
 import com.kunle.aisle9b.screens.utilScreens.LoadingScreen
-import com.kunle.aisle9b.templates.RecipeItem9
+import com.kunle.aisle9b.templates.CustomSearchBar9
+import com.kunle.aisle9b.templates.items.RecipeItem9
 import kotlinx.coroutines.launch
 
 @Composable
@@ -43,7 +44,7 @@ fun RecipeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            SearchBar(onSearchClick = {search ->
+            SearchBar(onSearchClick = { search ->
                 scope.launch {
                     recipesVM.getSearchResults(query = search)
                 }
@@ -88,61 +89,30 @@ private fun Screen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(onSearchClick: (String) -> Unit) {
     var searchWord by remember { mutableStateOf("") }
-    val interactionSource = remember { MutableInteractionSource() }
 
-    BasicTextField(
-        modifier = Modifier
-            .height(45.dp)
-            .fillMaxWidth(.95f),
-        value = searchWord,
-        singleLine = true,
+    CustomSearchBar9(
+        text = searchWord,
         onValueChange = { searchWord = it },
-        interactionSource = interactionSource
-    ) { onValueChange ->
-        TextFieldDefaults.TextFieldDecorationBox(
-            value = searchWord,
-            innerTextField = onValueChange,
-            enabled = true,
-            singleLine = true,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon",
-                    modifier = Modifier.size(24.dp)
+        label = "Find a Recipe",
+        trailingIcon = {
+            Button(
+                shape = RectangleShape,
+                contentPadding = PaddingValues(7.dp),
+                modifier = Modifier.padding(5.dp),
+                onClick = {
+                    if (searchWord.isNotEmpty()) {
+                        onSearchClick(searchWord)
+                    }
+                }) {
+                Text(
+                    text = "Search",
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
-            },
-            trailingIcon = {
-                Button(
-                    shape = RectangleShape,
-                    contentPadding = PaddingValues(7.dp),
-                    modifier = Modifier.padding(5.dp),
-                    onClick = {
-                        if (searchWord.isNotEmpty()) {
-                            onSearchClick(searchWord)
-                        }
-                    }) {
-                    Text(
-                        text = "Search",
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            },
-            shape = RectangleShape,
-            label = { Text(text = "Find a Recipe") },
-            visualTransformation = VisualTransformation.None,
-            interactionSource = interactionSource,
-            contentPadding = PaddingValues(horizontal = 15.dp),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                textColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            )
-        )
-    }
+            }
+        }
+    )
 }
 

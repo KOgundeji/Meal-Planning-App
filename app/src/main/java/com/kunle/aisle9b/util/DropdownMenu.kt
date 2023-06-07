@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.util
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
@@ -32,6 +33,7 @@ fun AdditionalScreenOptions(navController: NavController) {
 
         }
         DropdownMenu(
+            modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer),
             expanded = expanded,
             onDismissRequest = { expanded = false }) {
             DropdownMenuItem(
@@ -44,18 +46,6 @@ fun AdditionalScreenOptions(navController: NavController) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
                         contentDescription = "Settings"
-                    )
-                })
-            DropdownMenuItem(
-                text = { Text(text = GroceryScreens.headerTitle(GroceryScreens.RecipeScreen)) },
-                onClick = {
-                    navController.navigate(GroceryScreens.RecipeScreen.name)
-                    expanded = false
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.MenuBook,
-                        contentDescription = "Recipe screen"
                     )
                 })
         }
