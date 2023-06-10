@@ -40,7 +40,6 @@ fun MealItem9(
     transferList: MutableList<List<Food>>
 ) {
     var isChecked by remember { mutableStateOf(false) }
-    var apiFlag: Int = -1
 
     val mwiList = mealVM.mealsWithIngredients.collectAsState().value
     val mwi = mwiList.find { MWI ->
@@ -51,7 +50,6 @@ fun MealItem9(
         if (mwi?.foods?.isNotEmpty() == true) {
             mwi.foods.joinToString { it.name }
         } else if (mwi?.meal?.apiID != null) {
-            apiFlag = mwi.meal.apiID
             "Sourced from Spoonacular API"
         } else {
             ""
@@ -96,29 +94,31 @@ fun MealItem9(
                         )
                     }
                     MealButtonBar.Transfer -> {
-                        Icon(
-                            modifier = Modifier
-                                .clickable {
-                                    isChecked = !isChecked
-                                    if (isChecked) {
-                                        transferList.add(mwi!!.foods)
-                                    } else {
-                                        transferList.remove(mwi!!.foods)
+                        if (!meal.api) {
+                            Icon(
+                                modifier = Modifier
+                                    .clickable {
+                                        isChecked = !isChecked
+                                        if (isChecked) {
+                                            transferList.add(mwi!!.foods)
+                                        } else {
+                                            transferList.remove(mwi!!.foods)
+                                        }
                                     }
-                                }
-                                .size(32.dp)
-                                .border(
-                                    border = BorderStroke(
-                                        1.dp,
-                                        color = MaterialTheme.colorScheme.tertiary
+                                    .size(32.dp)
+                                    .border(
+                                        border = BorderStroke(
+                                            1.dp,
+                                            color = MaterialTheme.colorScheme.tertiary
+                                        ),
+                                        shape = CircleShape
                                     ),
-                                    shape = CircleShape
-                                ),
-                            imageVector = Icons.Filled.ArrowCircleLeft,
-                            contentDescription = "Transfer button",
-                            tint = if (!isChecked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
+                                imageVector = Icons.Filled.ArrowCircleLeft,
+                                contentDescription = "Transfer button",
+                                tint = if (!isChecked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
                     }
                     else -> {
                         Image(
@@ -136,8 +136,8 @@ fun MealItem9(
                         .padding(horizontal = 3.dp)
                         .clickable {
                             if (primaryButtonBarAction == MealButtonBar.Default) {
-                                if (apiFlag != -1) {
-                                    val recipeId = mwi!!.meal.apiID
+                                if (meal.api) {
+                                    val recipeId = meal.apiID
                                     navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${recipeId}")
                                 } else {
                                     val index = mwiList.indexOf(mwi)

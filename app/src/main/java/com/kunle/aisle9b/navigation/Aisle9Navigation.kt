@@ -59,7 +59,7 @@ fun Aisle9Navigation(
 //    )
     NavHost(
         navController = navController,
-        startDestination = GroceryScreens.RecipeScreen.name
+        startDestination = GroceryScreens.GroceryListScreen.name
     ) {
         composable(route = GroceryScreens.SplashScreen.name) {
             SplashScreen(

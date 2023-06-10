@@ -76,12 +76,11 @@ private fun Screen(
     ) {
         items(items = recipeList) {
             RecipeItem9(
-                modifier = Modifier.padding(6.dp),
+                modifier = Modifier.padding(5.dp),
                 navController = navController,
                 id = it.id,
                 imageURL = it.image,
                 name = it.title,
-                numOfLikes = it.aggregateLikes,
                 source = it.sourceName,
                 readyTimeInMinutes = it.readyInMinutes
             )

@@ -1,7 +1,9 @@
 package com.kunle.aisle9b.screens.groceries
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,13 +17,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
@@ -49,6 +53,7 @@ fun GroceryScreen(
     source(GroceryScreens.GroceryListScreen)
 
     val groceryList = groceryVM.groceryList.collectAsState().value
+    val completeFoodList = groceryVM.foodList.collectAsState().value
     val categoriesOn = sharedVM.categoriesOnSetting.value
 
     val listState = rememberLazyListState()
@@ -57,7 +62,7 @@ fun GroceryScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        GroceryInputTextField { food ->
+        GroceryInputTextField(completeFoodList) { food ->
             sharedVM.upsertFood(food)
             coroutineScope.launch { listState.animateScrollToItem(index = 0) }
         }
@@ -172,11 +177,13 @@ fun GroceryScreen(
 }
 
 @Composable
-fun GroceryInputTextField(onAddGrocery: (Food) -> Unit) {
+fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (Food) -> Unit) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     var item by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
+    var suggestions by remember { mutableStateOf(emptyList<String>()) }
+    val expanded = remember { derivedStateOf { suggestions.isNotEmpty() } }
 
     Row(
         modifier = Modifier
@@ -185,21 +192,60 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Card(
-            modifier = Modifier.weight(.7f),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-            elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-            shape = RoundedCornerShape(3.dp)
-        ) {
-            CustomTextField9(
-                modifier = Modifier
-                    .height(45.dp)
-                    .fillMaxWidth(),
-                text = item,
-                onValueChange = { item = it },
-                textStyle = TextStyle(fontSize = 12.sp),
-                label = "Add new item",
-            )
+        Box(modifier = Modifier.weight(.7f)) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+                shape = RoundedCornerShape(3.dp)
+            ) {
+                CustomTextField9(
+                    modifier = Modifier
+                        .height(45.dp)
+                        .fillMaxWidth(),
+                    text = item,
+                    onValueChange = {
+                        item = it
+                        suggestions =
+                            foodList.filter { text ->
+                                text.contains(it, ignoreCase = true) && text != item
+                            }.take(3)
+
+                    },
+                    textStyle = TextStyle(fontSize = 14.sp),
+                    label = "Add new item",
+                )
+            }
+            if (expanded.value && item.isNotEmpty()) {
+                DropdownMenu(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer),
+                    expanded = expanded.value,
+                    onDismissRequest = { },
+                    properties = PopupProperties(
+                        focusable = false,
+                        dismissOnBackPress = true,
+                        dismissOnClickOutside = true
+                    )
+                ) {
+                    suggestions.forEach { foodName ->
+                        DropdownMenuItem(
+                            modifier = Modifier
+                                .height(30.dp)
+                                .fillMaxWidth(),
+                            text = {
+                                Text(
+                                    text = foodName,
+                                    style = TextStyle(
+                                        fontStyle = FontStyle.Italic,
+                                        fontSize = 14.sp
+                                    )
+                                )
+                            },
+                            onClick = {
+                                item = foodName
+                            })
+                    }
+                }
+            }
         }
         Spacer(modifier = Modifier.width(10.dp))
         Card(
@@ -259,4 +305,5 @@ fun GroceryInputTextField(onAddGrocery: (Food) -> Unit) {
         }
     }
 }
+
 

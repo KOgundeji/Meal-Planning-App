@@ -77,7 +77,7 @@ fun CustomListScreen(
             onValueChange = {
                 searchWord = it
                 filteredCustomLists = customLists.filter { list ->
-                    list.name.lowercase().contains(searchWord.lowercase())
+                    list.name.contains(searchWord, ignoreCase = true)
                 }
             },
             label = "Search in Custom Lists",
@@ -85,9 +85,7 @@ fun CustomListScreen(
                 if (searchWord.isNotEmpty()) {
                     IconButton(onClick = {
                         searchWord = ""
-                        filteredCustomLists = customLists.filter { list ->
-                            list.name.lowercase().contains(searchWord.lowercase())
-                        }
+                        filteredCustomLists = customLists
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Cancel,

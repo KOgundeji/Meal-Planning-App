@@ -1,9 +1,9 @@
 package com.kunle.aisle9b.models
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import android.net.Uri
 import java.util.*
 
 @Entity(tableName = "meal_table")
@@ -11,17 +11,20 @@ open class Meal(
     @PrimaryKey
     val mealId: UUID = UUID.randomUUID(),
     @ColumnInfo
-    val name: String,
+    var name: String,
     @ColumnInfo
-    val servingSize: String,
+    var servingSize: String,
     @ColumnInfo
-    val mealPic: Uri? = null,
+    var mealPic: Uri? = null,
     @ColumnInfo
-    val notes: String,
+    var notes: String,
     @ColumnInfo
-    val apiID: Int? = null
+    var api: Boolean = false,
+    @ColumnInfo
+    val apiID: Int? = null,
+
 ) {
-    constructor(name: String, apiID: Int) : this(name = name, apiID = apiID, servingSize = "", notes = "")
+    constructor(name: String, apiID: Int) : this(name = name, apiID = apiID, servingSize = "", notes = "", api = true)
 
     companion object {
         fun createBlank(): Meal {

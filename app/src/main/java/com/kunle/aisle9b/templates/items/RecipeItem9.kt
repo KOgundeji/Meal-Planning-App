@@ -23,7 +23,6 @@ fun RecipeItem9(
     navController: NavController,
     id: Int,
     readyTimeInMinutes: Int,
-    numOfLikes: Int,
     imageURL: String,
     name: String,
     source: String
@@ -72,7 +71,6 @@ fun RecipeItem9(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -80,28 +78,11 @@ fun RecipeItem9(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row() {
-                    Text(
-                        text = "Ready in $readyTimeInMinutes minutes",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(3.dp)
-                ) {
-                    Text(
-                        text = numOfLikes.toString(),
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Icon(
-                        imageVector = Icons.Default.ThumbUp, contentDescription = "likes",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
+                Text(
+                    text = "Ready in $readyTimeInMinutes minutes",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp
+                )
             }
         }
     }

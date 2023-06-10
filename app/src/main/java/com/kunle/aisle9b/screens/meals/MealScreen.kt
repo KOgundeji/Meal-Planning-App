@@ -74,7 +74,7 @@ fun MealScreen(
             onValueChange = { string ->
                 searchWord = string
                 filteredMealLists = mealList.filter { meal ->
-                    meal.name.lowercase().contains(searchWord.lowercase())
+                    meal.name.contains(searchWord, ignoreCase = true)
                 }
             },
             label = "Search in Meals",
@@ -82,9 +82,7 @@ fun MealScreen(
                 if (searchWord.isNotEmpty()) {
                     IconButton(onClick = {
                         searchWord = ""
-                        filteredMealLists = mealList.filter { meal ->
-                            meal.name.lowercase().contains(searchWord.lowercase())
-                        }
+                        filteredMealLists = mealList
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Cancel,

@@ -36,8 +36,8 @@ import com.kunle.aisle9b.templates.items.ListItem9
 fun IngredientsListDialog9(
     modifier: Modifier = Modifier,
     sharedVM: SharedVM,
-    foodList: List<Food>,
     originalServingSize: String,
+    foodList: List<Food>,
     updateFoodList: (Food, Food, String) -> Unit,
     onSaveServingSizeClick: (String) -> Unit,
     setShowDialog: () -> Unit
@@ -45,6 +45,7 @@ fun IngredientsListDialog9(
     var addFoodDialog by remember { mutableStateOf(false) }
     var newServingSize by remember { mutableStateOf(originalServingSize) }
     var saveClicked by remember { mutableStateOf(false) }
+
     val fadeInOut by animateFloatAsState(
         targetValue = if (saveClicked) 0f else 1f,
         animationSpec = tween(
