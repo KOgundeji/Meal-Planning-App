@@ -33,6 +33,7 @@ import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
 import com.kunle.aisle9b.screens.meals.MealButtonBar
+import com.kunle.aisle9b.templates.CustomAutoComplete9
 import com.kunle.aisle9b.templates.CustomTextField9
 import com.kunle.aisle9b.templates.headers.CategoryHeader
 import com.kunle.aisle9b.templates.items.ListItem9
@@ -182,8 +183,6 @@ fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (Food) -> Unit) 
     val focusManager = LocalFocusManager.current
     var item by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
-    var suggestions by remember { mutableStateOf(emptyList<String>()) }
-    val expanded = remember { derivedStateOf { suggestions.isNotEmpty() } }
 
     Row(
         modifier = Modifier
@@ -193,59 +192,12 @@ fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (Food) -> Unit) 
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(modifier = Modifier.weight(.7f)) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-                shape = RoundedCornerShape(3.dp)
-            ) {
-                CustomTextField9(
-                    modifier = Modifier
-                        .height(45.dp)
-                        .fillMaxWidth(),
-                    text = item,
-                    onValueChange = {
-                        item = it
-                        suggestions =
-                            foodList.filter { text ->
-                                text.contains(it, ignoreCase = true) && text != item
-                            }.take(3)
-
-                    },
-                    textStyle = TextStyle(fontSize = 14.sp),
-                    label = "Add new item",
-                )
-            }
-            if (expanded.value && item.isNotEmpty()) {
-                DropdownMenu(
-                    modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer),
-                    expanded = expanded.value,
-                    onDismissRequest = { },
-                    properties = PopupProperties(
-                        focusable = false,
-                        dismissOnBackPress = true,
-                        dismissOnClickOutside = true
-                    )
-                ) {
-                    suggestions.forEach { foodName ->
-                        DropdownMenuItem(
-                            modifier = Modifier
-                                .height(30.dp)
-                                .fillMaxWidth(),
-                            text = {
-                                Text(
-                                    text = foodName,
-                                    style = TextStyle(
-                                        fontStyle = FontStyle.Italic,
-                                        fontSize = 14.sp
-                                    )
-                                )
-                            },
-                            onClick = {
-                                item = foodName
-                            })
-                    }
-                }
-            }
+            CustomAutoComplete9(
+                value = item,
+                setValue = { item = it },
+                originalList = foodList,
+                label = "Add new item"
+            )
         }
         Spacer(modifier = Modifier.width(10.dp))
         Card(
