@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.kunle.aisle9b.models.Category
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.templates.items.ListItem9
@@ -26,7 +27,7 @@ import com.kunle.aisle9b.templates.items.ListItem9
 @Composable
 fun ReconciliationDialog(
     items: Map<String, List<Food>>,
-    shoppingVM: SharedVM,
+    sharedVM: SharedVM,
     resetButtonBarToDefault: () -> Unit,
     closeDialog: () -> Unit
 ) {
@@ -63,9 +64,11 @@ fun ReconciliationDialog(
                         ListItem9(
                             modifier = Modifier.height(40.dp),
                             food = list[0],
-                            sharedVM = shoppingVM,
+                            category = "",
+                            sharedVM = sharedVM,
                             editPencilShown = false,
                             checkBoxShown = false,
+                            setCategory = {},
                             onEditFood = { _, _ -> }
                         )
                         repeat(times = numOfFoodsToReconcile - 1) { currentNum ->
@@ -81,9 +84,11 @@ fun ReconciliationDialog(
                                 ListItem9(
                                     modifier = Modifier.height(40.dp),
                                     food = list[currentNum + 1],
-                                    sharedVM = shoppingVM,
+                                    category = "",
+                                    sharedVM = sharedVM,
                                     editPencilShown = false,
                                     checkBoxShown = false,
+                                    setCategory = {},
                                     onEditFood = { _, _ -> }
                                 )
                             }
@@ -95,11 +100,12 @@ fun ReconciliationDialog(
                     )
                     ReplacementFoodSection(
                         name = keyList[currentDialogIndex],
-                        setFood = { shoppingVM.upsertFood(it) },
+                        setFood = { sharedVM.upsertFood(it) },
+                        setCategory = { sharedVM.upsertCategory(it) },
                         takeOriginalFoodOutOfGroceryList = {
                             list.forEach {
                                 it.isInGroceryList = false
-                                shoppingVM.upsertFood(it)
+                                sharedVM.upsertFood(it)
                             }
                         },
                         onNextClick = {
@@ -109,7 +115,8 @@ fun ReconciliationDialog(
                                 resetButtonBarToDefault()
                                 closeDialog()
                             }
-                            Toast.makeText(context, "$it added to Grocery List", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "$it added to Grocery List", Toast.LENGTH_SHORT)
+                                .show()
                         })
                 }
             }
@@ -126,6 +133,7 @@ fun ReconciliationDialog(
 fun ReplacementFoodSection(
     name: String,
     setFood: (Food) -> Unit,
+    setCategory: (Category) -> Unit,
     takeOriginalFoodOutOfGroceryList: () -> Unit,
     onNextClick: (String) -> Unit
 ) {
@@ -161,10 +169,14 @@ fun ReplacementFoodSection(
                     val newFood = Food(
                         name = name,
                         quantity = ingredientQuantity,
-                        category = ingredientCategory,
                         isInGroceryList = true
                     )
+                    val newCategory = Category(
+                        foodName = name,
+                        categoryName = ingredientCategory
+                    )
                     setFood(newFood)
+                    setCategory(newCategory)
                     ingredientQuantity = ""
                     ingredientCategory = ""
 

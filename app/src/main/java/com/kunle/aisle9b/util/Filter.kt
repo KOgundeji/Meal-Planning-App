@@ -26,7 +26,6 @@ fun filterForReconciliation(
                 foodId = value[0].foodId,
                 name = key,
                 quantity = value[0].quantity,
-                category = value[0].category,
                 isInGroceryList = true
             )
             shoppingVM.upsertFood(newFood)

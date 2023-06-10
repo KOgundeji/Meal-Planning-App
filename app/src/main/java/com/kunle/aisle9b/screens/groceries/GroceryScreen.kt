@@ -1,9 +1,7 @@
 package com.kunle.aisle9b.screens.groceries
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,17 +15,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
+import com.kunle.aisle9b.models.Category
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.SharedVM
@@ -55,6 +50,7 @@ fun GroceryScreen(
 
     val groceryList = groceryVM.groceryList.collectAsState().value
     val completeFoodList = groceryVM.foodList.collectAsState().value
+    val categoryMap = sharedVM.categoryMap.collectAsState().value
     val categoriesOn = sharedVM.categoriesOnSetting.value
 
     val listState = rememberLazyListState()
@@ -144,7 +140,7 @@ fun GroceryScreen(
         } else {
             LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 if (categoriesOn) {
-                    val groupedGroceries = groceryList.groupBy { food -> food.category }
+                    val groupedGroceries = groceryList.groupBy { food -> categoryMap[food.name] ?: "Uncategorized" }
                     groupedGroceries.forEach { (category, groceries) ->
                         stickyHeader {
                             CategoryHeader(string = category)
@@ -152,8 +148,10 @@ fun GroceryScreen(
                         items(items = groceries) { foodItem ->
                             ListItem9(
                                 food = foodItem,
+                                category = categoryMap[foodItem.name] ?: "Uncategorized",
                                 sharedVM = sharedVM,
                                 modifier = Modifier.animateItemPlacement(),
+                                setCategory = { sharedVM.upsertCategory(it) },
                                 onEditFood = { _, newFood ->
                                     sharedVM.upsertFood(newFood)
                                 }
@@ -164,8 +162,10 @@ fun GroceryScreen(
                     items(items = groceryList) { foodItem ->
                         ListItem9(
                             food = foodItem,
+                            category = categoryMap[foodItem.name] ?: "Uncategorized",
                             sharedVM = sharedVM,
                             modifier = Modifier.animateItemPlacement(),
+                            setCategory = { sharedVM.upsertCategory(it) },
                             onEditFood = { _, newFood ->
                                 sharedVM.upsertFood(newFood)
                             }

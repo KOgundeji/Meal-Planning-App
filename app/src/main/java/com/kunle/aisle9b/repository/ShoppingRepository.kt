@@ -20,6 +20,7 @@ class ShoppingRepository @Inject constructor(
     private val foodDao: FoodDao,
     private val listDao: ListDao,
     private val mealDao: MealDao,
+    private val categoryDao: CategoryDao,
     private val settingsDao: SettingsDao,
     private val instructionDao: InstructionDao,
     private val listWithGroceriesDao: ListWithGroceriesDao,
@@ -69,6 +70,12 @@ class ShoppingRepository @Inject constructor(
     suspend fun deleteAllMeals() = mealDao.deleteAllMeals()
     suspend fun getMeal(name: String) = mealDao.getMeal(name)
     fun getAllMeals(): Flow<List<Meal>> = mealDao.getAllMeals().flowOn(Dispatchers.IO).conflate()
+
+    suspend fun upsertCategory(category: Category) = categoryDao.upsertCategory(category)
+    suspend fun deleteCategory(category: Category) = categoryDao.deleteCategory(category)
+    suspend fun deleteAllCategories() = categoryDao.deleteAllCategories()
+    fun getAllCategories(): Flow<List<Category>> =
+        categoryDao.getAllCategories().flowOn(Dispatchers.IO).conflate()
 
     suspend fun insertSettings(settings: AppSettings) = settingsDao.insertSettings(settings)
     suspend fun deleteSettings(settings: AppSettings) = settingsDao.deleteSettings(settings)

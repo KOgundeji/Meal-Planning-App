@@ -74,7 +74,9 @@ fun AddMealScreenTest(
     if (editIngredients) {
         IngredientsListDialog9(
             foodList = foodList,
+            categoryMap = sharedVM.categoryMap.collectAsState().value,
             originalServingSize = meal.servingSize,
+            updateCategory = { sharedVM.upsertCategory(it) },
             updateFoodList = { oldFood, newFood, command ->
                 if (command == "Edit") {
                     foodList.remove(oldFood)

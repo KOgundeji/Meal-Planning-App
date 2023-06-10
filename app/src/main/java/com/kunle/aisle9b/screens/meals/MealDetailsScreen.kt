@@ -64,6 +64,8 @@ fun MealDetailsScreen(
                 it.position
             }
 
+        val categoryMap = sharedVM.categoryMap.collectAsState().value
+
         var editSummary by remember { mutableStateOf(false) }
         var editIngredients by remember { mutableStateOf(false) }
         var editInstructions by remember { mutableStateOf(false) }
@@ -73,9 +75,11 @@ fun MealDetailsScreen(
         if (editIngredients) {
             IngredientsListDialog9(
                 foodList = mwi.foods,
+                categoryMap = categoryMap,
                 updateFoodList = { _, newFood, _ ->
                     sharedVM.upsertFood(newFood)
                 },
+                updateCategory = { sharedVM.upsertCategory(it)},
                 onSaveServingSizeClick = { servingSize ->
                     mealVM.updateServingSize(
                         ServingSizeUpdate(

@@ -29,8 +29,9 @@ import com.kunle.aisle9b.templates.dialogs.ModifyGroceriesDialog9
 @Composable
 fun PreMadeListItem9(
     list: GroceryList,
+    categoryMap: Map<String,String>,
     primaryButtonBarAction: CustomListButtonBar,
-    shoppingVM: SharedVM,
+    sharedVM: SharedVM,
     customListVM: CustomListVM,
     transferList: MutableList<List<Food>>
 ) {
@@ -46,7 +47,8 @@ fun PreMadeListItem9(
     if (showEditMealDialog) {
         ModifyGroceriesDialog9(
             id = list.listId,
-            sharedVM = shoppingVM,
+            categoryMap = categoryMap,
+            sharedVM = sharedVM,
             customListVM = customListVM,
             setShowDialog = { showEditMealDialog = false }
         )
@@ -77,9 +79,9 @@ fun PreMadeListItem9(
                             onCheckedChange = {
                                 isChecked = !isChecked
                                 if (isChecked) {
-                                    shoppingVM.groceryListDeleteList.add(list)
+                                    sharedVM.groceryListDeleteList.add(list)
                                 } else {
-                                    shoppingVM.groceryListDeleteList.remove(list)
+                                    sharedVM.groceryListDeleteList.remove(list)
                                 }
                             },
                             colors = CheckboxDefaults.colors(

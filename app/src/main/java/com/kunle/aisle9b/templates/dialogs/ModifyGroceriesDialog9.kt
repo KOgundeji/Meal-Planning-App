@@ -30,6 +30,7 @@ import java.util.*
 @Composable
 fun ModifyGroceriesDialog9(
     id: UUID,
+    categoryMap: Map<String, String>,
     sharedVM: SharedVM,
     customListVM: CustomListVM,
     setShowDialog: () -> Unit
@@ -46,8 +47,10 @@ fun ModifyGroceriesDialog9(
 
     if (showFoodDialog) {
         EditFoodDialog9(
-            oldFood = Food(name = "", quantity = "", isInGroceryList = false),
+            oldFood = Food.createBlank(),
+            category = "Uncategorized",
             closeDialog = { showFoodDialog = false },
+            setCategory = { sharedVM.upsertCategory(it) },
             setFood = { _, newFood ->
                 sharedVM.upsertFood(newFood)
                 customListVM.insertPair(ListFoodMap(listId = id, foodId = newFood.foodId))
@@ -87,7 +90,7 @@ fun ModifyGroceriesDialog9(
                         .height(45.dp)
                         .fillMaxWidth(),
                     text = name,
-                    onValueChange = { name = it},
+                    onValueChange = { name = it },
                     label = "Meal Name",
                     singleLine = true,
                     textStyle = TextStyle(fontSize = 16.sp)
@@ -131,10 +134,12 @@ fun ModifyGroceriesDialog9(
                         ListItem9(
                             modifier = Modifier.padding(start = 4.dp),
                             food = it,
+                            category = categoryMap[it.name] ?: "Uncategorized",
                             sharedVM = sharedVM,
                             checkBoxShown = false,
+                            setCategory = { category -> sharedVM.upsertCategory(category) },
                             onEditFood = { _, newFood ->
-                                sharedVM.upsertFood(newFood )
+                                sharedVM.upsertFood(newFood)
                             }
                         )
                     }

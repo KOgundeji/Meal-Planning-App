@@ -14,13 +14,19 @@ data class Food(
     @ColumnInfo
     var quantity: String,
     @ColumnInfo
-    var category: String = "",
-    @ColumnInfo
     var isInGroceryList: Boolean
 ) {
     companion object {
         fun createBlank(): Food {
             return Food(name = "", quantity = "", isInGroceryList = false)
+        }
+
+        fun copy(food: Food, isInGroceryList: Boolean): Food {
+            return Food(
+                name = food.name,
+                quantity = food.quantity,
+                isInGroceryList = isInGroceryList
+            )
         }
     }
 }

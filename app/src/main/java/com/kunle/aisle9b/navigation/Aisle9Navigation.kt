@@ -78,7 +78,7 @@ fun Aisle9Navigation(
         }
         composable(route = GroceryScreens.CustomListScreen.name) {
             CustomListScreen(
-                shoppingVM = sharedVM,
+                sharedVM = sharedVM,
                 customListVM = customListVM,
                 modifier = modifier,
                 source = source,
@@ -124,7 +124,7 @@ fun Aisle9Navigation(
         composable(route = GroceryScreens.AddCustomListScreen.name) {
             AddPreMadeListScreen(
                 modifier = modifier,
-                shoppingVM = sharedVM,
+                sharedVM = sharedVM,
                 customListVM = customListVM,
                 navController = navController,
                 source = source,

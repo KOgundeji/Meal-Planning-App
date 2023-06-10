@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kunle.aisle9b.models.Category
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.templates.dialogs.EditFoodDialog9
@@ -25,7 +26,9 @@ import com.kunle.aisle9b.templates.dialogs.EditFoodDialog9
 fun ListItem9(
     modifier: Modifier = Modifier,
     food: Food,
+    category: String,
     sharedVM: SharedVM,
+    setCategory: (Category) -> Unit,
     onEditFood: (Food, Food) -> Unit,
     checkBoxShown: Boolean = true,
     editPencilShown: Boolean = true
@@ -36,7 +39,9 @@ fun ListItem9(
     if (showEditFoodDialog) {
         EditFoodDialog9(
             oldFood = food,
+            category = category,
             closeDialog = { showEditFoodDialog = false },
+            setCategory = { setCategory(it) },
             setFood = { oldFood, updatedFood ->
                 onEditFood(oldFood, updatedFood)
             })

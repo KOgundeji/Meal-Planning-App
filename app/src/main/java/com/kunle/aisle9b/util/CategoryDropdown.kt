@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import com.kunle.aisle9b.models.Category.Static.categories
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,20 +53,3 @@ fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
     }
 }
 
-val categories = arrayOf(
-    "Baking/Spices",
-    "Beverages",
-    "Bread/Grain",
-    "Canned Goods",
-    "Condiments",
-    "Dairy",
-    "For the Home",
-    "Frozen Food",
-    "Fruit",
-    "Meat/Fish",
-    "Pet Supplies",
-    "Produce",
-    "Snacks",
-    "Toiletries",
-    "Uncategorized"
-)

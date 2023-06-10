@@ -30,7 +30,7 @@ import com.kunle.aisle9b.templates.items.ListItem9
 @Composable
 fun AddPreMadeListScreen(
     modifier: Modifier = Modifier,
-    shoppingVM: SharedVM,
+    sharedVM: SharedVM,
     customListVM: CustomListVM,
     navController: NavController,
     topBar: (TopBarOptions) -> Unit,
@@ -39,6 +39,8 @@ fun AddPreMadeListScreen(
     topBar(TopBarOptions.Back)
     source(GroceryScreens.AddCustomListScreen)
 
+    val categoryMap = sharedVM.categoryMap.collectAsState().value
+
     val list = GroceryList(name = "")
     var customListName by remember { mutableStateOf("") }
     var showAddGroceryDialog by remember { mutableStateOf(false) }
@@ -46,9 +48,11 @@ fun AddPreMadeListScreen(
     if (showAddGroceryDialog) {
         EditFoodDialog9(
             oldFood = Food.createBlank(),
+            category = "Uncategorized",
             closeDialog = { showAddGroceryDialog = false },
+            setCategory = {  }, //figure this out later
             setFood = { _, newFood ->
-                shoppingVM.tempGroceryList.add(newFood) }
+                sharedVM.tempGroceryList.add(newFood) }
         )
     }
     Column(
@@ -102,8 +106,8 @@ fun AddPreMadeListScreen(
             }
             Button(
                 onClick = {
-                    shoppingVM.tempGroceryList.forEach {
-                        shoppingVM.upsertFood(it)
+                    sharedVM.tempGroceryList.forEach {
+                        sharedVM.upsertFood(it)
                         customListVM.insertList(
                             list = GroceryList(listId = list.listId, name = customListName)
                         )
@@ -111,7 +115,7 @@ fun AddPreMadeListScreen(
                             ListFoodMap(listId = list.listId, foodId = it.foodId)
                         )
                     }
-                    shoppingVM.tempGroceryList.clear()
+                    sharedVM.tempGroceryList.clear()
                     navController.navigate(GroceryScreens.CustomListScreen.name)
                 },
                 modifier = Modifier.width(75.dp),
@@ -131,15 +135,17 @@ fun AddPreMadeListScreen(
             modifier = Modifier.padding(horizontal = 15.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(items = shoppingVM.tempGroceryList) {
+            items(items = sharedVM.tempGroceryList) {
                 ListItem9(
                     modifier = Modifier.padding(vertical = 3.dp),
                     food = it,
-                    sharedVM = shoppingVM,
+                    category = categoryMap[it.name] ?: "Uncategorized",
+                    sharedVM = sharedVM,
                     checkBoxShown = false,
+                    setCategory = { }, //figure this out later
                     onEditFood = { oldFood, newFood ->
-                        shoppingVM.tempIngredientList.remove(oldFood)
-                        shoppingVM.tempIngredientList.add(newFood)
+                        sharedVM.tempIngredientList.remove(oldFood)
+                        sharedVM.tempIngredientList.add(newFood)
                     }
                 )
             }

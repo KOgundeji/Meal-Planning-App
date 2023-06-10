@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.kunle.aisle9b.models.Category
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.templates.CustomTextField9
@@ -39,6 +40,8 @@ fun IngredientsListDialog9(
     originalServingSize: String,
     foodList: List<Food>,
     updateFoodList: (Food, Food, String) -> Unit,
+    categoryMap: Map<String,String>,
+    updateCategory: (Category) -> Unit,
     onSaveServingSizeClick: (String) -> Unit,
     setShowDialog: () -> Unit
 ) {
@@ -58,7 +61,9 @@ fun IngredientsListDialog9(
     if (addFoodDialog) {
         EditFoodDialog9(
             oldFood = Food.createBlank(),
+            category = "Uncategorized",
             closeDialog = { addFoodDialog = false },
+            setCategory = { updateCategory(it)},
             setFood = { oldFood, newFood ->
                 updateFoodList(oldFood, newFood, "Add")
             })
@@ -180,8 +185,10 @@ fun IngredientsListDialog9(
                         ListItem9(
                             modifier = Modifier.padding(start = 4.dp),
                             food = it,
+                            category = categoryMap[it.name] ?: "Uncategorized",
                             sharedVM = sharedVM,
                             checkBoxShown = false,
+                            setCategory = { category -> sharedVM.upsertCategory(category) },
                             onEditFood = { oldFood, newFood ->
                                 updateFoodList(oldFood, newFood, "Edit")
                             }

@@ -59,6 +59,12 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideCategoryDao(shoppingRoomDB: ShoppingRoomDB): CategoryDao =
+        shoppingRoomDB.categoryDao()
+
+
+    @Singleton
+    @Provides
     fun provideSettingsDao(shoppingRoomDB: ShoppingRoomDB): SettingsDao =
         shoppingRoomDB.settingsDao()
 

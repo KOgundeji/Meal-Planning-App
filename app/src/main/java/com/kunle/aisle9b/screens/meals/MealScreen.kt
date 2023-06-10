@@ -50,7 +50,7 @@ fun MealScreen(
         if (foodsForReconciliation.isNotEmpty()) {
             ReconciliationDialog(
                 items = foodsForReconciliation,
-                shoppingVM = shoppingVM,
+                sharedVM = shoppingVM,
                 resetButtonBarToDefault = {
                     topBar(TopBarOptions.Default)
                     shoppingVM.mealButtonBar.value = MealButtonBar.Default
