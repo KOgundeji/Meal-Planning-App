@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
-import com.kunle.aisle9b.models.Category
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.SharedVM
@@ -196,7 +195,7 @@ fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (Food) -> Unit) 
                 value = item,
                 setValue = { item = it },
                 originalList = foodList,
-                label = "Add new item"
+                label = "Add grocery"
             )
         }
         Spacer(modifier = Modifier.width(10.dp))

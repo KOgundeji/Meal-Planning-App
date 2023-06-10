@@ -30,10 +30,10 @@ fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier.menuAnchor(),
                 label = { Text(text = "Select Category") },
-                colors = TextFieldDefaults.textFieldColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer),
                 shape = RectangleShape
             )
-
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }

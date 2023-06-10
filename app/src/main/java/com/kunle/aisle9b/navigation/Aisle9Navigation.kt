@@ -181,8 +181,7 @@ fun BottomNavigationBar9(
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        tonalElevation = 5.dp,
-        modifier = Modifier.border(border = BorderStroke(width = Dp.Hairline, Color.LightGray))
+        tonalElevation = 5.dp
     ) {
         screenList.forEach { item ->
             val selected = item.route == backStackEntry.value?.destination?.route

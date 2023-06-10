@@ -9,7 +9,7 @@ import com.kunle.aisle9b.util.UriConverter
 
 @Database(
     entities = [Food::class, GroceryList::class, Meal::class, AppSettings::class, ListFoodMap::class, MealFoodMap::class, Instruction::class, Category::class],
-    version = 3,
+    version = 1,
     exportSchema = false
 )
 @TypeConverters(UUIDConverter::class, UriConverter::class)

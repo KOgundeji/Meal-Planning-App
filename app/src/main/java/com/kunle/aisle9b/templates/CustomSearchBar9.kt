@@ -66,7 +66,10 @@ fun CustomSearchBar9(
                     focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer ,
+                    cursorColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
                 contentPadding = PaddingValues(horizontal = 15.dp),
             )

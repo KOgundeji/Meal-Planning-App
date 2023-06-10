@@ -78,6 +78,7 @@ fun MealDetailsScreen(
                 categoryMap = categoryMap,
                 updateFoodList = { _, newFood, _ ->
                     sharedVM.upsertFood(newFood)
+                    mealVM.insertPair(MealFoodMap(mealId = mwi.meal.mealId, foodId = newFood.foodId))
                 },
                 updateCategory = { sharedVM.upsertCategory(it)},
                 onSaveServingSizeClick = { servingSize ->

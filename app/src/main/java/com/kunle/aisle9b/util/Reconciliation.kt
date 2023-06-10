@@ -12,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,7 +40,7 @@ fun ReconciliationDialog(
         val list = items[keyList[currentDialogIndex]]
         val numOfFoodsToReconcile = list!!.size
         Dialog(onDismissRequest = { closeDialog() }) {
-            Surface(color = Color.DarkGray) {
+            Surface(color = MaterialTheme.colorScheme.surface) {
                 Column(
                     modifier = Modifier.padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -124,11 +123,8 @@ fun ReconciliationDialog(
     } else {
         currentDialogIndex += 1
     }
-//    resetButtonBarToDefault()
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReplacementFoodSection(
     name: String,
@@ -150,14 +146,16 @@ fun ReplacementFoodSection(
             enabled = false,
             onValueChange = { },
             label = { Text(text = "Grocery Item") },
-            colors = TextFieldDefaults.textFieldColors(containerColor = Color.Gray)
+            colors = TextFieldDefaults.colors()
         )
         TextField(
             value = ingredientQuantity,
             onValueChange = { ingredientQuantity = it },
             label = { Text(text = "How much/How many?") },
             placeholder = { Text(text = "Type quantity") },
-            colors = TextFieldDefaults.textFieldColors(containerColor = Color.Gray),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            )
         )
         CategoryDropDownMenu(
             category = ingredientCategory,
@@ -188,8 +186,8 @@ fun ReplacementFoodSection(
                     .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    contentColor = MaterialTheme.colorScheme.primaryContainer
                 )
             ) {
                 Text(
