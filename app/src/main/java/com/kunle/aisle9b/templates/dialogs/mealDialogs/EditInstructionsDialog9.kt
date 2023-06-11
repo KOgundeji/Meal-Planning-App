@@ -29,7 +29,7 @@ fun EditInstructionsDialog9(
     updatedInstruction: (Instruction, Int) -> Unit,
     setShowDialog: () -> Unit
 ) {
-    var newPosition by remember { mutableStateOf(instruction.position) }
+    var newPosition by remember { mutableStateOf(instruction.position.toString()) }
     var instructionStep by remember { mutableStateOf(instruction.step) }
 
     Dialog(onDismissRequest = { setShowDialog() }) {
@@ -64,12 +64,12 @@ fun EditInstructionsDialog9(
                         .height(45.dp)
                         .verticalScroll(rememberScrollState())
                         .fillMaxWidth(),
-                    text = newPosition.toString(),
+                    text = newPosition,
                     onValueChange = {
                         newPosition = if (it != "") {
-                            it.toInt()
+                            it
                         } else {
-                            0
+                            ""
                         }
                     },
                     label = "Step #...",
@@ -101,7 +101,7 @@ fun EditInstructionsDialog9(
                                     mealId = instruction.mealId,
                                     position = instruction.position
                                 ),
-                                newPosition
+                                newPosition.toInt()
                             )
                         },
                         modifier = Modifier.width(200.dp),
