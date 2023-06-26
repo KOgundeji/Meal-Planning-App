@@ -2,22 +2,21 @@ package com.kunle.aisle9b.screens.customLists
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kunle.aisle9b.models.GroceryList
-import com.kunle.aisle9b.models.ListFoodMap
-import com.kunle.aisle9b.models.ListWithGroceries
-import com.kunle.aisle9b.repository.ShoppingRepository
+import com.kunle.aisle9b.models.*
+import com.kunle.aisle9b.repositories.BasicRepositoryFunctions
+import com.kunle.aisle9b.repositories.customLists.CustomListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class CustomListVM @Inject constructor(private val repository: ShoppingRepository) : ViewModel() {
+class CustomListVM @Inject constructor(private val repository: CustomListRepository) : ViewModel(),
+    BasicRepositoryFunctions {
 
     private val _customLists = MutableStateFlow<List<GroceryList>>(emptyList())
     private val _groceriesOfCustomLists = MutableStateFlow<List<ListWithGroceries>>(emptyList())
@@ -38,15 +37,16 @@ class CustomListVM @Inject constructor(private val repository: ShoppingRepositor
         }
     }
 
-    fun insertList(list: GroceryList) = viewModelScope.launch { repository.insertList(list) }
+    fun insertList(list: GroceryList): Long {
+        var listId = -1L
+        viewModelScope.launch {
+            listId = async { repository.insertList(list) }.await()
+        }
+        return listId
+    }
+
     fun deleteList(list: GroceryList) = viewModelScope.launch { repository.deleteList(list) }
     fun updateList(list: GroceryList) = viewModelScope.launch { repository.updateList(list) }
-    fun deleteAllLists() = viewModelScope.launch { repository.deleteAllLists() }
-    suspend fun getLists(name: String): GroceryList {
-        return withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
-            repository.getLists(name)
-        }
-    }
 
 
     fun insertPair(crossRef: ListFoodMap) =
@@ -58,16 +58,37 @@ class CustomListVM @Inject constructor(private val repository: ShoppingRepositor
     fun updatePair(crossRef: ListFoodMap) =
         viewModelScope.launch { repository.updatePair(crossRef) }
 
-    fun deleteSpecificListWithGroceries(listId: UUID) =
+    fun deleteSpecificListWithGroceries(listId: Long) =
         viewModelScope.launch { repository.deleteSpecificGroceryList(listId) }
 
-    fun deleteAllListWithGroceries() =
-        viewModelScope.launch { repository.deleteAllListWithGroceries() }
+    fun updateName(obj: GroceryListNameUpdate) =
+        viewModelScope.launch { repository.updateName(obj) }
 
-    suspend fun getSpecificListWithGroceries(listId: Long): ListWithGroceries {
-        return withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
-            repository.getSpecificListWithGroceries(listId)
+    fun updateVisibility(obj: GroceryListVisibilityUpdate) =
+        viewModelScope.launch { repository.updateVisibility(obj) }
+
+    override suspend fun insertFood(food: Food): Long {
+        var foodId = -1L
+        viewModelScope.launch {
+            foodId = async { repository.insertFood(food) }.await()
         }
+        return foodId
+    }
+
+    override suspend fun upsertFood(food: Food) {
+        viewModelScope.launch { repository.upsertFood(food) }
+    }
+
+    override suspend fun deleteFood(food: Food) {
+        viewModelScope.launch { repository.deleteFood(food) }
+    }
+
+    override suspend fun insertGrocery(grocery: Grocery) {
+        viewModelScope.launch { repository.insertGrocery(grocery) }
+    }
+
+    override suspend fun deleteGroceryByName(name: String) {
+        viewModelScope.launch { repository.deleteGroceryByName(name) }
     }
 
 }

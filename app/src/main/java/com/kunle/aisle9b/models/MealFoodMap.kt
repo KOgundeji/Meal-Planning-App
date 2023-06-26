@@ -7,6 +7,6 @@ import java.util.UUID
 @Entity(primaryKeys = ["mealId", "foodId"])
 class MealFoodMap(
     @ColumnInfo(index = true)
-    val mealId: UUID,
-    val foodId: UUID) {
+    val mealId: Long,
+    val foodId: Long) {
 }

@@ -15,7 +15,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -23,14 +22,16 @@ import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.customLists.CustomListVM
+import com.kunle.aisle9b.templates.CustomTextField9
 import com.kunle.aisle9b.templates.dialogs.EditFoodDialog9
+import com.kunle.aisle9b.templates.items.CustomUpdateTextField9
 import com.kunle.aisle9b.templates.items.ListItem9
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPreMadeListScreen(
     modifier: Modifier = Modifier,
-    sharedVM: SharedVM,
     customListVM: CustomListVM,
     navController: NavController,
     topBar: (TopBarOptions) -> Unit,
@@ -39,20 +40,25 @@ fun AddPreMadeListScreen(
     topBar(TopBarOptions.Back)
     source(GroceryScreens.AddCustomListScreen)
 
-    val categoryMap = sharedVM.categoryMap.collectAsState().value
-
-    val list = GroceryList(name = "")
+    val scope = rememberCoroutineScope()
+    val listId = remember { customListVM.insertList(GroceryList.createBlank()) }
     var customListName by remember { mutableStateOf("") }
     var showAddGroceryDialog by remember { mutableStateOf(false) }
+
+    val lwg = customListVM.groceriesOfCustomLists.collectAsState().value.first {
+        it.list.listId == listId
+    }
 
     if (showAddGroceryDialog) {
         EditFoodDialog9(
             oldFood = Food.createBlank(),
-            category = "Uncategorized",
             closeDialog = { showAddGroceryDialog = false },
-            setCategory = {  }, //figure this out later
-            setFood = { _, newFood ->
-                sharedVM.tempGroceryList.add(newFood) }
+            setFood = { newFood ->
+                scope.launch {
+                    val foodId = async { customListVM.insertFood(newFood) }.await()
+                    customListVM.insertPair(ListFoodMap(listId = listId, foodId = foodId))
+                }
+            }
         )
     }
     Column(
@@ -65,11 +71,18 @@ fun AddPreMadeListScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        TextField(
-            value = customListName,
+        CustomUpdateTextField9(
+            text = customListName,
             onValueChange = { customListName = it },
-            placeholder = { Text(text = "Type custom grocery list name") },
-            colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
+            onSaveClick = {
+                customListVM.updateName(
+                    GroceryListNameUpdate(
+                        listId = listId,
+                        listName = customListName
+                    )
+                )
+            },
+            label = "Type custom grocery list name",
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
         )
         Row(
@@ -106,16 +119,7 @@ fun AddPreMadeListScreen(
             }
             Button(
                 onClick = {
-                    sharedVM.tempGroceryList.forEach {
-                        sharedVM.upsertFood(it)
-                        customListVM.insertList(
-                            list = GroceryList(listId = list.listId, name = customListName)
-                        )
-                        customListVM.insertPair(
-                            ListFoodMap(listId = list.listId, foodId = it.foodId)
-                        )
-                    }
-                    sharedVM.tempGroceryList.clear()
+                    customListVM.updateVisibility(GroceryListVisibilityUpdate(listId = listId))
                     navController.navigate(GroceryScreens.CustomListScreen.name)
                 },
                 modifier = Modifier.width(75.dp),
@@ -135,17 +139,14 @@ fun AddPreMadeListScreen(
             modifier = Modifier.padding(horizontal = 15.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(items = sharedVM.tempGroceryList) {
+            items(items = lwg.groceries) {
                 ListItem9(
                     modifier = Modifier.padding(vertical = 3.dp),
                     food = it,
-                    category = categoryMap[it.name] ?: "Uncategorized",
-                    sharedVM = sharedVM,
+                    viewModel = customListVM,
                     checkBoxShown = false,
-                    setCategory = { }, //figure this out later
-                    onEditFood = { oldFood, newFood ->
-                        sharedVM.tempIngredientList.remove(oldFood)
-                        sharedVM.tempIngredientList.add(newFood)
+                    onEditFood = { newFood ->
+                        scope.launch { customListVM.upsertFood(newFood) }
                     }
                 )
             }

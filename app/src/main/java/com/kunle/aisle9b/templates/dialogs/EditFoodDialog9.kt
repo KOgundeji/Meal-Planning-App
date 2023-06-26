@@ -18,21 +18,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.kunle.aisle9b.models.Category
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.util.CategoryDropDownMenu
 
 @Composable
 fun EditFoodDialog9(
     oldFood: Food,
-    category: String,
     closeDialog: () -> Unit,
-    setCategory: (Category) -> Unit,
-    setFood: (Food, Food) -> Unit
+    setFood: (Food) -> Unit
 ) {
     var ingredientName by remember { mutableStateOf(oldFood.name) }
     var ingredientQuantity by remember { mutableStateOf(oldFood.quantity) }
-    var ingredientCategory by remember { mutableStateOf(category) }
+    var ingredientCategory by remember { mutableStateOf(oldFood.category) }
 
     Dialog(onDismissRequest = { closeDialog() }) {
         Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.background) {
@@ -88,14 +85,9 @@ fun EditFoodDialog9(
                                 foodId = oldFood.foodId,
                                 name = ingredientName,
                                 quantity = ingredientQuantity,
-                                isInGroceryList = oldFood.isInGroceryList
+                                category = ingredientCategory
                             )
-                            val selectedCategory = Category(
-                                foodName = ingredientName,
-                                categoryName = ingredientCategory
-                            )
-                            setFood(oldFood, newFood)
-                            setCategory(selectedCategory)
+                            setFood(newFood)
                             closeDialog()
                         },
                         shape = RoundedCornerShape(50.dp),

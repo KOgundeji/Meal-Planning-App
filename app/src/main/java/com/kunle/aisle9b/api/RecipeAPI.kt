@@ -41,7 +41,7 @@ interface RecipeAPI {
         @Header(value = "x-api-key") apiKey: String = spoonacular_key,
         @Query(value = "query") query: String,
         @Query(value = "addRecipeInformation") addRecipeInformation: Boolean = true,
-        @Query(value = "number") number: Int = 30,
+        @Query(value = "number") number: Int = 75,
         @Query(value = "limitLicense") limitLicense: Boolean = true
     ): RawJSON
 

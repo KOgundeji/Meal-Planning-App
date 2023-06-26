@@ -4,10 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import java.util.*
 
-@Entity(primaryKeys = ["listId","foodId"])
+@Entity(primaryKeys = ["listId", "foodId"])
 data class ListFoodMap(
-@ColumnInfo(index = true)
-val listId: UUID,
-val foodId: UUID
-) {
-}
+    @ColumnInfo(index = true)
+    val listId: Long,
+    val foodId: Long
+)

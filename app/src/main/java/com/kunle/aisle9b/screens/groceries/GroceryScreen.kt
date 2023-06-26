@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
 import com.kunle.aisle9b.screens.meals.MealButtonBar
 import com.kunle.aisle9b.templates.CustomAutoComplete9
@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroceryScreen(
     modifier: Modifier = Modifier,
-    sharedVM: SharedVM,
+    generalVM: GeneralVM,
     groceryVM: GroceryVM,
     navController: NavController,
     topBar: (TopBarOptions) -> Unit,
@@ -47,10 +47,9 @@ fun GroceryScreen(
     topBar(TopBarOptions.Default)
     source(GroceryScreens.GroceryListScreen)
 
+    val namesOfAllFoods = groceryVM.namesOfAllFoods.collectAsState().value
     val groceryList = groceryVM.groceryList.collectAsState().value
-    val completeFoodList = groceryVM.foodList.collectAsState().value
-    val categoryMap = sharedVM.categoryMap.collectAsState().value
-    val categoriesOn = sharedVM.categoriesOnSetting.value
+    val categoriesOn = generalVM.categoriesOnSetting.value
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -58,9 +57,11 @@ fun GroceryScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        GroceryInputTextField(completeFoodList) { food ->
-            sharedVM.upsertFood(food)
-            coroutineScope.launch { listState.animateScrollToItem(index = 0) }
+        GroceryInputTextField(namesOfAllFoods) { name, quantity ->
+            coroutineScope.launch {
+                listState.animateScrollToItem(index = 0)
+                groceryVM.upsertFood(Food(name = name, quantity = quantity))
+            }
         }
         if (groceryList.isEmpty()) {
             Column(
@@ -85,7 +86,7 @@ fun GroceryScreen(
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
                     onClick = {
-                        sharedVM.customListButtonBar.value = CustomListButtonBar.Transfer
+                        generalVM.customListButtonBar.value = CustomListButtonBar.Transfer
                         navController.navigate(GroceryScreens.CustomListScreen.name)
                     }) {
                     Row(
@@ -116,7 +117,7 @@ fun GroceryScreen(
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
                     onClick = {
-                        sharedVM.mealButtonBar.value = MealButtonBar.Transfer
+                        generalVM.mealButtonBar.value = MealButtonBar.Transfer
                         navController.navigate(GroceryScreens.MealScreen.name)
                     }) {
                     Row(
@@ -139,34 +140,31 @@ fun GroceryScreen(
         } else {
             LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 if (categoriesOn) {
-                    val groupedGroceries = groceryList.groupBy { food -> categoryMap[food.name] ?: "Uncategorized" }
+                    val groupedGroceries =
+                        groceryList.groupBy { food -> food.category }
                     groupedGroceries.forEach { (category, groceries) ->
                         stickyHeader {
                             CategoryHeader(string = category)
                         }
-                        items(items = groceries) { foodItem ->
+                        items(items = groceries) { grocery ->
                             ListItem9(
-                                food = foodItem,
-                                category = categoryMap[foodItem.name] ?: "Uncategorized",
-                                sharedVM = sharedVM,
+                                food = grocery,
+                                viewModel = groceryVM,
                                 modifier = Modifier.animateItemPlacement(),
-                                setCategory = { sharedVM.upsertCategory(it) },
-                                onEditFood = { _, newFood ->
-                                    sharedVM.upsertFood(newFood)
+                                onEditFood = { newFood ->
+                                    coroutineScope.launch { groceryVM.upsertFood(newFood) }
                                 }
                             )
                         }
                     }
                 } else {
-                    items(items = groceryList) { foodItem ->
+                    items(items = groceryList) { grocery ->
                         ListItem9(
-                            food = foodItem,
-                            category = categoryMap[foodItem.name] ?: "Uncategorized",
-                            sharedVM = sharedVM,
+                            food = grocery,
+                            viewModel = groceryVM,
                             modifier = Modifier.animateItemPlacement(),
-                            setCategory = { sharedVM.upsertCategory(it) },
-                            onEditFood = { _, newFood ->
-                                sharedVM.upsertFood(newFood)
+                            onEditFood = { newFood ->
+                                coroutineScope.launch { groceryVM.upsertFood(newFood) }
                             }
                         )
                     }
@@ -177,7 +175,7 @@ fun GroceryScreen(
 }
 
 @Composable
-fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (Food) -> Unit) {
+fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (String, String) -> Unit) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     var item by remember { mutableStateOf("") }
@@ -226,13 +224,7 @@ fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (Food) -> Unit) 
                 .height(45.dp)
                 .clickable {
                     if (item.isNotEmpty()) {
-                        onAddGrocery(
-                            Food(
-                                name = item,
-                                quantity = quantity,
-                                isInGroceryList = true
-                            )
-                        )
+                        onAddGrocery(item, quantity)
                         Toast
                             .makeText(context, "$item added", Toast.LENGTH_SHORT)
                             .show()

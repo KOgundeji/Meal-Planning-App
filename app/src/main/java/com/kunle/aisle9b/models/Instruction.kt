@@ -7,17 +7,14 @@ import java.util.*
 
 @Entity(tableName = "instructions")
 data class Instruction(
-    @PrimaryKey
-    val instructionId: UUID = UUID.randomUUID(),
-    @ColumnInfo
-    var step: String,
-    @ColumnInfo
-    val mealId: UUID,
-    @ColumnInfo
-    var position: Int
+    @PrimaryKey(autoGenerate = true)
+    val instructionId: Long = 0,
+    val step: String,
+    val mealId: Long,
+    val position: Int
 ) {
     companion object {
-        fun createBlank(mealId: UUID): Instruction {
+        fun createBlank(mealId: Long): Instruction {
             return Instruction(step = "", mealId = mealId, position = 0)
         }
     }

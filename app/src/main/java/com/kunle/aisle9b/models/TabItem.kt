@@ -1,7 +1,6 @@
-package com.kunle.aisle9b.models.tabs
+package com.kunle.aisle9b.models
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
 
 data class TabItem (
     val title: String,

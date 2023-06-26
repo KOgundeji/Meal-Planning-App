@@ -24,7 +24,7 @@ fun CustomTextField9(
     readOnly: Boolean = false,
     trailingIcon: @Composable () -> Unit = {},
     textStyle: TextStyle = TextStyle(),
-    keyboardOptions: KeyboardOptions = KeyboardOptions(),
+    keyboardOptions: KeyboardOptions = KeyboardOptions()
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 

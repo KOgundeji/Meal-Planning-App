@@ -1,8 +1,8 @@
 package com.kunle.aisle9b.api.apiModels
 
+import com.kunle.aisle9b.api.apiModels.recipeModels.Recipe
 import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
 import com.kunle.aisle9b.models.apiModels.queryModels.Result
-import com.kunle.aisle9b.api.apiModels.recipeModels.Recipe
 
 sealed class ApiResponseList {
     object Loading: ApiResponseList()

@@ -1,8 +1,5 @@
 package com.kunle.aisle9b.templates.dialogs.mealDialogs
 
-import androidx.compose.animation.core.EaseOutQuint
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,62 +7,43 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.kunle.aisle9b.models.Category
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.screens.SharedVM
-import com.kunle.aisle9b.templates.CustomTextField9
+import com.kunle.aisle9b.screens.meals.MealVM
 import com.kunle.aisle9b.templates.dialogs.EditFoodDialog9
+import com.kunle.aisle9b.templates.items.CustomUpdateTextField9
 import com.kunle.aisle9b.templates.items.ListItem9
 
 @Composable
 fun IngredientsListDialog9(
     modifier: Modifier = Modifier,
-    sharedVM: SharedVM,
+    mealVM: MealVM,
     originalServingSize: String,
     foodList: List<Food>,
-    updateFoodList: (Food, Food, String) -> Unit,
-    categoryMap: Map<String,String>,
-    updateCategory: (Category) -> Unit,
+    updateFoodList: (Food) -> Unit,
     onSaveServingSizeClick: (String) -> Unit,
     setShowDialog: () -> Unit
 ) {
     var addFoodDialog by remember { mutableStateOf(false) }
     var newServingSize by remember { mutableStateOf(originalServingSize) }
-    var saveClicked by remember { mutableStateOf(false) }
-
-    val fadeInOut by animateFloatAsState(
-        targetValue = if (saveClicked) 0f else 1f,
-        animationSpec = tween(
-            durationMillis = 1000,
-            easing = EaseOutQuint
-        ),
-        finishedListener = { saveClicked = false }
-    )
 
     if (addFoodDialog) {
         EditFoodDialog9(
             oldFood = Food.createBlank(),
-            category = "Uncategorized",
             closeDialog = { addFoodDialog = false },
-            setCategory = { updateCategory(it)},
-            setFood = { oldFood, newFood ->
-                updateFoodList(oldFood, newFood, "Add")
+            setFood = { newFood ->
+                updateFoodList(newFood)
             })
     }
 
@@ -97,52 +75,11 @@ fun IngredientsListDialog9(
                             .clickable { setShowDialog() }
                     )
                 }
-                CustomTextField9(
-                    modifier = Modifier
-                        .height(45.dp)
-                        .fillMaxWidth(),
+                CustomUpdateTextField9(
                     text = newServingSize,
                     onValueChange = { newServingSize = it },
-                    label = "# of servings recipe makes",
-                    singleLine = true,
-                    textStyle = TextStyle(fontSize = 16.sp),
-                    trailingIcon = {
-                        Button(
-                            shape = RectangleShape,
-                            contentPadding = PaddingValues(7.dp),
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .alpha(1 - fadeInOut),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
-                            onClick = {
-                                if (newServingSize.isNotEmpty()) {
-                                    onSaveServingSizeClick(newServingSize)
-                                }
-                            }) {
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = null,
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-                        Button(
-                            shape = RectangleShape,
-                            contentPadding = PaddingValues(7.dp),
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .alpha(fadeInOut),
-                            onClick = {
-                                if (newServingSize.isNotEmpty()) {
-                                    onSaveServingSizeClick(newServingSize)
-                                    saveClicked = true
-                                }
-                            }) {
-                            Text(
-                                text = "Save",
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
-                    }
+                    onSaveClick = { onSaveServingSizeClick(newServingSize) },
+                    label = "# of servings recipe makes"
                 )
                 Text(text = "List of Ingredients", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Row(
@@ -165,7 +102,7 @@ fun IngredientsListDialog9(
                         )
                     }
                     Button(
-                        onClick = { },
+                        onClick = { }, //fix this
                         modifier = Modifier.width(75.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
@@ -185,12 +122,10 @@ fun IngredientsListDialog9(
                         ListItem9(
                             modifier = Modifier.padding(start = 4.dp),
                             food = it,
-                            category = categoryMap[it.name] ?: "Uncategorized",
-                            sharedVM = sharedVM,
+                            viewModel = mealVM,
                             checkBoxShown = false,
-                            setCategory = { category -> sharedVM.upsertCategory(category) },
-                            onEditFood = { oldFood, newFood ->
-                                updateFoodList(oldFood, newFood, "Edit")
+                            onEditFood = { newFood ->
+                                updateFoodList(newFood)
                             }
                         )
                     }

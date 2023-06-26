@@ -17,33 +17,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kunle.aisle9b.models.Category
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.repositories.BasicRepositoryFunctions
 import com.kunle.aisle9b.templates.dialogs.EditFoodDialog9
+import kotlinx.coroutines.launch
 
 @Composable
 fun ListItem9(
     modifier: Modifier = Modifier,
     food: Food,
-    category: String,
-    sharedVM: SharedVM,
-    setCategory: (Category) -> Unit,
-    onEditFood: (Food, Food) -> Unit,
+    viewModel: BasicRepositoryFunctions,
+    onEditFood: (Food) -> Unit,
     checkBoxShown: Boolean = true,
     editPencilShown: Boolean = true
 ) {
+    val scope = rememberCoroutineScope()
     var isChecked by remember { mutableStateOf(false) }
     var showEditFoodDialog by remember { mutableStateOf(false) }
 
     if (showEditFoodDialog) {
         EditFoodDialog9(
             oldFood = food,
-            category = category,
             closeDialog = { showEditFoodDialog = false },
-            setCategory = { setCategory(it) },
-            setFood = { oldFood, updatedFood ->
-                onEditFood(oldFood, updatedFood)
+            setFood = { updatedFood ->
+                onEditFood(updatedFood)
             })
     }
     Card(
@@ -63,8 +60,7 @@ fun ListItem9(
                     checked = isChecked,
                     onCheckedChange = {
                         isChecked = true
-                        food.isInGroceryList = false
-                        sharedVM.upsertFood(food)
+                        scope.launch { viewModel.deleteFood(food) }
                     },
                     colors = CheckboxDefaults.colors(
                         checkedColor = MaterialTheme.colorScheme.secondaryContainer,

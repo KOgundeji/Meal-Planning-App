@@ -16,7 +16,7 @@ import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.templates.CustomSearchBar9
 import com.kunle.aisle9b.templates.items.MealItem9
 import com.kunle.aisle9b.util.*
@@ -24,7 +24,7 @@ import com.kunle.aisle9b.util.*
 @Composable
 fun MealScreen(
     modifier: Modifier = Modifier,
-    shoppingVM: SharedVM,
+    generalVM: GeneralVM,
     mealVM: MealVM,
     navController: NavController,
     topBar: (TopBarOptions) -> Unit,
@@ -32,35 +32,35 @@ fun MealScreen(
 ) {
     source(GroceryScreens.MealScreen)
 
-    val primaryButtonBar = shoppingVM.mealButtonBar.value
+    val primaryButtonBar = generalVM.mealButtonBar.value
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
 
-    val listsToAddToGroceryList = remember { mutableStateListOf(shoppingVM.groceryList.value) }
+    val listsToAddToGroceryList = remember { mutableStateListOf(generalVM.groceryList.value) }
     var searchWord by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    val mealList = mealVM.mealsList.collectAsState().value
+    val mealList = mealVM.mealList.collectAsState().value
     var filteredMealLists by remember { mutableStateOf(mealList) }
 
     if (transferFoodsToGroceryList) {
-        val foodsForReconciliation = filterForReconciliation(
-            lists = listsToAddToGroceryList,
-            shoppingVM = shoppingVM
-        )
+        val foodsForReconciliation =
+            generalVM.filterForReconciliation(
+            lists = listsToAddToGroceryList)
+
         if (foodsForReconciliation.isNotEmpty()) {
             ReconciliationDialog(
                 items = foodsForReconciliation,
-                sharedVM = shoppingVM,
+                viewModel = mealVM,
                 resetButtonBarToDefault = {
                     topBar(TopBarOptions.Default)
-                    shoppingVM.mealButtonBar.value = MealButtonBar.Default
+                    generalVM.mealButtonBar.value = MealButtonBar.Default
                 }
             ) {
                 transferFoodsToGroceryList = false
             }
         } else {
             topBar(TopBarOptions.Default)
-            shoppingVM.mealButtonBar.value = MealButtonBar.Default
+            generalVM.mealButtonBar.value = MealButtonBar.Default
         }
         Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
     }
@@ -100,14 +100,14 @@ fun MealScreen(
                     topAppBar = topBar,
                     onBackClick = {
                         topBar(TopBarOptions.Default)
-                        shoppingVM.mealButtonBar.value = MealButtonBar.Default
+                        generalVM.mealButtonBar.value = MealButtonBar.Default
                     },
                     onDeleteClick = {
-                        shoppingVM.mealDeleteList.forEach { meal ->
+                        generalVM.mealDeleteList.forEach { meal ->
                             mealVM.deleteMeal(meal)
                             mealVM.deleteSpecificMealIngredients(meal.mealId)
                         }
-                        shoppingVM.mealButtonBar.value = MealButtonBar.Default
+                        generalVM.mealButtonBar.value = MealButtonBar.Default
                     })
             }
             MealButtonBar.Transfer -> {
@@ -117,7 +117,7 @@ fun MealScreen(
                     addLists = { transferFoodsToGroceryList = true }
                 ) {
                     topBar(TopBarOptions.Default)
-                    shoppingVM.mealButtonBar.value = MealButtonBar.Default
+                    generalVM.mealButtonBar.value = MealButtonBar.Default
                 }
             }
         }
@@ -126,7 +126,7 @@ fun MealScreen(
                 MealItem9(
                     meal = meal,
                     primaryButtonBarAction = primaryButtonBar,
-                    shoppingVM = shoppingVM,
+                    shoppingVM = generalVM,
                     mealVM = mealVM,
                     navController = navController,
                     transferList = listsToAddToGroceryList

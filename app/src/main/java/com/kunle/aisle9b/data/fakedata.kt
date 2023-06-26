@@ -1,9 +1,5 @@
 package com.kunle.aisle9b.data
 
-import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.screens.SharedVM
-import com.kunle.aisle9b.screens.customLists.CustomListVM
-import com.kunle.aisle9b.screens.meals.MealVM
 //
 //var oranges =
 //    Food(name = "Oranges", quantity = "4 bunches", category = "Fruit", isInGroceryList = true)

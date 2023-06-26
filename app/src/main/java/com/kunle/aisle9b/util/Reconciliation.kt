@@ -18,19 +18,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.kunle.aisle9b.models.Category
 import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.models.Grocery
+import com.kunle.aisle9b.repositories.BasicRepositoryFunctions
 import com.kunle.aisle9b.templates.items.ListItem9
+import kotlinx.coroutines.launch
 
 @Composable
 fun ReconciliationDialog(
     items: Map<String, List<Food>>,
-    sharedVM: SharedVM,
+    viewModel: BasicRepositoryFunctions,
     resetButtonBarToDefault: () -> Unit,
     closeDialog: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val keyList = items.keys.toList()
     val totalDialogsNeeded = items.size
 
@@ -63,12 +65,10 @@ fun ReconciliationDialog(
                         ListItem9(
                             modifier = Modifier.height(40.dp),
                             food = list[0],
-                            category = "",
-                            sharedVM = sharedVM,
+                            viewModel = viewModel,
                             editPencilShown = false,
                             checkBoxShown = false,
-                            setCategory = {},
-                            onEditFood = { _, _ -> }
+                            onEditFood = { }
                         )
                         repeat(times = numOfFoodsToReconcile - 1) { currentNum ->
                             Spacer(modifier = Modifier.height(7.dp))
@@ -83,12 +83,10 @@ fun ReconciliationDialog(
                                 ListItem9(
                                     modifier = Modifier.height(40.dp),
                                     food = list[currentNum + 1],
-                                    category = "",
-                                    sharedVM = sharedVM,
+                                    viewModel = viewModel,
                                     editPencilShown = false,
                                     checkBoxShown = false,
-                                    setCategory = {},
-                                    onEditFood = { _, _ -> }
+                                    onEditFood = { }
                                 )
                             }
                         }
@@ -99,13 +97,12 @@ fun ReconciliationDialog(
                     )
                     ReplacementFoodSection(
                         name = keyList[currentDialogIndex],
-                        setFood = { sharedVM.upsertFood(it) },
-                        setCategory = { sharedVM.upsertCategory(it) },
+                        setGroceryIntoGroceryList = {
+                            scope.launch { viewModel.insertGrocery(it) }
+                        },
                         takeOriginalFoodOutOfGroceryList = {
-                            list.forEach {
-                                it.isInGroceryList = false
-                                sharedVM.upsertFood(it)
-                            }
+                            val alreadyInGroceryList = keyList[currentDialogIndex]
+                            scope.launch { viewModel.deleteGroceryByName(alreadyInGroceryList) }
                         },
                         onNextClick = {
                             if ((currentDialogIndex + 1) < totalDialogsNeeded) {
@@ -128,8 +125,7 @@ fun ReconciliationDialog(
 @Composable
 fun ReplacementFoodSection(
     name: String,
-    setFood: (Food) -> Unit,
-    setCategory: (Category) -> Unit,
+    setGroceryIntoGroceryList: (Grocery) -> Unit,
     takeOriginalFoodOutOfGroceryList: () -> Unit,
     onNextClick: (String) -> Unit
 ) {
@@ -161,24 +157,20 @@ fun ReplacementFoodSection(
             category = ingredientCategory,
             newCategory = { ingredientCategory = it })
         Spacer(modifier = Modifier.height(20.dp))
-        Box() {
+        Box {
             Button(
                 onClick = {
-                    val newFood = Food(
+                    val newIntoGroceryList = Grocery(
                         name = name,
                         quantity = ingredientQuantity,
-                        isInGroceryList = true
+                        category = ingredientCategory
                     )
-                    val newCategory = Category(
-                        foodName = name,
-                        categoryName = ingredientCategory
-                    )
-                    setFood(newFood)
-                    setCategory(newCategory)
+                    takeOriginalFoodOutOfGroceryList()
+                    setGroceryIntoGroceryList(newIntoGroceryList)
+
                     ingredientQuantity = ""
                     ingredientCategory = ""
 
-                    takeOriginalFoodOutOfGroceryList()
                     onNextClick(name)
                 },
                 shape = RoundedCornerShape(50.dp),

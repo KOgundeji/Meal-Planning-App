@@ -7,7 +7,7 @@ import com.kunle.aisle9b.models.MealFoodMap
 import com.kunle.aisle9b.api.apiModels.ApiResponseInstructions
 import com.kunle.aisle9b.api.apiModels.ApiResponseRecipe
 import com.kunle.aisle9b.api.apiModels.ApiResponseList
-import com.kunle.aisle9b.repository.ShoppingRepository
+import com.kunle.aisle9b.repositories.recipes.RecipeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipesVM @Inject constructor(private val repository: ShoppingRepository) : ViewModel() {
+class RecipesVM @Inject constructor(private val repository: RecipeRepository) : ViewModel() {
 
     private val _searchState = MutableStateFlow<ApiResponseList>(ApiResponseList.Neutral)
     private val _retrievedRecipeState =

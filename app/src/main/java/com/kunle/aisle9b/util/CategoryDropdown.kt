@@ -6,7 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import com.kunle.aisle9b.models.Category.Static.categories
+import com.kunle.aisle9b.models.Food.Companion.categories
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

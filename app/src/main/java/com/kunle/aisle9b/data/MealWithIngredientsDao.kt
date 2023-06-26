@@ -1,11 +1,9 @@
 package com.kunle.aisle9b.data
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.kunle.aisle9b.models.MealFoodMap
 import com.kunle.aisle9b.models.MealWithIngredients
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
 
 @Dao
 interface MealWithIngredientsDao {
@@ -20,14 +18,7 @@ interface MealWithIngredientsDao {
     suspend fun updatePair(crossRef: MealFoodMap)
 
     @Query("DELETE FROM MealFoodMap WHERE mealId = :mealId")
-    suspend fun deleteSpecificMealIngredients(mealId: UUID)
-
-    @Query("DELETE FROM MealFoodMap")
-    suspend fun deleteAllMealWithIngredients()
-
-    @Transaction
-    @Query("SELECT * FROM meal_table WHERE mealId = :mealId")
-    suspend fun getSpecificMealWithIngredients(mealId: Long): MealWithIngredients
+    suspend fun deleteSpecificMealIngredients(mealId: Long)
 
     @Transaction
     @Query("SELECT * FROM meal_table")

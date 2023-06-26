@@ -8,7 +8,6 @@ import java.util.*
 
 @Dao
 interface ListWithGroceriesDao {
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPair(crossRef: ListFoodMap)
 
@@ -19,14 +18,7 @@ interface ListWithGroceriesDao {
     suspend fun updatePair(crossRef: ListFoodMap)
 
     @Query("DELETE FROM ListFoodMap WHERE listId = :listId")
-    suspend fun deleteSpecificGroceryList(listId: UUID)
-
-    @Query("DELETE FROM ListFoodMap")
-    suspend fun deleteAllGroceryLists()
-
-    @Transaction
-    @Query("SELECT * FROM list_table WHERE listId = :listId")
-    suspend fun getSpecificListWithGroceries(listId: Long): ListWithGroceries
+    suspend fun deleteSpecificGroceryList(listId: Long)
 
     @Transaction
     @Query("SELECT * FROM list_table")

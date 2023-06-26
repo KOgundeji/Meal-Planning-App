@@ -14,167 +14,157 @@ import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.AppSettings
 import com.kunle.aisle9b.models.SettingsEnum
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.GeneralVM
 
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    sharedVM: SharedVM,
+    generalVM: GeneralVM,
     topBar: (TopBarOptions) -> Unit,
     source: (GroceryScreens) -> Unit
 ) {
     topBar(TopBarOptions.Default)
     source(GroceryScreens.SettingsScreen)
 
-    val settingsList = sharedVM.settingsList.collectAsState().value
+    val settingsList = generalVM.settingsList.collectAsState().value
 
-    if (settingsList.size < 3) {
-        sharedVM.insertSettings(AppSettings(SettingsEnum.DarkMode.name, false))
-        sharedVM.insertSettings(AppSettings(SettingsEnum.Categories.name, true))
-        sharedVM.insertSettings(AppSettings(SettingsEnum.ScreenPermOn.name, false))
-    } else {
-        val darkMode = settingsList.first {
-            it.settingsName == SettingsEnum.DarkMode.name
-        }.value
+    val darkMode = settingsList.first {
+        it.settingsName == SettingsEnum.DarkMode.name
+    }.value
 
-        val screenPermOn = settingsList.first {
-            it.settingsName == SettingsEnum.ScreenPermOn.name
-        }.value
+    val screenPermOn = settingsList.first {
+        it.settingsName == SettingsEnum.ScreenPermOn.name
+    }.value
 
-        val categoriesOn = settingsList.first {
-            it.settingsName == SettingsEnum.Categories.name
-        }.value
+    val categoriesOn = settingsList.first {
+        it.settingsName == SettingsEnum.Categories.name
+    }.value
 
-        sharedVM.darkModeSetting.value = darkMode
-        sharedVM.categoriesOnSetting.value = categoriesOn
-        sharedVM.keepScreenOnSetting.value = screenPermOn
+    if (screenPermOn) {
+        KeepScreenOn()
+    }
 
-        if (screenPermOn) {
-            KeepScreenOn()
+    Column(modifier = modifier) {
+        Text(
+            text = "Display options",
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 16.sp,
+            modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 15.dp)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(.95f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Dark Mode",
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(start = 15.dp)
+            )
+            Switch(
+                checked = darkMode,
+                colors = SwitchDefaults.colors(),
+                onCheckedChange = {
+                    generalVM.darkModeSetting.value = it
+                    generalVM.upsertSettings(
+                        AppSettings(
+                            settingsName = SettingsEnum.DarkMode.name,
+                            value = it
+                        )
+                    )
+                }
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(.95f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Keep Screen on",
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(start = 15.dp)
+            )
+            Switch(
+                checked = screenPermOn,
+                colors = SwitchDefaults.colors(),
+                onCheckedChange = {
+                    generalVM.keepScreenOnSetting.value = it
+                    generalVM.upsertSettings(
+                        AppSettings(
+                            settingsName = SettingsEnum.ScreenPermOn.name,
+                            value = it
+                        )
+                    )
+                }
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(.95f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Add Categories to Grocery List",
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(start = 15.dp),
+                maxLines = 2
+            )
+            Switch(
+                checked = categoriesOn,
+                colors = SwitchDefaults.colors(),
+                onCheckedChange = {
+                    generalVM.categoriesOnSetting.value = it
+                    generalVM.upsertSettings(
+                        AppSettings(
+                            settingsName = SettingsEnum.Categories.name,
+                            value = it
+                        )
+                    )
+                }
+            )
         }
 
-        Column(modifier = modifier) {
+        Column() {
+            Box(modifier = Modifier.weight(1f, true))
             Text(
-                text = "Display options",
+                text = "About",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp,
-                modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 15.dp)
+                modifier = Modifier.padding(start = 10.dp, bottom = 4.dp)
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(.95f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Dark Mode",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(start = 15.dp)
-                )
-                Switch(
-                    checked = darkMode,
-                    colors = SwitchDefaults.colors(),
-                    onCheckedChange = {
-                        sharedVM.darkModeSetting.value = it
-                        sharedVM.updateSettings(
-                            AppSettings(
-                                settingsName = SettingsEnum.DarkMode.name,
-                                value = it
-                            )
-                        )
-                    }
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(.95f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Keep Screen on",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(start = 15.dp)
-                )
-                Switch(
-                    checked = screenPermOn,
-                    colors = SwitchDefaults.colors(),
-                    onCheckedChange = {
-                        sharedVM.keepScreenOnSetting.value = it
-                        sharedVM.updateSettings(
-                            AppSettings(
-                                settingsName = SettingsEnum.ScreenPermOn.name,
-                                value = it
-                            )
-                        )
-                    }
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(.95f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Add Categories to Grocery List",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(start = 15.dp),
-                    maxLines = 2
-                )
-                Switch(
-                    checked = categoriesOn,
-                    colors = SwitchDefaults.colors(),
-                    onCheckedChange = {
-                        sharedVM.categoriesOnSetting.value = it
-                        sharedVM.updateSettings(
-                            AppSettings(
-                                settingsName = SettingsEnum.Categories.name,
-                                value = it
-                            )
-                        )
-                    }
-                )
-            }
-
-            Column() {
-                Box(modifier = Modifier.weight(1f, true))
-                Text(
-                    text = "About",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(start = 10.dp, bottom = 4.dp)
-                )
-                Text(
-                    text = "Created by Kunle Ogundeji",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 15.dp, bottom = 1.dp)
-                )
-                Text(
-                    text = "Sun King Studios",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 15.dp, bottom = 1.dp)
-                )
-                Text(
-                    text = "Version 2.0.0",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 15.dp, bottom = 10.dp)
-                )
-            }
+            Text(
+                text = "Created by Kunle Ogundeji",
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(start = 15.dp, bottom = 1.dp)
+            )
+            Text(
+                text = "Sun King Studios",
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(start = 15.dp, bottom = 1.dp)
+            )
+            Text(
+                text = "Version 2.0.0",
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(start = 15.dp, bottom = 10.dp)
+            )
         }
     }
 }

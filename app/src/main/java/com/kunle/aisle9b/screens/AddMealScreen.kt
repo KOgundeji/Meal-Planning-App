@@ -1,7 +1,6 @@
 package com.kunle.aisle9b.screens
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.models.tabs.TabItem
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.meals.MealVM
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
@@ -44,24 +42,24 @@ import kotlinx.coroutines.launch
 fun AddMealScreenTest(
     modifier: Modifier = Modifier,
     mealVM: MealVM,
-    sharedVM: SharedVM,
+    generalVM: GeneralVM,
     topBar: (TopBarOptions) -> Unit,
     source: (GroceryScreens) -> Unit
 ) {
     topBar(TopBarOptions.Back)
     source(GroceryScreens.AddMealsScreenTEST)
+    val scope = rememberCoroutineScope()
+    val mealId = remember { mealVM.insertMeal(Meal.createBlank()) }
 
-    var meal by remember { mutableStateOf(Meal.createBlank()) }
-    sharedVM.mealToBeSaved = meal
-
-    val foodList = remember { mutableStateListOf<Food>() }
-    sharedVM.foodListToBeSaved = foodList
+    val mwi = mealVM.mealsWithIngredients.collectAsState().value.first {
+        it.meal.mealId == mealId
+    }
 
     var instructionsList by remember { mutableStateOf(emptyList<Instruction>()) }
     val mealInstructions = remember(instructionsList) {
         instructionsList.sortedBy { it.position }
     }
-    sharedVM.instructionsToBeSaved = mealInstructions
+    generalVM.instructionsToBeSaved = mealInstructions
 
     var editSummary by remember { mutableStateOf(false) }
     var editIngredients by remember { mutableStateOf(false) }
@@ -70,29 +68,22 @@ fun AddMealScreenTest(
     var shouldShowCamera by remember { mutableStateOf(false) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-
     if (editIngredients) {
         IngredientsListDialog9(
-            foodList = foodList,
-            categoryMap = sharedVM.categoryMap.collectAsState().value,
-            originalServingSize = meal.servingSize,
-            updateCategory = { sharedVM.upsertCategory(it) },
-            updateFoodList = { oldFood, newFood, command ->
-                if (command == "Edit") {
-                    foodList.remove(oldFood)
-                }
-                foodList.add(newFood)
+            foodList = mwi.ingredients,
+            originalServingSize = mwi.meal.servingSize,
+            mealVM = mealVM,
+            updateFoodList = { newFood ->
+                scope.launch { mealVM.upsertFood(food = newFood) }
             },
             onSaveServingSizeClick = { servingSize ->
-                meal = Meal(
-                    mealId = meal.mealId,
-                    name = meal.name,
-                    servingSize = servingSize,
-                    mealPic = meal.mealPic,
-                    notes = meal.notes
+                mealVM.updateServingSize(
+                    ServingSizeUpdate(
+                        mealId = mealId,
+                        servingSize = servingSize
+                    )
                 )
             },
-            sharedVM = sharedVM,
             setShowDialog = { editIngredients = false })
     }
 
@@ -108,15 +99,15 @@ fun AddMealScreenTest(
                     )
                 editInstructions = false
             },
-            mealId = meal.mealId,
-            setShowDialog = { editInstructions = false })
+            mealId = mealId
+        ) { editInstructions = false }
     }
 
     if (editSummary) {
         EditSummaryDialog9(
-            meal = meal,
+            meal = mwi.meal,
             updateMeal = {
-                meal = it
+                mealVM.upsertMeal(it)
                 editSummary = false
             },
             setShowDialog = { editSummary = false })
@@ -125,13 +116,7 @@ fun AddMealScreenTest(
     if (editPicture) {
         PhotoOptionsDialog9(
             onImageCaptured = { uri ->
-                meal = Meal(
-                    mealId = meal.mealId,
-                    name = meal.name,
-                    servingSize = meal.servingSize,
-                    mealPic = uri,
-                    notes = meal.notes
-                )
+                mealVM.updatePic(PicUpdate(mealId = mealId, mealPic = uri))
                 editPicture = false
             },
             toggleCamera = {
@@ -139,13 +124,7 @@ fun AddMealScreenTest(
                 shouldShowCamera = it
             },
             deletePic = {
-                meal = Meal(
-                    mealId = meal.mealId,
-                    name = meal.name,
-                    servingSize = meal.servingSize,
-                    mealPic = null,
-                    notes = meal.notes
-                )
+                mealVM.updatePic(PicUpdate(mealId = mealId, mealPic = null))
                 editPicture = false
             }
         ) {
@@ -157,18 +136,12 @@ fun AddMealScreenTest(
         CameraXMode(
             toggleCamera = { shouldShowCamera = it },
             onImageCaptured = { uri ->
-                meal = Meal(
-                    mealId = meal.mealId,
-                    name = meal.name,
-                    servingSize = meal.servingSize,
-                    mealPic = uri,
-                    notes = meal.notes
-                )
+                mealVM.updatePic(PicUpdate(mealId = mealId, mealPic = uri))
             })
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        if (meal.mealPic == null) {
+        if (mwi.meal.mealPic == null) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -207,7 +180,7 @@ fun AddMealScreenTest(
             ) {
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
-                    model = meal.mealPic,
+                    model = mwi.meal.mealPic,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.Center
@@ -215,8 +188,8 @@ fun AddMealScreenTest(
             }
         }
         Tabs(
-            meal = meal,
-            foodList = foodList,
+            meal = mwi.meal,
+            ingredientList = mwi.ingredients,
             mealInstructions = mealInstructions,
             editSummary = { editSummary = true },
             editIngredients = { editIngredients = true },
@@ -228,7 +201,7 @@ fun AddMealScreenTest(
 @Composable
 fun Tabs(
     meal: Meal,
-    foodList: List<Food>,
+    ingredientList: List<Food>,
     mealInstructions: List<Instruction>,
     editSummary: () -> Unit,
     editIngredients: () -> Unit,
@@ -248,7 +221,7 @@ fun Tabs(
         TabItem(
             title = "Ingredients",
             screen = {
-                IngredientsTab(meal = meal, foodList = foodList) {
+                IngredientsTab(meal = meal, ingredientList = ingredientList) {
                     editIngredients()
                 }
             }),
@@ -323,7 +296,7 @@ fun SummaryScreen(
 @Composable
 fun IngredientsTab(
     meal: Meal,
-    foodList: List<Food>,
+    ingredientList: List<Food>,
     editIngredients: () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -366,8 +339,8 @@ fun IngredientsTab(
                 .padding(start = 6.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(items = foodList) {
-                Text(text = "${it.quantity} ${it.name}", fontSize = 14.sp)
+            items(items = ingredientList) {
+                Text(text = "${it.name}: ${it.quantity}", fontSize = 14.sp)
             }
         }
     }

@@ -1,8 +1,6 @@
 package com.kunle.aisle9b.navigation
 
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
@@ -13,9 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,7 +38,7 @@ import com.kunle.aisle9b.ui.theme.*
 @Composable
 fun Aisle9Navigation(
     modifier: Modifier = Modifier,
-    sharedVM: SharedVM,
+    generalVM: GeneralVM,
     navController: NavHostController,
     source: (GroceryScreens) -> Unit,
     topBar: (TopBarOptions) -> Unit
@@ -52,11 +48,6 @@ fun Aisle9Navigation(
     val customListVM = viewModel<CustomListVM>()
     val mealVM = viewModel<MealVM>()
 
-//    addFakeToDatabase(
-//        sharedVM = sharedVM,
-//        mealVM = mealVM,
-//        customListVM = customListVM
-//    )
     NavHost(
         navController = navController,
         startDestination = GroceryScreens.GroceryListScreen.name
@@ -69,7 +60,7 @@ fun Aisle9Navigation(
         composable(route = GroceryScreens.GroceryListScreen.name) {
             GroceryScreen(
                 modifier = modifier,
-                sharedVM = sharedVM,
+                generalVM = generalVM,
                 groceryVM = groceryVM,
                 navController = navController,
                 source = source,
@@ -78,7 +69,7 @@ fun Aisle9Navigation(
         }
         composable(route = GroceryScreens.CustomListScreen.name) {
             CustomListScreen(
-                sharedVM = sharedVM,
+                generalVM = generalVM,
                 customListVM = customListVM,
                 modifier = modifier,
                 source = source,
@@ -88,7 +79,7 @@ fun Aisle9Navigation(
         composable(route = GroceryScreens.MealScreen.name) {
             MealScreen(
                 modifier = modifier,
-                shoppingVM = sharedVM,
+                generalVM = generalVM,
                 mealVM = mealVM,
                 navController = navController,
                 source = source,
@@ -98,7 +89,7 @@ fun Aisle9Navigation(
         composable(route = GroceryScreens.SettingsScreen.name) {
             SettingsScreen(
                 modifier = modifier,
-                sharedVM = sharedVM,
+                generalVM = generalVM,
                 source = source,
                 topBar = topBar
             )
@@ -115,7 +106,7 @@ fun Aisle9Navigation(
         composable(route = GroceryScreens.AddMealsScreenTEST.name) {
             AddMealScreenTest(
                 modifier = modifier,
-                sharedVM = sharedVM,
+                generalVM = generalVM,
                 mealVM = mealVM,
                 source = source,
                 topBar = topBar
@@ -124,7 +115,6 @@ fun Aisle9Navigation(
         composable(route = GroceryScreens.AddCustomListScreen.name) {
             AddPreMadeListScreen(
                 modifier = modifier,
-                sharedVM = sharedVM,
                 customListVM = customListVM,
                 navController = navController,
                 source = source,
@@ -142,7 +132,7 @@ fun Aisle9Navigation(
                 modifier = modifier,
                 recipeId = backStack.arguments?.getInt("recipeIndex"),
                 recipesVM = recipeVM,
-                sharedVM = sharedVM,
+                generalVM = generalVM,
                 source = source,
                 topBar = topBar
             )
@@ -158,7 +148,6 @@ fun Aisle9Navigation(
                 modifier = modifier,
                 mealIndex = backStack.arguments?.getInt("mealIndex"),
                 mealVM = mealVM,
-                sharedVM = sharedVM,
                 source = source,
                 topBar = topBar
             )

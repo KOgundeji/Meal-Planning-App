@@ -3,32 +3,32 @@ package com.kunle.aisle9b.screens.meals
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.repository.ShoppingRepository
+import com.kunle.aisle9b.repositories.BasicRepositoryFunctions
+import com.kunle.aisle9b.repositories.meals.MealRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class MealVM @Inject constructor(private val repository: ShoppingRepository) : ViewModel() {
+class MealVM @Inject constructor(private val repository: MealRepository) : ViewModel(),
+    BasicRepositoryFunctions {
 
-    private val _mealsList = MutableStateFlow<List<Meal>>(emptyList())
+    private val _mealList = MutableStateFlow<List<Meal>>(emptyList())
     private val _mealsWithIngredients = MutableStateFlow<List<MealWithIngredients>>(emptyList())
     private val _instructions = MutableStateFlow<List<Instruction>>(emptyList())
-    val mealsList = _mealsList.asStateFlow()
+    val mealList = _mealList.asStateFlow()
     val mealsWithIngredients = _mealsWithIngredients.asStateFlow()
     val instructions = _instructions.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllMeals().distinctUntilChanged().collect {
-                _mealsList.value = it
+                _mealList.value = it
             }
         }
 
@@ -45,6 +45,14 @@ class MealVM @Inject constructor(private val repository: ShoppingRepository) : V
         }
     }
 
+    fun insertMeal(meal: Meal): Long {
+        var mealId = -1L
+        viewModelScope.launch {
+            mealId = async { repository.insertMeal(meal) }.await()
+        }
+        return mealId
+    }
+
     fun upsertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }
     fun deleteMeal(meal: Meal) = viewModelScope.launch { repository.deleteMeal(meal) }
     fun updateName(obj: MealNameUpdate) = viewModelScope.launch { repository.updateName(obj) }
@@ -53,24 +61,12 @@ class MealVM @Inject constructor(private val repository: ShoppingRepository) : V
         viewModelScope.launch { repository.updateServingSize(obj) }
 
     fun updateNotes(obj: NotesUpdate) = viewModelScope.launch { repository.updateNotes(obj) }
-    fun deleteAllMeals() = viewModelScope.launch { repository.deleteAllMeals() }
-    suspend fun getMeal(name: String): Meal {
-        return viewModelScope.async {
-            repository.getMeal(name)
-        }.await()
-    }
 
     fun upsertInstruction(instruction: Instruction) =
         viewModelScope.launch { repository.upsertInstruction(instruction) }
 
     fun deleteInstruction(instruction: Instruction) =
         viewModelScope.launch { repository.deleteInstruction(instruction) }
-
-
-    suspend fun getAllInstructionsForMeal(mealId: UUID): Flow<List<Instruction>> =
-        viewModelScope.async {
-            repository.getAllInstructionsForMeal(mealId)
-        }.await()
 
 
     fun insertPair(crossRef: MealFoodMap) =
@@ -82,16 +78,31 @@ class MealVM @Inject constructor(private val repository: ShoppingRepository) : V
     fun updatePair(crossRef: MealFoodMap) =
         viewModelScope.launch { repository.updatePair(crossRef) }
 
-    fun deleteSpecificMealIngredients(mealId: UUID) =
-        viewModelScope.launch { repository.deleteSpecificMealIngredients(mealId) }
+    fun deleteSpecificMealIngredients(mealId: Long) =
+        viewModelScope.launch { repository.deleteSpecificMealWithIngredients(mealId) }
 
-    fun deleteAllMealWithIngredients() =
-        viewModelScope.launch { repository.deleteAllMealWithIngredients() }
+    override suspend fun insertFood(food: Food): Long {
+        var foodId = -1L
+        viewModelScope.launch {
+            foodId = async { repository.insertFood(food) }.await()
+        }
+        return foodId
+    }
 
-    suspend fun getSpecificMealWithIngredients(mealId: Long): MealWithIngredients {
-        return viewModelScope.async {
-            repository.getSpecificMealWithIngredients(mealId)
-        }.await()
+    override suspend fun insertGrocery(grocery: Grocery) {
+        viewModelScope.launch { repository.insertGrocery(grocery) }
+    }
+
+    override suspend fun upsertFood(food: Food) {
+        viewModelScope.launch { repository.upsertFood(food) }
+    }
+
+    override suspend fun deleteFood(food: Food) {
+        viewModelScope.launch { repository.deleteFood(food) }
+    }
+
+    override suspend fun deleteGroceryByName(name: String) {
+        viewModelScope.launch { repository.deleteGroceryByName(name) }
     }
 
     fun reorganizeTempInstructions(
@@ -200,6 +211,4 @@ class MealVM @Inject constructor(private val repository: ShoppingRepository) : V
         }
 
     }
-
-
 }

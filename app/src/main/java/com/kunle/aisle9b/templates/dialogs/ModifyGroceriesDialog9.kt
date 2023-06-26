@@ -20,40 +20,43 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
+import com.kunle.aisle9b.models.GroceryList
+import com.kunle.aisle9b.models.GroceryListNameUpdate
 import com.kunle.aisle9b.models.ListFoodMap
-import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.screens.customLists.CustomListVM
 import com.kunle.aisle9b.templates.CustomTextField9
+import com.kunle.aisle9b.templates.items.CustomUpdateTextField9
 import com.kunle.aisle9b.templates.items.ListItem9
-import java.util.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun ModifyGroceriesDialog9(
-    id: UUID,
-    categoryMap: Map<String, String>,
-    sharedVM: SharedVM,
+    groceryList: GroceryList,
     customListVM: CustomListVM,
     setShowDialog: () -> Unit
 ) {
-    val food =
-        customListVM.groceriesOfCustomLists.collectAsState().value.first { it.list.listId == id }.groceries
+    val scope = rememberCoroutineScope()
+    val collectedFoodList =
+        customListVM.groceriesOfCustomLists.collectAsState().value.first { it.list.listId == groceryList.listId }.groceries
 
-    val sourceName =
-        customListVM.groceriesOfCustomLists.collectAsState().value.first { it.list.listId == id }.list.name
-
-    val foodList by remember { mutableStateOf(food) }
-    var name by remember { mutableStateOf(sourceName) }
+    val foodList by remember { mutableStateOf(collectedFoodList) }
+    var name by remember { mutableStateOf(groceryList.listName) } //this doesn't actually go anywhere
     var showFoodDialog by remember { mutableStateOf(false) }
 
     if (showFoodDialog) {
         EditFoodDialog9(
             oldFood = Food.createBlank(),
-            category = "Uncategorized",
             closeDialog = { showFoodDialog = false },
-            setCategory = { sharedVM.upsertCategory(it) },
-            setFood = { _, newFood ->
-                sharedVM.upsertFood(newFood)
-                customListVM.insertPair(ListFoodMap(listId = id, foodId = newFood.foodId))
+            setFood = { newFood ->
+                scope.launch {
+                    customListVM.upsertFood(newFood)
+                    customListVM.insertPair(
+                        ListFoodMap(
+                            listId = groceryList.listId,
+                            foodId = newFood.foodId
+                        )
+                    )
+                }
             })
     }
 
@@ -85,15 +88,22 @@ fun ModifyGroceriesDialog9(
                             .clickable { setShowDialog() }
                     )
                 }
-                CustomTextField9(
+                CustomUpdateTextField9(
                     modifier = Modifier
                         .height(45.dp)
                         .fillMaxWidth(),
                     text = name,
                     onValueChange = { name = it },
-                    label = "Meal Name",
-                    singleLine = true,
-                    textStyle = TextStyle(fontSize = 16.sp)
+                    onSaveClick = {
+                        customListVM.updateName(
+                            GroceryListNameUpdate(
+                                listId = groceryList.listId,
+                                listName = it
+                            )
+                        )
+                    },
+                    label = "List Name",
+                    singleLine = true
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -134,12 +144,10 @@ fun ModifyGroceriesDialog9(
                         ListItem9(
                             modifier = Modifier.padding(start = 4.dp),
                             food = it,
-                            category = categoryMap[it.name] ?: "Uncategorized",
-                            sharedVM = sharedVM,
+                            viewModel = customListVM,
                             checkBoxShown = false,
-                            setCategory = { category -> sharedVM.upsertCategory(category) },
-                            onEditFood = { _, newFood ->
-                                sharedVM.upsertFood(newFood)
+                            onEditFood = { newFood ->
+                                scope.launch { customListVM.upsertFood(newFood) }
                             }
                         )
                     }

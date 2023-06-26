@@ -17,7 +17,7 @@ import com.kunle.aisle9b.models.SettingsEnum
 import com.kunle.aisle9b.navigation.Aisle9Navigation
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
 import com.kunle.aisle9b.screens.meals.MealButtonBar
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
@@ -29,34 +29,34 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val sharedVM: SharedVM by viewModels()
-            ShoppingApp(sharedVM = sharedVM)
+            val generalVM: GeneralVM by viewModels()
+            ShoppingApp(generalVM = generalVM)
         }
     }
 }
 
 @Composable
-fun ShoppingApp(sharedVM: SharedVM) {
+fun ShoppingApp(generalVM: GeneralVM) {
     val navController = rememberNavController()
     var topBar by remember { mutableStateOf(TopBarOptions.Default) }
     var multiFloatingState by remember { mutableStateOf(MultiFloatingState.Collapsed) }
     var source by remember { mutableStateOf(GroceryScreens.GroceryListScreen) }
 
-    val settings = sharedVM.settingsList.collectAsState().value
+    val settings = generalVM.settingsList.collectAsState().value
 
-    sharedVM.darkModeSetting.value = settings.firstOrNull() {
+    generalVM.darkModeSetting.value = settings.firstOrNull() {
         it.settingsName == SettingsEnum.DarkMode.name
     }?.value ?: isSystemInDarkTheme()
 
-    sharedVM.categoriesOnSetting.value = settings.firstOrNull {
+    generalVM.categoriesOnSetting.value = settings.firstOrNull {
         it.settingsName == SettingsEnum.Categories.name
     }?.value ?: false
 
-    sharedVM.keepScreenOnSetting.value = settings.firstOrNull() {
+    generalVM.keepScreenOnSetting.value = settings.firstOrNull() {
         it.settingsName == SettingsEnum.ScreenPermOn.name
     }?.value ?: false
 
-    Aisle9bTheme(darkTheme = sharedVM.darkModeSetting.value) {
+    Aisle9bTheme(darkTheme = generalVM.darkModeSetting.value) {
         Scaffold(
             topBar = {
                 when (topBar) {
@@ -66,9 +66,9 @@ fun ShoppingApp(sharedVM: SharedVM) {
                         ) {
                             when (source) {
                                 GroceryScreens.MealScreen ->
-                                    sharedVM.mealButtonBar.value = MealButtonBar.Default
+                                    generalVM.mealButtonBar.value = MealButtonBar.Default
                                 GroceryScreens.CustomListScreen ->
-                                    sharedVM.customListButtonBar.value =
+                                    generalVM.customListButtonBar.value =
                                         CustomListButtonBar.Default
                                 else ->
                                     navController.popBackStack()
@@ -88,12 +88,12 @@ fun ShoppingApp(sharedVM: SharedVM) {
                         ExpandingFAB(
                             onAddClick = { navController.navigate(GroceryScreens.AddCustomListScreen.name) },
                             onTransferClick = {
-                                sharedVM.customListButtonBar.value =
+                                generalVM.customListButtonBar.value =
                                     CustomListButtonBar.Transfer
                                 topBar = TopBarOptions.Back
                             },
                             onDeleteClick = {
-                                sharedVM.customListButtonBar.value = CustomListButtonBar.Delete
+                                generalVM.customListButtonBar.value = CustomListButtonBar.Delete
                                 topBar = TopBarOptions.Back
                             },
                             multiFloatingState = multiFloatingState,
@@ -103,21 +103,21 @@ fun ShoppingApp(sharedVM: SharedVM) {
                         ExpandingFAB(
                             onAddClick = { navController.navigate(GroceryScreens.AddMealsScreenTEST.name) },
                             onTransferClick = {
-                                sharedVM.mealButtonBar.value = MealButtonBar.Transfer
+                                generalVM.mealButtonBar.value = MealButtonBar.Transfer
                                 topBar = TopBarOptions.Back
                             },
                             onDeleteClick = {
-                                sharedVM.mealButtonBar.value = MealButtonBar.Delete
+                                generalVM.mealButtonBar.value = MealButtonBar.Delete
                                 topBar = TopBarOptions.Back
                             },
                             multiFloatingState = multiFloatingState,
                             onMultiFabStateChange = { multiFloatingState = it }
                         )
                     GroceryScreens.AddMealsScreenTEST ->
-                        SaveFAB { sharedVM.saveCreatedMealonFABClick() }
+                        SaveFAB { generalVM.saveCreatedMealonFABClick() }
                     GroceryScreens.RecipeDetailsScreen ->
                         SaveFAB {
-                            sharedVM.saveAPIMealonFABClick()
+                            generalVM.saveAPIMealonFABClick()
                         }
                     else -> {}
 
@@ -125,9 +125,9 @@ fun ShoppingApp(sharedVM: SharedVM) {
             },
             bottomBar = {
                 BottomNavigationBar9(
-                    mealsName = "Meals (${sharedVM.numOfMeals.collectAsState().value})",
+                    mealsName = "Meals (${generalVM.numOfMeals.collectAsState().value})",
                     navController = navController,
-                    badgeCount = sharedVM.groceryBadgeCount.collectAsState().value,
+                    badgeCount = generalVM.groceryBadgeCount.collectAsState().value,
                     onItemClick = {
                         navController.navigate(it.route)
                     })
@@ -142,7 +142,7 @@ fun ShoppingApp(sharedVM: SharedVM) {
                     source = { screen -> source = screen },
                     topBar = { top -> topBar = top },
                     navController = navController,
-                    sharedVM = sharedVM,
+                    generalVM = generalVM,
                 )
             }
         }

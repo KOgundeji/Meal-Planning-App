@@ -29,9 +29,9 @@ import com.kunle.aisle9b.api.apiModels.ApiResponseRecipe
 import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
 import com.kunle.aisle9b.api.apiModels.recipeModels.Recipe
 import com.kunle.aisle9b.models.Meal
-import com.kunle.aisle9b.models.tabs.TabItem
+import com.kunle.aisle9b.models.TabItem
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.screens.utilScreens.ErrorScreen
 import com.kunle.aisle9b.screens.utilScreens.LoadingScreen
 import com.kunle.aisle9b.templates.headers.IngredientHeader
@@ -43,7 +43,7 @@ fun RecipeDetailsScreen(
     modifier: Modifier = Modifier,
     recipeId: Int?,
     recipesVM: RecipesVM,
-    sharedVM: SharedVM,
+    generalVM: GeneralVM,
     topBar: (TopBarOptions) -> Unit,
     source: (GroceryScreens) -> Unit
 ) {
@@ -66,7 +66,7 @@ fun RecipeDetailsScreen(
         retrievedRecipeState is ApiResponseRecipe.Success && retrievedInstructionState is ApiResponseInstructions.Success ->
         DetailsScreen(
             modifier = modifier,
-            sharedVM = sharedVM,
+            generalVM = generalVM,
             recipe = retrievedRecipeState.recipe,
             instructions = retrievedInstructionState.instructions
         )
@@ -77,12 +77,12 @@ fun RecipeDetailsScreen(
 @Composable
 private fun DetailsScreen(
     modifier: Modifier,
-    sharedVM: SharedVM,
+    generalVM: GeneralVM,
     recipe: Recipe,
     instructions: Instructions
 ) {
-    sharedVM.apiMealToBeSaved =
-        Meal(name = recipe.title, apiID = recipe.id)
+    generalVM.apiMealToBeSaved =
+        Meal(name = recipe.title, apiID = recipe.id, servingSize = recipe.servings.toString())
 
     Column(modifier = modifier.fillMaxSize()) {
         Box(

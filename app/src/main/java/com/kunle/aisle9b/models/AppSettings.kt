@@ -8,10 +8,9 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "settings")
 data class AppSettings(
-    @PrimaryKey
-    val settingsName: String,
-    @ColumnInfo
-    val value: Boolean) {}
+    @PrimaryKey val settingsName: String,
+    val value: Boolean
+)
 
 enum class SettingsEnum {
     DarkMode,

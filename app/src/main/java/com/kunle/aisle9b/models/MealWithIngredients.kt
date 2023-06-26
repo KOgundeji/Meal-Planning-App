@@ -13,5 +13,5 @@ data class MealWithIngredients(
         parentColumn = "mealId",
         entityColumn = "foodId",
         associateBy = Junction(MealFoodMap::class)
-    ) val foods: List<Food>
+    ) val ingredients: List<Food>
 )

@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.DriveFileMoveRtl
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,15 +18,15 @@ import androidx.compose.ui.unit.dp
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.templates.CustomSearchBar9
-import com.kunle.aisle9b.templates.items.PreMadeListItem9
-import com.kunle.aisle9b.util.*
+import com.kunle.aisle9b.templates.items.CustomListItem9
+import com.kunle.aisle9b.util.ReconciliationDialog
 
 @Composable
 fun CustomListScreen(
     modifier: Modifier = Modifier,
-    sharedVM: SharedVM,
+    generalVM: GeneralVM,
     customListVM: CustomListVM,
     topBar: (TopBarOptions) -> Unit,
     source: (GroceryScreens) -> Unit
@@ -32,38 +35,34 @@ fun CustomListScreen(
     source(GroceryScreens.CustomListScreen)
 
     val context = LocalContext.current
-
     val customLists = customListVM.customLists.collectAsState().value
-    val categoryMap = sharedVM.categoryMap.collectAsState().value
-
-    var primaryButtonBar = sharedVM.customListButtonBar.value
-
+    var primaryButtonBar = generalVM.customListButtonBar.value
     var searchWord by remember { mutableStateOf("") }
 
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
-    val listsToAddToGroceryList = remember { mutableStateListOf(sharedVM.groceryList.value) }
+    val listsToAddToGroceryList = remember { mutableStateListOf(generalVM.groceryList.value) }
 
     var filteredCustomLists by remember { mutableStateOf(customLists) }
 
     if (transferFoodsToGroceryList) {
-        val foodsForReconciliation = filterForReconciliation(
-            lists = listsToAddToGroceryList,
-            shoppingVM = sharedVM
-        )
+        val foodsForReconciliation =
+            generalVM.filterForReconciliation(
+                lists = listsToAddToGroceryList)
+
         if (foodsForReconciliation.isNotEmpty()) {
             ReconciliationDialog(
                 items = foodsForReconciliation,
-                sharedVM = sharedVM,
+                viewModel = customListVM,
                 resetButtonBarToDefault = {
                     topBar(TopBarOptions.Default)
-                    sharedVM.customListButtonBar.value = CustomListButtonBar.Default
+                    generalVM.customListButtonBar.value = CustomListButtonBar.Default
                 }
             ) {
                 transferFoodsToGroceryList = false
             }
         } else {
             topBar(TopBarOptions.Default)
-            sharedVM.customListButtonBar.value = CustomListButtonBar.Default
+            generalVM.customListButtonBar.value = CustomListButtonBar.Default
         }
         Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT)
             .show()
@@ -79,7 +78,7 @@ fun CustomListScreen(
             onValueChange = {
                 searchWord = it
                 filteredCustomLists = customLists.filter { list ->
-                    list.name.contains(searchWord, ignoreCase = true)
+                    list.listName.contains(searchWord, ignoreCase = true)
                 }
             },
             label = "Search in Custom Lists",
@@ -105,15 +104,15 @@ fun CustomListScreen(
                     topAppBar = topBar,
                     onBackClick = {
                         topBar(TopBarOptions.Default)
-                        sharedVM.customListButtonBar.value = CustomListButtonBar.Default
+                        generalVM.customListButtonBar.value = CustomListButtonBar.Default
                     },
                     onDeleteClick = {
-                        sharedVM.groceryListDeleteList.forEach { customList ->
+                        generalVM.groceryListDeleteList.forEach { customList ->
                             customListVM.deleteList(customList)
                             customListVM.deleteSpecificListWithGroceries(customList.listId)
                         }
                         topBar(TopBarOptions.Default)
-                        sharedVM.customListButtonBar.value = CustomListButtonBar.Default
+                        generalVM.customListButtonBar.value = CustomListButtonBar.Default
                     })
             }
             CustomListButtonBar.Transfer -> {
@@ -123,17 +122,16 @@ fun CustomListScreen(
                     addLists = { food -> transferFoodsToGroceryList = food }
                 ) {
                     topBar(TopBarOptions.Default)
-                    sharedVM.customListButtonBar.value = CustomListButtonBar.Default
+                    generalVM.customListButtonBar.value = CustomListButtonBar.Default
                 }
             }
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             items(items = filteredCustomLists) { listItem ->
-                PreMadeListItem9(
-                    list = listItem,
-                    categoryMap = categoryMap,
+                CustomListItem9(
+                    groceryList = listItem,
                     primaryButtonBarAction = primaryButtonBar,
-                    sharedVM = sharedVM,
+                    generalVM = generalVM,
                     customListVM = customListVM,
                     transferList = listsToAddToGroceryList
                 )

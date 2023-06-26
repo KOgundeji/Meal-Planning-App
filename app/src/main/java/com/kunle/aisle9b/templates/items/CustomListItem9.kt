@@ -21,24 +21,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.GroceryList
-import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
 import com.kunle.aisle9b.screens.customLists.CustomListVM
 import com.kunle.aisle9b.templates.dialogs.ModifyGroceriesDialog9
 
 @Composable
-fun PreMadeListItem9(
-    list: GroceryList,
-    categoryMap: Map<String,String>,
+fun CustomListItem9(
+    groceryList: GroceryList,
     primaryButtonBarAction: CustomListButtonBar,
-    sharedVM: SharedVM,
+    generalVM: GeneralVM,
     customListVM: CustomListVM,
     transferList: MutableList<List<Food>>
 ) {
     var isChecked by remember { mutableStateOf(false) }
     var showEditMealDialog by remember { mutableStateOf(false) }
     val lwg = customListVM.groceriesOfCustomLists.collectAsState().value.find { LWG ->
-        LWG.list.listId == list.listId
+        LWG.list.listId == groceryList.listId
     }
     val listedGroceries: String = lwg?.groceries
         ?.joinToString(separator = ", ") { it.name }
@@ -46,9 +45,7 @@ fun PreMadeListItem9(
 
     if (showEditMealDialog) {
         ModifyGroceriesDialog9(
-            id = list.listId,
-            categoryMap = categoryMap,
-            sharedVM = sharedVM,
+            groceryList = groceryList,
             customListVM = customListVM,
             setShowDialog = { showEditMealDialog = false }
         )
@@ -79,9 +76,9 @@ fun PreMadeListItem9(
                             onCheckedChange = {
                                 isChecked = !isChecked
                                 if (isChecked) {
-                                    sharedVM.groceryListDeleteList.add(list)
+                                    generalVM.groceryListDeleteList.add(groceryList)
                                 } else {
-                                    sharedVM.groceryListDeleteList.remove(list)
+                                    generalVM.groceryListDeleteList.remove(groceryList)
                                 }
                             },
                             colors = CheckboxDefaults.colors(
@@ -132,7 +129,7 @@ fun PreMadeListItem9(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = list.name,
+                        text = groceryList.listName,
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold

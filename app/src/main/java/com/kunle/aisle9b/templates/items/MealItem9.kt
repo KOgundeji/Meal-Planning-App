@@ -24,9 +24,8 @@ import androidx.navigation.NavController
 import com.kunle.aisle9b.R
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
-import com.kunle.aisle9b.models.MealWithIngredients
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.screens.SharedVM
+import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.screens.meals.MealButtonBar
 import com.kunle.aisle9b.screens.meals.MealVM
 
@@ -34,7 +33,7 @@ import com.kunle.aisle9b.screens.meals.MealVM
 fun MealItem9(
     meal: Meal,
     primaryButtonBarAction: MealButtonBar,
-    shoppingVM: SharedVM,
+    shoppingVM: GeneralVM,
     mealVM: MealVM,
     navController: NavController,
     transferList: MutableList<List<Food>>
@@ -47,8 +46,8 @@ fun MealItem9(
     }
 
     val listedIngredients: String =
-        if (mwi?.foods?.isNotEmpty() == true) {
-            mwi.foods.joinToString { it.name }
+        if (mwi?.ingredients?.isNotEmpty() == true) {
+            mwi.ingredients.joinToString { it.name }
         } else if (mwi?.meal?.apiID != null) {
             "Sourced from Spoonacular API"
         } else {
@@ -94,15 +93,15 @@ fun MealItem9(
                         )
                     }
                     MealButtonBar.Transfer -> {
-                        if (!meal.api) {
+                        if (meal.apiID < 0) {
                             Icon(
                                 modifier = Modifier
                                     .clickable {
                                         isChecked = !isChecked
                                         if (isChecked) {
-                                            transferList.add(mwi!!.foods)
+                                            transferList.add(mwi!!.ingredients)
                                         } else {
-                                            transferList.remove(mwi!!.foods)
+                                            transferList.remove(mwi!!.ingredients)
                                         }
                                     }
                                     .size(32.dp)
@@ -136,7 +135,7 @@ fun MealItem9(
                         .padding(horizontal = 3.dp)
                         .clickable {
                             if (primaryButtonBarAction == MealButtonBar.Default) {
-                                if (meal.api) {
+                                if (meal.apiID > 0) {
                                     val recipeId = meal.apiID
                                     navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${recipeId}")
                                 } else {

@@ -1,33 +1,51 @@
 package com.kunle.aisle9b.models
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.UUID
 
 @Entity(tableName = "food_table")
-data class Food(
-    @PrimaryKey
-    val foodId: UUID = UUID.randomUUID(),
-    @ColumnInfo
+open class Food(
+    @PrimaryKey(autoGenerate = true)
+    var foodId: Long = 0L,
     val name: String,
-    @ColumnInfo
-    var quantity: String,
-    @ColumnInfo
-    var isInGroceryList: Boolean
+    val quantity: String,
+    val category: String = "Uncategorized"
 ) {
     companion object {
         fun createBlank(): Food {
-            return Food(name = "", quantity = "", isInGroceryList = false)
+            return Food(name = "", quantity = "")
         }
 
-        fun copy(food: Food, isInGroceryList: Boolean): Food {
-            return Food(
+        fun foodToGrocery(food: Food): Grocery {
+            return Grocery(
                 name = food.name,
                 quantity = food.quantity,
-                isInGroceryList = isInGroceryList
+                category = food.category
             )
         }
+
+        val categories = arrayOf(
+            "Uncategorized",
+            "Baby Items",
+            "Baking",
+            "Beverages",
+            "Bread & Bakery",
+            "Canned Goods",
+            "Condiments & Spices",
+            "Dairy",
+            "Deli",
+            "Fish & Seafood",
+            "Frozen Foods",
+            "Fruits",
+            "Health Care",
+            "Household & Cleaning Supplies",
+            "Meat",
+            "Pasta, Rice & Cereal",
+            "Personal Care",
+            "Pet Care",
+            "Snacks",
+            "Vegetables"
+        )
     }
 }
 

@@ -30,9 +30,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.models.tabs.TabItem
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.screens.SharedVM
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.IngredientsListDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.InstructionsListDialog9
@@ -47,12 +45,13 @@ fun MealDetailsScreen(
     modifier: Modifier = Modifier,
     mealIndex: Int?,
     mealVM: MealVM,
-    sharedVM: SharedVM,
     topBar: (TopBarOptions) -> Unit,
     source: (GroceryScreens) -> Unit
 ) {
     topBar(TopBarOptions.Back)
     source(GroceryScreens.MealDetailsScreen)
+
+    val scope = rememberCoroutineScope()
 
     if (mealIndex != null) {
         val mwi = mealVM.mealsWithIngredients.collectAsState().value[mealIndex]
@@ -64,8 +63,6 @@ fun MealDetailsScreen(
                 it.position
             }
 
-        val categoryMap = sharedVM.categoryMap.collectAsState().value
-
         var editSummary by remember { mutableStateOf(false) }
         var editIngredients by remember { mutableStateOf(false) }
         var editInstructions by remember { mutableStateOf(false) }
@@ -74,13 +71,19 @@ fun MealDetailsScreen(
 
         if (editIngredients) {
             IngredientsListDialog9(
-                foodList = mwi.foods,
-                categoryMap = categoryMap,
-                updateFoodList = { _, newFood, _ ->
-                    sharedVM.upsertFood(newFood)
-                    mealVM.insertPair(MealFoodMap(mealId = mwi.meal.mealId, foodId = newFood.foodId))
+                foodList = mwi.ingredients,
+                mealVM = mealVM,
+                updateFoodList = { newFood ->
+                    scope.launch {
+                        mealVM.upsertFood(newFood)
+                        mealVM.insertPair(
+                            MealFoodMap(
+                                mealId = mwi.meal.mealId,
+                                foodId = newFood.foodId
+                            )
+                        )
+                    }
                 },
-                updateCategory = { sharedVM.upsertCategory(it)},
                 onSaveServingSizeClick = { servingSize ->
                     mealVM.updateServingSize(
                         ServingSizeUpdate(
@@ -90,7 +93,6 @@ fun MealDetailsScreen(
                     )
                 },
                 originalServingSize = mwi.meal.servingSize,
-                sharedVM = sharedVM,
                 setShowDialog = { editIngredients = false }
             )
         }
@@ -106,8 +108,8 @@ fun MealDetailsScreen(
                     )
                     editInstructions = false
                 },
-                mealId = mwi.meal.mealId,
-                setShowDialog = { editInstructions = false })
+                mealId = mwi.meal.mealId
+            ) { editInstructions = false }
         }
 
         if (editSummary) {
@@ -123,13 +125,10 @@ fun MealDetailsScreen(
         if (editPicture) {
             PhotoOptionsDialog9(
                 onImageCaptured = { Uri ->
-                    mealVM.upsertMeal(
-                        Meal(
+                    mealVM.updatePic(
+                        PicUpdate(
                             mealId = mwi.meal.mealId,
-                            name = mwi.meal.name,
-                            servingSize = mwi.meal.servingSize,
-                            mealPic = Uri,
-                            notes = mwi.meal.notes
+                            mealPic = Uri
                         )
                     )
                     editPicture = false
@@ -137,7 +136,10 @@ fun MealDetailsScreen(
                 toggleCamera = { shouldShowCamera = it },
                 deletePic = {
                     mealVM.updatePic(
-                        PicUpdate(mealId = mwi.meal.mealId, mealPic = null)
+                        PicUpdate(
+                            mealId = mwi.meal.mealId,
+                            mealPic = null
+                        )
                     )
                     editPicture = false
                 }
@@ -227,7 +229,10 @@ fun Tabs(
         TabItem(
             title = "Notes",
             screen = {
-                SummaryScreen(mealName = mwi.meal.name, notes = mwi.meal.notes) {
+                SummaryScreen(
+                    mealName = mwi.meal.name,
+                    notes = mwi.meal.notes
+                ) {
                     editSummary()
                 }
             }),
@@ -350,8 +355,8 @@ fun IngredientsTab(
                 .padding(start = 6.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(items = mealAndIngredients.foods) {
-                Text(text = "${it.quantity} ${it.name}", fontSize = 14.sp)
+            items(items = mealAndIngredients.ingredients) {
+                Text(text = "${it.name}: ${it.quantity}", fontSize = 14.sp)
             }
         }
     }

@@ -20,15 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Instruction
-import com.kunle.aisle9b.screens.meals.MealVM
 import com.kunle.aisle9b.templates.items.mealItems.InstructionItem
-import java.util.*
 
 @Composable
 fun InstructionsListDialog9(
     mealInstructionList: List<Instruction>,
     updatedInstruction: (Instruction, Int) -> Unit,
-    mealId: UUID,
+    mealId: Long,
     setShowDialog: () -> Unit
 ) {
     var addInstructionDialog by remember { mutableStateOf(false) }

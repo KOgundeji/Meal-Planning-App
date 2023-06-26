@@ -7,15 +7,11 @@ import java.util.*
 
 @Dao
 interface InstructionDao {
-
-    @Upsert()
+    @Upsert
     suspend fun upsertInstruction(instruction: Instruction)
 
     @Delete
     suspend fun deleteInstruction(instruction: Instruction)
-
-    @Query("SELECT * FROM instructions WHERE mealId = :mealId")
-    fun getAllInstructionsForMeal(mealId: UUID): Flow<List<Instruction>>
 
     @Query("SELECT * FROM instructions")
     fun getAllInstructions(): Flow<List<Instruction>>
