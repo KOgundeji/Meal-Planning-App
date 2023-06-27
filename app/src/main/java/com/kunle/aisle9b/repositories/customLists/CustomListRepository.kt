@@ -19,6 +19,7 @@ interface CustomListRepository {
     suspend fun insertGrocery(grocery: Grocery)
     suspend fun upsertFood(food: Food)
     suspend fun deleteFood(food: Food)
+    suspend fun deleteGrocery(grocery: Grocery)
     suspend fun deleteGroceryByName(name: String)
 
     //Partial Room entries

@@ -4,10 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "grocery_table")
-open class Grocery(
+data class Grocery(
     @PrimaryKey(autoGenerate = true)
     val groceryId: Long = 0,
     val name: String,
     val quantity: String,
-    val category: String
+    val category: String = "Uncategorized"
 )

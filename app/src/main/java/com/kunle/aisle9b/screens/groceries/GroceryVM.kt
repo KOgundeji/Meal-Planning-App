@@ -37,8 +37,8 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
         }
     }
 
-    fun deleteGrocery(grocery: Grocery) = viewModelScope.launch {
-        repository.deleteGrocery(grocery)
+    override suspend fun deleteGrocery(grocery: Grocery) {
+        viewModelScope.launch { repository.deleteGrocery(grocery) }
     }
 
     override suspend fun insertFood(food: Food): Long {

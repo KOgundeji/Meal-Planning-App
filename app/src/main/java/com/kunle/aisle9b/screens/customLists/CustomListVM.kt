@@ -83,6 +83,10 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
         viewModelScope.launch { repository.deleteFood(food) }
     }
 
+    override suspend fun deleteGrocery(grocery: Grocery) {
+        viewModelScope.launch { repository.deleteGrocery(grocery) }
+    }
+
     override suspend fun insertGrocery(grocery: Grocery) {
         viewModelScope.launch { repository.insertGrocery(grocery) }
     }

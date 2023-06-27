@@ -36,6 +36,8 @@ class CustomListRepositoryImpl @Inject constructor(
     override suspend fun insertGrocery(grocery: Grocery) = groceryDao.insertGrocery(grocery)
     override suspend fun upsertFood(food: Food) = groceryDao.upsertFood(food)
     override suspend fun deleteFood(food: Food) = groceryDao.deleteFood(food)
+    override suspend fun deleteGrocery(grocery: Grocery) = groceryDao.deleteGrocery(grocery)
+
     override suspend fun deleteGroceryByName(name: String) = groceryDao.deleteGroceryByName(name)
 
     //Partial Room entries

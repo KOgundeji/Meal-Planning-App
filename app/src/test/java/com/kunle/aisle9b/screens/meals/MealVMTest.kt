@@ -2,6 +2,7 @@ package com.kunle.aisle9b.screens.meals
 
 import com.kunle.aisle9b.models.Instruction
 import com.kunle.aisle9b.repositories.FakeShoppingRepository
+import com.kunle.aisle9b.repositories.meals.FakeMealRepository
 import dagger.hilt.android.testing.HiltAndroidTest
 
 import org.junit.Before
@@ -15,7 +16,7 @@ class MealVMTest {
 
     @Before
     fun setUp() {
-        viewModel = MealVM(repository = FakeShoppingRepository())
+        viewModel = MealVM(repository = FakeMealRepository())
         testList = listOf(
             Instruction(1, "Do the third thing", 4, 3),
             Instruction(2, "Do the fourth thing", 4, 4),

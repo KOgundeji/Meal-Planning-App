@@ -11,7 +11,6 @@ interface MealRepository {
     suspend fun getInstructions(id: Int): Instructions
 
     //Partial Room entries
-
     suspend fun updateName(obj: MealNameUpdate)
     suspend fun updatePic(obj: PicUpdate)
     suspend fun updateServingSize(obj: ServingSizeUpdate)
@@ -22,6 +21,7 @@ interface MealRepository {
     suspend fun upsertMeal(meal: Meal)
     suspend fun deleteMeal(meal: Meal)
     suspend fun insertGrocery(grocery: Grocery)
+    suspend fun deleteGrocery(grocery: Grocery)
     suspend fun deleteGroceryByName(name: String)
     suspend fun insertFood(food: Food) : Long
     suspend fun upsertFood(food: Food)

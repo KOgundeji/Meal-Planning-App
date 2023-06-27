@@ -26,6 +26,10 @@ class FakeMealRepository: MealRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun deleteGrocery(grocery: Grocery) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun deleteGroceryByName(name: String) {
         TODO("Not yet implemented")
     }
@@ -78,7 +82,7 @@ class FakeMealRepository: MealRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteSpecificMealWithIngredients(mealId: Int) {
+    suspend fun deleteSpecificMealWithIngredients(mealId: Int) {
         TODO("Not yet implemented")
     }
 

@@ -58,7 +58,7 @@ fun GroceryListItem9(
                 checked = isChecked,
                 onCheckedChange = {
                     isChecked = true
-                    scope.launch { viewModel.deleteGroceryByName(grocery.name) }
+                    scope.launch { viewModel.deleteGrocery(grocery) }
                 },
                 colors = CheckboxDefaults.colors(
                     checkedColor = MaterialTheme.colorScheme.secondaryContainer,
