@@ -12,7 +12,7 @@ data class Meal(
     val servingSize: String,
     val mealPic: Uri? = null,
     val notes: String,
-    val apiID: Long = -1,
+    val apiID: Int = -1,
     val visible: Boolean = true
 ) {
     constructor(name: String, servingSize: String, apiID: Int) :

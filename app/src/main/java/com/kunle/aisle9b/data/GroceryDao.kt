@@ -19,6 +19,9 @@ interface GroceryDao {
     @Insert
     suspend fun insertGrocery(grocery: Grocery)
 
+    @Upsert
+    suspend fun upsertGrocery(grocery: Grocery)
+
     @Delete
     suspend fun deleteGrocery(grocery: Grocery)
 

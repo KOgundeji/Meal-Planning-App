@@ -30,6 +30,7 @@ import com.kunle.aisle9b.screens.meals.MealButtonBar
 import com.kunle.aisle9b.templates.CustomAutoComplete9
 import com.kunle.aisle9b.templates.CustomTextField9
 import com.kunle.aisle9b.templates.headers.CategoryHeader
+import com.kunle.aisle9b.templates.items.GroceryListItem9
 import com.kunle.aisle9b.templates.items.ListItem9
 import com.kunle.aisle9b.util.*
 import kotlinx.coroutines.launch
@@ -147,24 +148,24 @@ fun GroceryScreen(
                             CategoryHeader(string = category)
                         }
                         items(items = groceries) { grocery ->
-                            ListItem9(
-                                food = grocery,
+                            GroceryListItem9(
+                                grocery = grocery,
                                 viewModel = groceryVM,
                                 modifier = Modifier.animateItemPlacement(),
-                                onEditFood = { newFood ->
-                                    coroutineScope.launch { groceryVM.upsertFood(newFood) }
+                                onEditGrocery = { newGrocery ->
+                                    coroutineScope.launch { groceryVM.upsertGrocery(newGrocery) }
                                 }
                             )
                         }
                     }
                 } else {
                     items(items = groceryList) { grocery ->
-                        ListItem9(
-                            food = grocery,
+                        GroceryListItem9(
+                            grocery = grocery,
                             viewModel = groceryVM,
                             modifier = Modifier.animateItemPlacement(),
-                            onEditFood = { newFood ->
-                                coroutineScope.launch { groceryVM.upsertFood(newFood) }
+                            onEditGrocery = { newGrocery ->
+                                coroutineScope.launch { groceryVM.upsertGrocery(newGrocery) }
                             }
                         )
                     }

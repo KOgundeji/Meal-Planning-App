@@ -10,6 +10,7 @@ interface GroceryRepository {
     suspend fun insertFood(food: Food): Long
     suspend fun insertGrocery(grocery: Grocery)
     suspend fun upsertFood(food: Food)
+    suspend fun upsertGrocery(grocery: Grocery)
     suspend fun deleteFood(food: Food)
     suspend fun deleteGrocery(grocery: Grocery)
     suspend fun deleteGroceryByName(name: String)

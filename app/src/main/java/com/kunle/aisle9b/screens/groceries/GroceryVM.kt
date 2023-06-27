@@ -53,6 +53,10 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
         viewModelScope.launch { repository.insertGrocery(grocery) }
     }
 
+    suspend fun upsertGrocery(grocery: Grocery) {
+        viewModelScope.launch { repository.upsertGrocery(grocery) }
+    }
+
     override suspend fun upsertFood(food: Food) {
         viewModelScope.launch { repository.upsertFood(food) }
     }

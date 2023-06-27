@@ -42,7 +42,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideGeneralRepository(
+    fun provideGeneralRepositoryImpl(
         groceryDao: GroceryDao,
         mealDao: MealDao,
         settingsDao: SettingsDao,
@@ -58,7 +58,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideCustomListRepository(
+    fun provideCustomListRepositoryImpl(
         customListDao: CustomListDao,
         listWithGroceriesDao: ListWithGroceriesDao,
         groceryDao: GroceryDao
@@ -68,12 +68,12 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideGroceryRepository(groceryDao: GroceryDao) =
+    fun provideGroceryRepositoryImpl(groceryDao: GroceryDao) =
         GroceryRepositoryImpl(groceryDao) as GroceryRepository
 
     @Singleton
     @Provides
-    fun provideMealRepository(
+    fun provideMealRepositoryImpl(
         groceryDao: GroceryDao,
         mealDao: MealDao,
         instructionDao: InstructionDao,
@@ -90,7 +90,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRecipeRepository(
+    fun provideRecipeRepositoryImpl(
         groceryDao: GroceryDao,
         mealDao: MealDao,
         recipeAPI: RecipeAPI,

@@ -27,6 +27,7 @@ class GroceryRepositoryImpl @Inject constructor(
 
     override suspend fun insertFood(food: Food): Long = groceryDao.insertFood(food)
     override suspend fun insertGrocery(grocery: Grocery) = groceryDao.insertGrocery(grocery)
+    override suspend fun upsertGrocery(grocery: Grocery) = groceryDao.upsertGrocery(grocery)
     override suspend fun upsertFood(food: Food) = groceryDao.upsertFood(food)
     override suspend fun deleteFood(food: Food) = groceryDao.deleteFood(food)
     override suspend fun deleteGroceryByName(name: String) = groceryDao.deleteGroceryByName(name)
