@@ -2,10 +2,8 @@ package com.kunle.aisle9b.repositories.recipes
 
 import com.kunle.aisle9b.api.RecipeAPI
 import com.kunle.aisle9b.api.apiModels.recipeModels.Recipe
-import com.kunle.aisle9b.data.GroceryDao
 import com.kunle.aisle9b.data.MealDao
 import com.kunle.aisle9b.data.MealWithIngredientsDao
-import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.models.MealFoodMap
 import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
@@ -14,7 +12,6 @@ import javax.inject.Inject
 
 class RecipeRepositoryImpl @Inject
 constructor(
-    private val groceryDao: GroceryDao,
     private val mealDao: MealDao,
     private val recipeAPI: RecipeAPI,
     private val mealWithIngredientsDao: MealWithIngredientsDao

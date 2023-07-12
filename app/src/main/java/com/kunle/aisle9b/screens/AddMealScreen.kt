@@ -1,6 +1,7 @@
 package com.kunle.aisle9b.screens
 
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -124,7 +125,7 @@ fun AddMealScreenTest(
                 shouldShowCamera = it
             },
             deletePic = {
-                mealVM.updatePic(PicUpdate(mealId = mealId, mealPic = null))
+                mealVM.updatePic(PicUpdate(mealId = mealId, mealPic =  Uri.EMPTY))
                 editPicture = false
             }
         ) {

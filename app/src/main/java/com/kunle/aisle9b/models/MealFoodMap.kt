@@ -5,7 +5,7 @@ import androidx.room.Entity
 import java.util.UUID
 
 @Entity(primaryKeys = ["mealId", "foodId"])
-class MealFoodMap(
+data class MealFoodMap(
     @ColumnInfo(index = true)
     val mealId: Long,
     val foodId: Long) {

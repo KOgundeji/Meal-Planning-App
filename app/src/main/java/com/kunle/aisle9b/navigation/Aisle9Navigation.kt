@@ -34,6 +34,7 @@ import com.kunle.aisle9b.screens.recipes.RecipeScreen
 import com.kunle.aisle9b.screens.recipes.RecipesVM
 import com.kunle.aisle9b.screens.splash.SplashScreen
 import com.kunle.aisle9b.ui.theme.*
+import dagger.hilt.android.AndroidEntryPoint
 
 @Composable
 fun Aisle9Navigation(
@@ -43,8 +44,8 @@ fun Aisle9Navigation(
     source: (GroceryScreens) -> Unit,
     topBar: (TopBarOptions) -> Unit
 ) {
-    val recipeVM = viewModel<RecipesVM>()
     val groceryVM = viewModel<GroceryVM>()
+    val recipeVM = viewModel<RecipesVM>()
     val customListVM = viewModel<CustomListVM>()
     val mealVM = viewModel<MealVM>()
 

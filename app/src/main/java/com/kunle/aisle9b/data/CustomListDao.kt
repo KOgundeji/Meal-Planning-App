@@ -25,7 +25,7 @@ interface CustomListDao {
     suspend fun deleteAllInvisibleLists()
 
     @Query("SELECT * FROM list_table WHERE visible")
-    fun getVisibleLists(): Flow<List<GroceryList>>
+    fun getAllVisibleLists(): Flow<List<GroceryList>>
 
     @Query("SELECT * FROM list_table")
     fun getAllLists(): Flow<List<GroceryList>>

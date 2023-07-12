@@ -27,20 +27,20 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getAllMeals().distinctUntilChanged().collect {
-                _mealList.value = it
+            repository.getAllMeals().distinctUntilChanged().collect { meals ->
+                _mealList.value = meals
             }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getAllMealsWithIngredients().distinctUntilChanged().collect {
-                _mealsWithIngredients.value = it
+            repository.getAllMealsWithIngredients().distinctUntilChanged().collect { mwi ->
+                _mealsWithIngredients.value = mwi
             }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getAllInstructions().distinctUntilChanged().collect {
-                _instructions.value = it
+            repository.getAllInstructions().distinctUntilChanged().collect { list ->
+                _instructions.value = list
             }
         }
     }
@@ -74,9 +74,6 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
 
     fun deletePair(crossRef: MealFoodMap) =
         viewModelScope.launch { repository.deletePair(crossRef) }
-
-    fun updatePair(crossRef: MealFoodMap) =
-        viewModelScope.launch { repository.updatePair(crossRef) }
 
     fun deleteSpecificMealIngredients(mealId: Long) =
         viewModelScope.launch { repository.deleteSpecificMealWithIngredients(mealId) }

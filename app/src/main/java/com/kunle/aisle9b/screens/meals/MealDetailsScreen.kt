@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens.meals
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -138,7 +139,7 @@ fun MealDetailsScreen(
                     mealVM.updatePic(
                         PicUpdate(
                             mealId = mwi.meal.mealId,
-                            mealPic = null
+                            mealPic =  Uri.EMPTY
                         )
                     )
                     editPicture = false

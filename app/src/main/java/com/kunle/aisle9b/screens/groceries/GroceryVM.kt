@@ -30,7 +30,7 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
                 _groceryList.value = groceryItems
             }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.getAllFoodNames().distinctUntilChanged().collect { foodItems ->
                 _namesOfAllFoods.value = foodItems
             }

@@ -17,10 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.kunle.aisle9b.R
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -31,7 +35,6 @@ import com.kunle.aisle9b.templates.CustomAutoComplete9
 import com.kunle.aisle9b.templates.CustomTextField9
 import com.kunle.aisle9b.templates.headers.CategoryHeader
 import com.kunle.aisle9b.templates.items.GroceryListItem9
-import com.kunle.aisle9b.templates.items.ListItem9
 import com.kunle.aisle9b.util.*
 import kotlinx.coroutines.launch
 
@@ -56,7 +59,9 @@ fun GroceryScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .semantics { contentDescription = R.string.grocery_screen.toString() }
     ) {
         GroceryInputTextField(namesOfAllFoods) { name, quantity ->
             coroutineScope.launch {
@@ -73,7 +78,7 @@ fun GroceryScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Your Grocery List is currently empty!",
+                    text = stringResource(R.string.empty_list_message),
                     modifier = Modifier.padding(15.dp)
                 )
                 Button(
@@ -97,11 +102,11 @@ fun GroceryScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.DriveFileMoveRtl,
-                            contentDescription = "transfer saved list button"
+                            contentDescription = stringResource(R.string.transfer_custom_list_description)
                         )
                         Spacer(modifier = Modifier.width(7.dp))
                         Text(
-                            text = "Load Saved Grocery List",
+                            text = stringResource(R.string.load_saved_grocery_list),
                             fontSize = 16.sp
                         )
                     }
@@ -128,11 +133,11 @@ fun GroceryScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.DriveFileMoveRtl,
-                            contentDescription = "transfer meals button"
+                            contentDescription = stringResource(R.string.transfer_meal_description)
                         )
                         Spacer(modifier = Modifier.width(7.dp))
                         Text(
-                            text = "Add Meal to Grocery List",
+                            text = stringResource(R.string.add_meal_to_grocery_list),
                             fontSize = 16.sp
                         )
                     }
@@ -191,6 +196,7 @@ fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (String, String)
     ) {
         Box(modifier = Modifier.weight(.7f)) {
             CustomAutoComplete9(
+                modifier = Modifier.semantics { contentDescription = "Grocery name" },
                 value = item,
                 setValue = { item = it },
                 originalList = foodList,
@@ -207,7 +213,8 @@ fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (String, String)
             CustomTextField9(
                 modifier = Modifier
                     .height(45.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .semantics { contentDescription = "Grocery quantity" },
                 text = quantity,
                 onValueChange = { quantity = it },
                 label = "#",
@@ -240,7 +247,9 @@ fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (String, String)
                 }
         ) {
             Row(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .semantics { contentDescription = "Add grocery" },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {

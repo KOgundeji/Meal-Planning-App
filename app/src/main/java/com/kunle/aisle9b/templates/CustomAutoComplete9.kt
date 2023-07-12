@@ -25,14 +25,14 @@ fun CustomAutoComplete9(
     var suggestions by remember { mutableStateOf(emptyList<String>()) }
     val expanded = remember { derivedStateOf { suggestions.isNotEmpty()} }
 
-    Box(modifier = modifier) {
+    Box(modifier = Modifier) {
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
             elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
             shape = RoundedCornerShape(3.dp)
         ) {
             CustomTextField9(
-                modifier = Modifier
+                modifier = modifier
                     .height(45.dp)
                     .fillMaxWidth(),
                 text = value,

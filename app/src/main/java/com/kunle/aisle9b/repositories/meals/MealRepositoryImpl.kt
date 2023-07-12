@@ -51,11 +51,8 @@ class MealRepositoryImpl @Inject constructor(
     override suspend fun deletePair(crossRef: MealFoodMap) =
         mealWithIngredientsDao.deletePair(crossRef)
 
-    override suspend fun updatePair(crossRef: MealFoodMap) =
-        mealWithIngredientsDao.updatePair(crossRef)
-
     override suspend fun deleteSpecificMealWithIngredients(mealId: Long) =
-        mealWithIngredientsDao.deleteSpecificMealIngredients(mealId)
+        mealWithIngredientsDao.deleteSpecificMealWithIngredients(mealId)
 
     override suspend fun upsertInstruction(instruction: Instruction) =
         instructionDao.upsertInstruction(instruction)

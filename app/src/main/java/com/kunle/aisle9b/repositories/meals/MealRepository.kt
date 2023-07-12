@@ -28,7 +28,6 @@ interface MealRepository {
     suspend fun deleteFood(food: Food)
     suspend fun insertPair(crossRef: MealFoodMap)
     suspend fun deletePair(crossRef: MealFoodMap)
-    suspend fun updatePair(crossRef: MealFoodMap)
 
     suspend fun deleteSpecificMealWithIngredients(mealId: Long)
 

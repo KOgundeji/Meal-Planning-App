@@ -91,13 +91,11 @@ object AppModule {
     @Singleton
     @Provides
     fun provideRecipeRepositoryImpl(
-        groceryDao: GroceryDao,
         mealDao: MealDao,
         recipeAPI: RecipeAPI,
         mealWithIngredientsDao: MealWithIngredientsDao
     ) =
         RecipeRepositoryImpl(
-            groceryDao,
             mealDao,
             recipeAPI,
             mealWithIngredientsDao

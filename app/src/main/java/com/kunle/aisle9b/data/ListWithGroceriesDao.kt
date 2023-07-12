@@ -18,7 +18,7 @@ interface ListWithGroceriesDao {
     suspend fun updatePair(crossRef: ListFoodMap)
 
     @Query("DELETE FROM ListFoodMap WHERE listId = :listId")
-    suspend fun deleteSpecificGroceryList(listId: Long)
+    suspend fun deleteSpecificListWithGroceries(listId: Long)
 
     @Transaction
     @Query("SELECT * FROM list_table")

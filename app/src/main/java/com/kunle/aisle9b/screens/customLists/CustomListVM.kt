@@ -48,18 +48,14 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
     fun deleteList(list: GroceryList) = viewModelScope.launch { repository.deleteList(list) }
     fun updateList(list: GroceryList) = viewModelScope.launch { repository.updateList(list) }
 
-
     fun insertPair(crossRef: ListFoodMap) =
         viewModelScope.launch { repository.insertPair(crossRef) }
 
     fun deletePair(crossRef: ListFoodMap) =
         viewModelScope.launch { repository.deletePair(crossRef) }
 
-    fun updatePair(crossRef: ListFoodMap) =
-        viewModelScope.launch { repository.updatePair(crossRef) }
-
     fun deleteSpecificListWithGroceries(listId: Long) =
-        viewModelScope.launch { repository.deleteSpecificGroceryList(listId) }
+        viewModelScope.launch { repository.deleteSpecificListWithGroceries(listId) }
 
     fun updateName(obj: GroceryListNameUpdate) =
         viewModelScope.launch { repository.updateName(obj) }

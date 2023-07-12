@@ -26,11 +26,8 @@ class CustomListRepositoryImpl @Inject constructor(
     override suspend fun deletePair(crossRef: ListFoodMap) =
         listWithGroceriesDao.deletePair(crossRef)
 
-    override suspend fun updatePair(crossRef: ListFoodMap) =
-        listWithGroceriesDao.updatePair(crossRef)
-
-    override suspend fun deleteSpecificGroceryList(listId: Long) =
-        listWithGroceriesDao.deleteSpecificGroceryList(listId)
+    override suspend fun deleteSpecificListWithGroceries(listId: Long) =
+        listWithGroceriesDao.deleteSpecificListWithGroceries(listId)
 
     override suspend fun insertFood(food: Food): Long = groceryDao.insertFood(food)
     override suspend fun insertGrocery(grocery: Grocery) = groceryDao.insertGrocery(grocery)
@@ -49,5 +46,5 @@ class CustomListRepositoryImpl @Inject constructor(
     override fun getAllListWithGroceries(): Flow<List<ListWithGroceries>> =
         listWithGroceriesDao.getAllListWithGroceries()
 
-    override fun getVisibleLists(): Flow<List<GroceryList>> = customListDao.getVisibleLists()
+    override fun getAllVisibleLists(): Flow<List<GroceryList>> = customListDao.getAllVisibleLists()
 }

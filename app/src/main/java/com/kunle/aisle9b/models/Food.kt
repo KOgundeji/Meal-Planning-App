@@ -16,14 +16,6 @@ data class Food(
             return Food(name = "", quantity = "")
         }
 
-        fun foodToGrocery(food: Food): Grocery {
-            return Grocery(
-                name = food.name,
-                quantity = food.quantity,
-                category = food.category
-            )
-        }
-
         val categories = arrayOf(
             "Uncategorized",
             "Baby Items",
@@ -45,6 +37,14 @@ data class Food(
             "Pet Care",
             "Snacks",
             "Vegetables"
+        )
+    }
+
+    fun foodToGrocery(): Grocery {
+        return Grocery(
+            name = this.name,
+            quantity = this.quantity,
+            category = this.category
         )
     }
 }

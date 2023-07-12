@@ -12,8 +12,7 @@ interface CustomListRepository {
 
     suspend fun insertPair(crossRef: ListFoodMap)
     suspend fun deletePair(crossRef: ListFoodMap)
-    suspend fun updatePair(crossRef: ListFoodMap)
-    suspend fun deleteSpecificGroceryList(listId: Long)
+    suspend fun deleteSpecificListWithGroceries(listId: Long)
 
     suspend fun insertFood(food: Food) : Long
     suspend fun insertGrocery(grocery: Grocery)
@@ -29,5 +28,5 @@ interface CustomListRepository {
     //Get all
     fun getAllLists(): Flow<List<GroceryList>>
     fun getAllListWithGroceries(): Flow<List<ListWithGroceries>>
-    fun getVisibleLists(): Flow<List<GroceryList>>
+    fun getAllVisibleLists(): Flow<List<GroceryList>>
 }

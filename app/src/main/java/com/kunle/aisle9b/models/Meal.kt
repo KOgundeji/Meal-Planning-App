@@ -10,7 +10,7 @@ data class Meal(
     val mealId: Long = 0,
     val name: String,
     val servingSize: String,
-    val mealPic: Uri? = null,
+    val mealPic: Uri = Uri.EMPTY,
     val notes: String,
     val apiID: Int = -1,
     val visible: Boolean = true
@@ -32,7 +32,7 @@ data class Meal(
 
 data class MealNameUpdate(val mealId: Long, val name: String)
 
-data class PicUpdate(val mealId: Long, val mealPic: Uri?)
+data class PicUpdate(val mealId: Long, val mealPic: Uri)
 
 data class ServingSizeUpdate(val mealId: Long, val servingSize: String)
 

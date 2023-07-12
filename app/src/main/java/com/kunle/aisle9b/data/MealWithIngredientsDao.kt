@@ -14,11 +14,8 @@ interface MealWithIngredientsDao {
     @Delete
     suspend fun deletePair(crossRef: MealFoodMap)
 
-    @Update
-    suspend fun updatePair(crossRef: MealFoodMap)
-
     @Query("DELETE FROM MealFoodMap WHERE mealId = :mealId")
-    suspend fun deleteSpecificMealIngredients(mealId: Long)
+    suspend fun deleteSpecificMealWithIngredients(mealId: Long)
 
     @Transaction
     @Query("SELECT * FROM meal_table")
