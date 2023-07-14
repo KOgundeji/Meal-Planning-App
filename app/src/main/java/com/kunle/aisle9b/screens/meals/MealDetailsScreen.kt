@@ -101,11 +101,10 @@ fun MealDetailsScreen(
         if (editInstructions) {
             InstructionsListDialog9(
                 mealInstructionList = mealInstructions,
-                updatedInstruction = { updatedInstruction, newPosition ->
+                updatedInstruction = {
                     mealVM.reorganizeDBInstructions(
-                        instruction = updatedInstruction,
-                        newPosition = newPosition,
-                        instructions = mealInstructions
+                        updatedInstruction = it,
+                        oldInstructionList = mealInstructions
                     )
                     editInstructions = false
                 },

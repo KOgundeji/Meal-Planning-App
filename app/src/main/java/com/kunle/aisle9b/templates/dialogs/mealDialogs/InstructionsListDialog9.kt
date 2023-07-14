@@ -25,7 +25,7 @@ import com.kunle.aisle9b.templates.items.mealItems.InstructionItem
 @Composable
 fun InstructionsListDialog9(
     mealInstructionList: List<Instruction>,
-    updatedInstruction: (Instruction, Int) -> Unit,
+    updatedInstruction: (Instruction) -> Unit,
     mealId: Long,
     setShowDialog: () -> Unit
 ) {
@@ -35,8 +35,8 @@ fun InstructionsListDialog9(
         EditInstructionsDialog9(
             instruction = Instruction.createBlank(mealId),
             setShowDialog = { addInstructionDialog = false },
-            updatedInstruction = { instruction, newPos ->
-                updatedInstruction(instruction, newPos)
+            updatedInstruction = { instruction ->
+                updatedInstruction(instruction)
             }
         )
     }
@@ -107,8 +107,8 @@ fun InstructionsListDialog9(
                     items(items = mealInstructionList) {
                         InstructionItem(
                             instruction = it,
-                            updatedInstruction = { updateIns, newPos ->
-                                updatedInstruction(updateIns, newPos)
+                            updatedInstruction = {
+                                updatedInstruction(it)
                             },
                         )
                     }

@@ -91,11 +91,10 @@ fun AddMealScreenTest(
     if (editInstructions) {
         InstructionsListDialog9(
             mealInstructionList = mealInstructions,
-            updatedInstruction = { updatedInstruction, newPosition ->
+            updatedInstruction = {
                 instructionsList =
                     mealVM.reorganizeTempInstructions(
-                        instruction = updatedInstruction,
-                        newPosition = newPosition,
+                        instruction = it,
                         instructions = mealInstructions
                     )
                 editInstructions = false

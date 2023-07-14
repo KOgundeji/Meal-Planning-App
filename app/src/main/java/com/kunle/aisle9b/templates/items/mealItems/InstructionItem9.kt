@@ -22,15 +22,15 @@ import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditInstructionsDialog9
 @Composable
 fun InstructionItem(
     instruction: Instruction,
-    updatedInstruction: (Instruction, Int) -> Unit,
+    updatedInstruction: (Instruction) -> Unit,
 ) {
     var edit by remember { mutableStateOf(false) }
 
     if (edit) {
         EditInstructionsDialog9(
             instruction = instruction,
-            updatedInstruction = { updatedIns, newPos ->
-                updatedInstruction(updatedIns, newPos)
+            updatedInstruction = {
+                updatedInstruction(it)
                 edit = false
             },
             setShowDialog = { edit = false }

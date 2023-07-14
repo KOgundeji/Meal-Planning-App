@@ -26,7 +26,7 @@ import com.kunle.aisle9b.templates.CustomTextField9
 @Composable
 fun EditInstructionsDialog9(
     instruction: Instruction,
-    updatedInstruction: (Instruction, Int) -> Unit,
+    updatedInstruction: (Instruction) -> Unit,
     setShowDialog: () -> Unit
 ) {
     var newPosition by remember { mutableStateOf(instruction.position.toString()) }
@@ -99,9 +99,8 @@ fun EditInstructionsDialog9(
                                     instructionId = instruction.instructionId,
                                     step = instructionStep,
                                     mealId = instruction.mealId,
-                                    position = instruction.position
-                                ),
-                                newPosition.toInt()
+                                    position = newPosition.toInt()
+                                )
                             )
                         },
                         modifier = Modifier.width(200.dp),

@@ -75,7 +75,7 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     fun deletePair(crossRef: MealFoodMap) =
         viewModelScope.launch { repository.deletePair(crossRef) }
 
-    fun deleteSpecificMealIngredients(mealId: Long) =
+    fun deleteSpecificMealWithIngredients(mealId: Long) =
         viewModelScope.launch { repository.deleteSpecificMealWithIngredients(mealId) }
 
     override suspend fun insertFood(food: Food): Long {
@@ -106,110 +106,120 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         viewModelScope.launch { repository.deleteGroceryByName(name) }
     }
 
+    //I don't think there are temp instructions anymore...
     fun reorganizeTempInstructions(
         instruction: Instruction,
-        newPosition: Int,
+//        newPosition: Int,
         instructions: List<Instruction>
     ): List<Instruction> {
         val oldPosition = instruction.position
         val newInstructionList = mutableListOf<Instruction>()
 
-        newInstructionList.add(
-            Instruction(
-                instructionId = instruction.instructionId,
-                step = instruction.step,
-                mealId = instruction.mealId,
-                position = newPosition
-            )
-        )
-
-        when {
-            (oldPosition == 0 || oldPosition == newPosition) -> {
-                instructions.forEach {
-                    if (it.instructionId != instruction.instructionId) {
-                        newInstructionList.add(it)
-                    }
-                }
-            }
-            newPosition < oldPosition -> {
-                instructions.forEach {
-                    if (it.position >= newPosition && it.position < instruction.position) {
-                        newInstructionList.add(
-                            Instruction(
-                                instructionId = it.instructionId,
-                                step = it.step,
-                                mealId = it.mealId,
-                                position = it.position + 1
-                            )
-                        )
-                    } else {
-                        newInstructionList.add(it)
-                    }
-                }
-            }
-            newPosition > oldPosition -> {
-                instructions.forEach {
-                    if (it.position <= newPosition && it.position > instruction.position) {
-                        newInstructionList.add(
-                            Instruction(
-                                instructionId = it.instructionId,
-                                step = it.step,
-                                mealId = it.mealId,
-                                position = it.position - 1
-                            )
-                        )
-                    }
-                }
-            }
-        }
+//        newInstructionList.add(
+//            Instruction(
+//                instructionId = instruction.instructionId,
+//                step = instruction.step,
+//                mealId = instruction.mealId,
+//                position = newPosition
+//            )
+//        )
+//
+//        when {
+//            (oldPosition == 0 || oldPosition == newPosition) -> {
+//                instructions.forEach {
+//                    if (it.instructionId != instruction.instructionId) {
+//                        newInstructionList.add(it)
+//                    }
+//                }
+//            }
+//            newPosition < oldPosition -> {
+//                instructions.forEach {
+//                    if (it.position >= newPosition && it.position < instruction.position) {
+//                        newInstructionList.add(
+//                            Instruction(
+//                                instructionId = it.instructionId,
+//                                step = it.step,
+//                                mealId = it.mealId,
+//                                position = it.position + 1
+//                            )
+//                        )
+//                    } else {
+//                        newInstructionList.add(it)
+//                    }
+//                }
+//            }
+//            newPosition > oldPosition -> {
+//                instructions.forEach {
+//                    if (it.position <= newPosition && it.position > instruction.position) {
+//                        newInstructionList.add(
+//                            Instruction(
+//                                instructionId = it.instructionId,
+//                                step = it.step,
+//                                mealId = it.mealId,
+//                                position = it.position - 1
+//                            )
+//                        )
+//                    }
+//                }
+//            }
+//        }
         return newInstructionList.toList()
     }
 
-    fun reorganizeDBInstructions(
-        instruction: Instruction,
-        newPosition: Int,
-        instructions: List<Instruction>
-    ) {
-        val oldPosition = instruction.position
+    val oldInstruction =
+        Instruction(instructionId = 12, step = "second thing", mealId = 1, position = 4)
+    val updatedInstruction =
+        Instruction(instructionId = 12, step = "first thing", mealId = 1, position = 2)
 
-        upsertInstruction(
-            Instruction(
-                instructionId = instruction.instructionId,
-                step = instruction.step,
-                mealId = instruction.mealId,
-                position = newPosition
-            )
-        )
-        when {
-            newPosition < oldPosition -> {
-                instructions.forEach {
-                    if (it.position >= newPosition && it.position < instruction.position) {
-                        upsertInstruction(
-                            Instruction(
-                                instructionId = it.instructionId,
-                                step = it.step,
-                                mealId = it.mealId,
-                                position = it.position + 1
+    val oldInstructionList = listOf(
+        Instruction(instructionId = 11, step = "first thing", mealId = 1, position = 1),
+        Instruction(instructionId = 22, step = "second thing", mealId = 1, position = 2),
+        Instruction(instructionId = 33, step = "third thing", mealId = 1, position = 3),
+        Instruction(instructionId = 44, step = "fourth thing", mealId = 1, position = 4),
+        Instruction(instructionId = 55, step = "fifth thing", mealId = 1, position = 5)
+    )
+
+    fun reorganizeDBInstructions(
+        updatedInstruction: Instruction,
+        oldInstructionList: List<Instruction>
+    ) {
+        val oldPosition =
+            oldInstructionList.find { it.instructionId == updatedInstruction.instructionId }!!.position
+        val newPosition = updatedInstruction.position
+
+        if (newPosition > 0) {
+            upsertInstruction(updatedInstruction)
+
+            when {
+                newPosition < oldPosition -> {
+                    oldInstructionList.forEach {
+                        if (it.position in newPosition until oldPosition) {
+                            upsertInstruction(
+                                Instruction(
+                                    instructionId = it.instructionId,
+                                    step = it.step,
+                                    mealId = it.mealId,
+                                    position = it.position + 1
+                                )
                             )
-                        )
+                        }
                     }
                 }
-            }
-            newPosition > oldPosition -> {
-                instructions.forEach {
-                    if (it.position <= newPosition && it.position > instruction.position) {
-                        upsertInstruction(
-                            Instruction(
-                                instructionId = it.instructionId,
-                                step = it.step,
-                                mealId = it.mealId,
-                                position = it.position - 1
+                newPosition > oldPosition -> {
+                    oldInstructionList.forEach {
+                        if (it.position in (oldPosition + 1)..newPosition) {
+                            upsertInstruction(
+                                Instruction(
+                                    instructionId = it.instructionId,
+                                    step = it.step,
+                                    mealId = it.mealId,
+                                    position = it.position - 1
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
         }
-
     }
 }

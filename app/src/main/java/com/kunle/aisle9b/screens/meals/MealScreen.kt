@@ -105,7 +105,7 @@ fun MealScreen(
                     onDeleteClick = {
                         generalVM.mealDeleteList.forEach { meal ->
                             mealVM.deleteMeal(meal)
-                            mealVM.deleteSpecificMealIngredients(meal.mealId)
+                            mealVM.deleteSpecificMealWithIngredients(meal.mealId)
                         }
                         generalVM.mealButtonBar.value = MealButtonBar.Default
                     })
