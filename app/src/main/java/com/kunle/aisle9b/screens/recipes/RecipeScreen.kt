@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
-import com.kunle.aisle9b.api.apiModels.ApiResponseList
+import com.kunle.aisle9b.api.apiModels.ApiResponseSearch
 import com.kunle.aisle9b.models.apiModels.queryModels.Result
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.utilScreens.ErrorScreen
@@ -50,14 +50,14 @@ fun RecipeScreen(
                 }
             })
             when (val searchState = recipesVM.searchState.collectAsState().value) {
-                is ApiResponseList.Error -> ErrorScreen(errorText = searchState.getMessage())
-                is ApiResponseList.Loading -> LoadingScreen()
-                is ApiResponseList.Success ->
+                is ApiResponseSearch.Error -> ErrorScreen(errorText = searchState.getMessage())
+                is ApiResponseSearch.Loading -> LoadingScreen()
+                is ApiResponseSearch.Success ->
                     Screen(
                         recipeList = searchState.recipes,
                         navController = navController,
                     )
-                ApiResponseList.Neutral -> {}
+                ApiResponseSearch.Neutral -> {}
             }
         }
     }

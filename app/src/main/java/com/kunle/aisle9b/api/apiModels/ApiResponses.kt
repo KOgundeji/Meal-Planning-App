@@ -4,13 +4,13 @@ import com.kunle.aisle9b.api.apiModels.recipeModels.Recipe
 import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
 import com.kunle.aisle9b.models.apiModels.queryModels.Result
 
-sealed class ApiResponseList {
-    object Loading: ApiResponseList()
-    object Neutral: ApiResponseList()
-    class Error(private val exception: Exception) : ApiResponseList() {
+sealed class ApiResponseSearch {
+    object Loading: ApiResponseSearch()
+    object Neutral: ApiResponseSearch()
+    class Error(private val exception: Exception) : ApiResponseSearch() {
         fun getMessage(): String? = exception.localizedMessage
     }
-    data class Success(val recipes: List<Result>) : ApiResponseList()
+    data class Success(val recipes: List<Result>) : ApiResponseSearch()
 }
 
 sealed class ApiResponseRecipe {

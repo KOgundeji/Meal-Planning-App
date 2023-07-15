@@ -29,13 +29,6 @@ interface RecipeAPI {
         @Query(value = "includeNutrition") includeNutrition: Boolean = false
     ): Recipe
 
-    @GET(value = "recipes/informationBulk")
-    suspend fun getBatchRecipes(
-        @Header(value = "x-api-key") apiKey: String = spoonacular_key,
-        @Query(value = "ids") ids: String,
-        @Query(value = "includeNutrition") includeNutrition: Boolean = false
-    ): BatchRecipes
-
     @GET(value = "recipes/complexSearch")
     suspend fun getSearchResults(
         @Header(value = "x-api-key") apiKey: String = spoonacular_key,

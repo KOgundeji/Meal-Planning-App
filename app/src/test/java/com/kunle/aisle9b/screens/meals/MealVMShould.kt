@@ -357,4 +357,19 @@ class MealVMShould {
         coVerify(exactly = 0) { mRepositoryImpl.upsertInstruction(any()) }
     }
 
+    @Test
+    fun reorganizeDBInstructions_newPositionGreaterThanAnyOther_callsCorrectRepositoryMethod() {
+        val oldInstruction =
+            Instruction(instructionId = 12, step = "second thing", mealId = 1, position = 2)
+        val updatedInstruction =
+            Instruction(instructionId = 12, step = "eleventh thing", mealId = 1, position = 11)
+
+        coEvery { mRepositoryImpl.upsertInstruction(any()) } returns Unit
+
+        sutMealViewModel.reorganizeDBInstructions(updatedInstruction, oldInstructionList)
+
+        coVerify { mRepositoryImpl.upsertInstruction(updatedInstruction) }
+        coVerify(exactly = 4) { mRepositoryImpl.upsertInstruction(any()) }
+    }
+
 }

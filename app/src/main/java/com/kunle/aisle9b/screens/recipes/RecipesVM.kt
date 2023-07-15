@@ -6,7 +6,7 @@ import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.models.MealFoodMap
 import com.kunle.aisle9b.api.apiModels.ApiResponseInstructions
 import com.kunle.aisle9b.api.apiModels.ApiResponseRecipe
-import com.kunle.aisle9b.api.apiModels.ApiResponseList
+import com.kunle.aisle9b.api.apiModels.ApiResponseSearch
 import com.kunle.aisle9b.repositories.recipes.RecipeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RecipesVM @Inject constructor(private val repository: RecipeRepository) : ViewModel() {
 
-    private val _searchState = MutableStateFlow<ApiResponseList>(ApiResponseList.Neutral)
+    private val _searchState = MutableStateFlow<ApiResponseSearch>(ApiResponseSearch.Neutral)
     private val _retrievedRecipeState =
         MutableStateFlow<ApiResponseRecipe>(ApiResponseRecipe.Neutral)
     private val _instructionsState =
@@ -40,12 +40,12 @@ class RecipesVM @Inject constructor(private val repository: RecipeRepository) : 
 
     fun getSearchResults(query: String) {
         viewModelScope.launch {
-            _searchState.value = ApiResponseList.Loading
+            _searchState.value = ApiResponseSearch.Loading
             try {
                 val searchResults = repository.getSearchResults(query = query)
-                _searchState.value = ApiResponseList.Success(searchResults.results)
+                _searchState.value = ApiResponseSearch.Success(searchResults.results)
             } catch (e: Exception) {
-                _searchState.value = ApiResponseList.Error(exception = e)
+                _searchState.value = ApiResponseSearch.Error(exception = e)
             }
         }
     }
@@ -62,7 +62,7 @@ class RecipesVM @Inject constructor(private val repository: RecipeRepository) : 
         }
     }
 
-    fun insertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }
+    fun upsertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }
 
     fun insertPair(crossRef: MealFoodMap) =
         viewModelScope.launch { repository.insertPair(crossRef) }

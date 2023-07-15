@@ -216,4 +216,24 @@ class CustomListVMShould {
             coVerify { mRepository.deleteGroceryByName(any()) }
         }
     }
+
+    @Test
+    fun insertGrocery_callsCorrectRepositoryMethod() {
+        runTest {
+            val grocery: Grocery = mockk()
+            coEvery { mRepository.insertGrocery(any()) } returns Unit
+            sutCustomListVM.insertGrocery(grocery)
+            coVerify { mRepository.insertGrocery(any()) }
+        }
+    }
+
+    @Test
+    fun deleteGrocery_callsCorrectRepositoryMethod() {
+        runTest {
+            val grocery: Grocery = mockk()
+            coEvery { mRepository.deleteGrocery(any()) } returns Unit
+            sutCustomListVM.deleteGrocery(grocery)
+            coVerify { mRepository.deleteGrocery(any()) }
+        }
+    }
 }
