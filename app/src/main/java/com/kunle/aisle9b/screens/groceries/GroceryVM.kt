@@ -37,6 +37,13 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
         }
     }
 
+    fun updateCategories(foodGroceryName: String, newCategory: String) {
+        viewModelScope.launch {
+            repository.updateGlobalFoodCategories(foodName = foodGroceryName, newCategory = newCategory)
+            repository.updateGlobalGroceryCategories(groceryName = foodGroceryName, newCategory = newCategory)
+        }
+    }
+
     override suspend fun deleteGrocery(grocery: Grocery) {
         viewModelScope.launch { repository.deleteGrocery(grocery) }
     }

@@ -16,7 +16,7 @@ import com.kunle.aisle9b.util.UriConverter
 @TypeConverters(UriConverter::class)
 abstract class ShoppingRoomDB : RoomDatabase() {
 
-    abstract fun foodDao(): GroceryDao
+    abstract fun groceryDao(): GroceryDao
     abstract fun listDao(): CustomListDao
     abstract fun mealDao(): MealDao
     abstract fun settingsDao(): SettingsDao

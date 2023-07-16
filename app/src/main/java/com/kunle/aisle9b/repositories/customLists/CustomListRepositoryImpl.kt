@@ -17,7 +17,6 @@ class CustomListRepositoryImpl @Inject constructor(
     //CRUD
     override suspend fun insertList(list: GroceryList): Long = customListDao.insertList(list)
     override suspend fun deleteList(list: GroceryList) = customListDao.deleteList(list)
-    override suspend fun updateList(list: GroceryList) = customListDao.updateList(list)
     override suspend fun deleteAllInvisibleLists() = customListDao.deleteAllInvisibleLists()
 
     override suspend fun insertPair(crossRef: ListFoodMap) =

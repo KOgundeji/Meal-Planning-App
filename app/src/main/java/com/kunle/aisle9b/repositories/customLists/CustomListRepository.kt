@@ -7,7 +7,6 @@ interface CustomListRepository {
     //CRUD
     suspend fun insertList(list: GroceryList): Long
     suspend fun deleteList(list: GroceryList)
-    suspend fun updateList(list: GroceryList)
     suspend fun deleteAllInvisibleLists()
 
     suspend fun insertPair(crossRef: ListFoodMap)

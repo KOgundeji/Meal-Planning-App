@@ -12,9 +12,6 @@ interface CustomListDao {
     @Delete
     suspend fun deleteList(list: GroceryList)
 
-    @Update
-    suspend fun updateList(list: GroceryList)
-
     @Update(entity = GroceryList::class)
     suspend fun updateName(obj: GroceryListNameUpdate)
 

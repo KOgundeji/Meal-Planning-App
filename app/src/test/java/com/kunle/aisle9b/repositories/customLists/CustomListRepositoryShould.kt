@@ -185,17 +185,6 @@ class CustomListRepositoryShould {
     }
 
     @Test
-    fun updateList_callsCorrectDaoMethod() {
-        runTest {
-            val groceryListClass: GroceryList = mockk()
-            coEvery { mCustomListDao.updateList(any()) } returns Unit
-
-            sutRepository.updateList(groceryListClass)
-            coVerify { mCustomListDao.updateList(any()) }
-        }
-    }
-
-    @Test
     fun deleteInvisibleLists_callsCorrectDaoMethod() {
         runTest {
             coEvery { mCustomListDao.deleteAllInvisibleLists() } returns Unit

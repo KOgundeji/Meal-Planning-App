@@ -97,17 +97,6 @@ class CustomListVMShould {
     }
 
     @Test
-    fun updateList_callsCorrectRepositoryMethod() {
-        runTest {
-            val groceryListClass: GroceryList = mockk()
-            coEvery { mRepository.updateList(any()) } returns Unit
-
-            sutCustomListVM.updateList(groceryListClass)
-            coVerify { mRepository.updateList(any()) }
-        }
-    }
-
-    @Test
     fun insertPair_callsCorrectRepositoryMethod() {
         runTest {
             val listFoodMap: ListFoodMap = mockk()

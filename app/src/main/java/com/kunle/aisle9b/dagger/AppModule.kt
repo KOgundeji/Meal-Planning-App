@@ -114,7 +114,7 @@ object AppModule {
     @Singleton
     @Provides
     fun provideFoodDao(shoppingRoomDB: ShoppingRoomDB): GroceryDao =
-        shoppingRoomDB.foodDao()
+        shoppingRoomDB.groceryDao()
 
     @Singleton
     @Provides

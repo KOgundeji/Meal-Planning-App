@@ -14,7 +14,8 @@ interface GroceryRepository {
     suspend fun deleteFood(food: Food)
     suspend fun deleteGrocery(grocery: Grocery)
     suspend fun deleteGroceryByName(name: String)
-    suspend fun updateGlobalFoodCategories(name: String, category: String)
+    suspend fun updateGlobalFoodCategories(foodName: String, newCategory: String)
+    suspend fun updateGlobalGroceryCategories(groceryName: String, newCategory: String)
 
     //Get all
     fun getAllGroceries(): Flow<List<Grocery>>

@@ -62,6 +62,17 @@ class GroceryVMShould {
     }
 
     @Test
+    fun updateCategories_callsCorrectRepositoryMethods() {
+        coEvery { mRepository.updateGlobalFoodCategories(any(), any()) } returns Unit
+        coEvery { mRepository.updateGlobalGroceryCategories(any(), any()) } returns Unit
+
+        sutGroceryViewModel.updateCategories("bananas", "Fruit")
+
+        coVerify { mRepository.updateGlobalFoodCategories(any(), any()) }
+        coVerify { mRepository.updateGlobalGroceryCategories(any(), any()) }
+    }
+
+    @Test
     fun deleteGrocery_callsCorrectRepositoryMethod() {
         runTest {
             coEvery { mRepository.deleteGrocery(any()) } returns Unit

@@ -44,7 +44,10 @@ class FakeGroceryRepository : GroceryRepository {
         }
     }
 
-    override suspend fun updateGlobalFoodCategories(name: String, category: String) {
+    override suspend fun updateGlobalFoodCategories(foodName: String, newCategory: String) {
+    }
+
+    override suspend fun updateGlobalGroceryCategories(groceryName: String, newCategory: String) {
     }
 
     override fun getAllGroceries(): Flow<List<Grocery>> {

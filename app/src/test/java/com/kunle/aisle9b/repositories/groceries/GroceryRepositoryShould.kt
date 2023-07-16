@@ -91,6 +91,18 @@ class GroceryRepositoryShould {
     }
 
     @Test
+    fun updateGlobalGroceryCategories_callsCorrectDaoMethod() {
+        runTest {
+            val name = "Test Name"
+            val category = "Test Category"
+            coEvery { mGroceryDao.updateGlobalGroceryCategories(any(), any()) } returns Unit
+
+            sutRepository.updateGlobalGroceryCategories(name, category)
+            coVerify { mGroceryDao.updateGlobalGroceryCategories(any(), any()) }
+        }
+    }
+
+    @Test
     fun insertFood_callsCorrectDaoMethod() {
         runTest {
             val food: Food = mockk()
