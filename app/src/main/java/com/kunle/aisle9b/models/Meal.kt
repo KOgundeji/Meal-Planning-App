@@ -32,9 +32,11 @@ data class Meal(
 
 data class MealNameUpdate(val mealId: Long, val name: String)
 
-data class PicUpdate(val mealId: Long, val mealPic: Uri)
+data class MealPicUpdate(val mealId: Long, val mealPic: Uri)
 
-data class ServingSizeUpdate(val mealId: Long, val servingSize: String)
+data class MealServingSizeUpdate(val mealId: Long, val servingSize: String)
 
-data class NotesUpdate(val mealId: Long, val notes: String)
+data class MealNotesUpdate(val mealId: Long, val notes: String)
+
+data class MealVisibilityUpdate(val mealId: Long, val visible: Boolean)
 

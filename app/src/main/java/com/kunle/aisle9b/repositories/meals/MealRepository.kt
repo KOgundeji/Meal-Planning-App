@@ -12,9 +12,10 @@ interface MealRepository {
 
     //Partial Room entries
     suspend fun updateName(obj: MealNameUpdate)
-    suspend fun updatePic(obj: PicUpdate)
-    suspend fun updateServingSize(obj: ServingSizeUpdate)
-    suspend fun updateNotes(obj: NotesUpdate)
+    suspend fun updatePic(obj: MealPicUpdate)
+    suspend fun updateServingSize(obj: MealServingSizeUpdate)
+    suspend fun updateNotes(obj: MealNotesUpdate)
+    suspend fun updateVisibility(obj: MealVisibilityUpdate)
 
     //CRUD
     suspend fun insertMeal(meal: Meal): Long

@@ -79,7 +79,7 @@ fun AddMealScreenTest(
             },
             onSaveServingSizeClick = { servingSize ->
                 mealVM.updateServingSize(
-                    ServingSizeUpdate(
+                    MealServingSizeUpdate(
                         mealId = mealId,
                         servingSize = servingSize
                     )
@@ -116,7 +116,7 @@ fun AddMealScreenTest(
     if (editPicture) {
         PhotoOptionsDialog9(
             onImageCaptured = { uri ->
-                mealVM.updatePic(PicUpdate(mealId = mealId, mealPic = uri))
+                mealVM.updatePic(MealPicUpdate(mealId = mealId, mealPic = uri))
                 editPicture = false
             },
             toggleCamera = {
@@ -124,7 +124,7 @@ fun AddMealScreenTest(
                 shouldShowCamera = it
             },
             deletePic = {
-                mealVM.updatePic(PicUpdate(mealId = mealId, mealPic =  Uri.EMPTY))
+                mealVM.updatePic(MealPicUpdate(mealId = mealId, mealPic =  Uri.EMPTY))
                 editPicture = false
             }
         ) {
@@ -136,7 +136,7 @@ fun AddMealScreenTest(
         CameraXMode(
             toggleCamera = { shouldShowCamera = it },
             onImageCaptured = { uri ->
-                mealVM.updatePic(PicUpdate(mealId = mealId, mealPic = uri))
+                mealVM.updatePic(MealPicUpdate(mealId = mealId, mealPic = uri))
             })
     }
 

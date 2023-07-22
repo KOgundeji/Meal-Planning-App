@@ -56,11 +56,12 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     fun upsertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }
     fun deleteMeal(meal: Meal) = viewModelScope.launch { repository.deleteMeal(meal) }
     fun updateName(obj: MealNameUpdate) = viewModelScope.launch { repository.updateName(obj) }
-    fun updatePic(obj: PicUpdate) = viewModelScope.launch { repository.updatePic(obj) }
-    fun updateServingSize(obj: ServingSizeUpdate) =
+    fun updatePic(obj: MealPicUpdate) = viewModelScope.launch { repository.updatePic(obj) }
+    fun updateServingSize(obj: MealServingSizeUpdate) =
         viewModelScope.launch { repository.updateServingSize(obj) }
 
-    fun updateNotes(obj: NotesUpdate) = viewModelScope.launch { repository.updateNotes(obj) }
+    fun updateNotes(obj: MealNotesUpdate) = viewModelScope.launch { repository.updateNotes(obj) }
+    fun updateVisibility(obj: MealVisibilityUpdate) = viewModelScope.launch { repository.updateVisibility(obj) }
 
     fun upsertInstruction(instruction: Instruction) =
         viewModelScope.launch { repository.upsertInstruction(instruction) }

@@ -7,6 +7,9 @@ import java.util.*
 
 @Dao
 interface InstructionDao {
+    @Insert
+    suspend fun insertInstruction(instruction: Instruction) //just for testing purposes
+
     @Upsert
     suspend fun upsertInstruction(instruction: Instruction)
 

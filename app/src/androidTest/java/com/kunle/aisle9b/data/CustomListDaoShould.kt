@@ -32,6 +32,51 @@ class CustomListDaoShould {
         sutDB.close()
     }
 
+    @Test
+    fun getAllVisibleLists_ListDao() {
+        runTest {
+            val listOfGroceryLists = listOf(
+                GroceryList(listName = "Grocery List A", visible = true),
+                GroceryList(listName = "Grocery List B", visible = false),
+                GroceryList(listName = "Grocery List C", visible = true),
+                GroceryList(listName = "Grocery List D", visible = false)
+            )
+
+            listOfGroceryLists.forEach {
+                sutDB.listDao().insertList(it)
+            }
+
+            val groceryList = sutDB.listDao().getAllLists().first()
+
+            assertThat(groceryList.size).isEqualTo(4)
+
+            val allVisibleLists = sutDB.listDao().getAllVisibleLists().first()
+
+            assertThat(allVisibleLists.size).isEqualTo(2)
+            assertThat(allVisibleLists[0].listName).isEqualTo("Grocery List A")
+            assertThat(allVisibleLists[1].listName).isEqualTo("Grocery List C")
+        }
+    }
+
+    @Test
+    fun getAllLists_ListDao() {
+        runTest {
+            val listOfGroceryLists = listOf(
+                GroceryList(listName = "Grocery List A", visible = true),
+                GroceryList(listName = "Grocery List B", visible = false),
+                GroceryList(listName = "Grocery List C", visible = true),
+                GroceryList(listName = "Grocery List D", visible = false)
+            )
+
+            listOfGroceryLists.forEach {
+                sutDB.listDao().insertList(it)
+            }
+
+            val groceryList = sutDB.listDao().getAllLists().first()
+
+            assertThat(groceryList.size).isEqualTo(4)
+        }
+    }
 
     @Test
     fun insertList_ListDao_noConflict() {
@@ -177,52 +222,6 @@ class CustomListDaoShould {
             assertThat(groceryListAfterDeletingInvisible.size).isEqualTo(2)
             assertThat(groceryListAfterDeletingInvisible[0].listName).isEqualTo("Grocery List A")
             assertThat(groceryListAfterDeletingInvisible[1].listName).isEqualTo("Grocery List C")
-        }
-    }
-
-    @Test
-    fun getAllVisibleLists_ListDao() {
-        runTest {
-            val listOfGroceryLists = listOf(
-                GroceryList(listName = "Grocery List A", visible = true),
-                GroceryList(listName = "Grocery List B", visible = false),
-                GroceryList(listName = "Grocery List C", visible = true),
-                GroceryList(listName = "Grocery List D", visible = false)
-            )
-
-            listOfGroceryLists.forEach {
-                sutDB.listDao().insertList(it)
-            }
-
-            val groceryList = sutDB.listDao().getAllLists().first()
-
-            assertThat(groceryList.size).isEqualTo(4)
-
-            val allVisibleLists = sutDB.listDao().getAllVisibleLists().first()
-
-            assertThat(allVisibleLists.size).isEqualTo(2)
-            assertThat(allVisibleLists[0].listName).isEqualTo("Grocery List A")
-            assertThat(allVisibleLists[1].listName).isEqualTo("Grocery List C")
-        }
-    }
-
-    @Test
-    fun getAllLists_ListDao() {
-        runTest {
-            val listOfGroceryLists = listOf(
-                GroceryList(listName = "Grocery List A", visible = true),
-                GroceryList(listName = "Grocery List B", visible = false),
-                GroceryList(listName = "Grocery List C", visible = true),
-                GroceryList(listName = "Grocery List D", visible = false)
-            )
-
-            listOfGroceryLists.forEach {
-                sutDB.listDao().insertList(it)
-            }
-
-            val groceryList = sutDB.listDao().getAllLists().first()
-
-            assertThat(groceryList.size).isEqualTo(4)
         }
     }
 }

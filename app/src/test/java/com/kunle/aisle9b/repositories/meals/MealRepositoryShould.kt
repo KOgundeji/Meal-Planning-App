@@ -160,7 +160,7 @@ class MealRepositoryShould {
     @Test
     fun updatePic_callsCorrectDaoMethod() {
         runTest {
-            val updatedPic: PicUpdate = mockk()
+            val updatedPic: MealPicUpdate = mockk()
             coEvery { mMealDao.updatePic(any()) } returns Unit
 
             sutRepository.updatePic(updatedPic)
@@ -171,7 +171,7 @@ class MealRepositoryShould {
     @Test
     fun updateServingSize_callsCorrectDaoMethod() {
         runTest {
-            val updatedServingSize: ServingSizeUpdate = mockk()
+            val updatedServingSize: MealServingSizeUpdate = mockk()
             coEvery { mMealDao.updateServingSize(any()) } returns Unit
 
             sutRepository.updateServingSize(updatedServingSize)
@@ -182,7 +182,7 @@ class MealRepositoryShould {
     @Test
     fun updateNotes_callsCorrectDaoMethod() {
         runTest {
-            val updatedNote: NotesUpdate = mockk()
+            val updatedNote: MealNotesUpdate = mockk()
             coEvery { mMealDao.updateNotes(any()) } returns Unit
 
             sutRepository.updateNotes(updatedNote)

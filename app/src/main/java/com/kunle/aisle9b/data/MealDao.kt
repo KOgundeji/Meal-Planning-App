@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MealDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertMeal(meal: Meal): Long
 
     @Upsert
@@ -19,13 +19,16 @@ interface MealDao {
     suspend fun updateName(obj: MealNameUpdate)
 
     @Update(entity = Meal::class)
-    suspend fun updatePic(obj: PicUpdate)
+    suspend fun updatePic(obj: MealPicUpdate)
 
     @Update(entity = Meal::class)
-    suspend fun updateServingSize(obj: ServingSizeUpdate)
+    suspend fun updateServingSize(obj: MealServingSizeUpdate)
 
     @Update(entity = Meal::class)
-    suspend fun updateNotes(obj: NotesUpdate)
+    suspend fun updateNotes(obj: MealNotesUpdate)
+
+    @Update(entity = Meal::class)
+    suspend fun updateVisibility(obj: MealVisibilityUpdate)
 
     @Query("SELECT * FROM meal_table WHERE visible")
     fun getVisibleMeals(): Flow<List<Meal>>

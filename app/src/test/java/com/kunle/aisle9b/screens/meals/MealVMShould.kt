@@ -131,7 +131,7 @@ class MealVMShould {
 
     @Test
     fun updatePic_callsCorrectRepositoryMethod() {
-        val mealPicUpdate: PicUpdate = mockk()
+        val mealPicUpdate: MealPicUpdate = mockk()
         coEvery { mRepositoryImpl.updatePic(any()) } returns Unit
 
         sutMealViewModel.updatePic(mealPicUpdate)
@@ -140,7 +140,7 @@ class MealVMShould {
 
     @Test
     fun updateServingSize_callsCorrectRepositoryMethod() {
-        val mealServingSizeUpdate: ServingSizeUpdate = mockk()
+        val mealServingSizeUpdate: MealServingSizeUpdate = mockk()
         coEvery { mRepositoryImpl.updateServingSize(any()) } returns Unit
 
         sutMealViewModel.updateServingSize(mealServingSizeUpdate)
@@ -149,7 +149,7 @@ class MealVMShould {
 
     @Test
     fun updateNotes_callsCorrectRepositoryMethod() {
-        val mealNotesUpdate: NotesUpdate = mockk()
+        val mealNotesUpdate: MealNotesUpdate = mockk()
         coEvery { mRepositoryImpl.updateNotes(any()) } returns Unit
 
         sutMealViewModel.updateNotes(mealNotesUpdate)

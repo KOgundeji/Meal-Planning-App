@@ -14,9 +14,6 @@ interface ListWithGroceriesDao {
     @Delete
     suspend fun deletePair(crossRef: ListFoodMap)
 
-    @Update
-    suspend fun updatePair(crossRef: ListFoodMap)
-
     @Query("DELETE FROM ListFoodMap WHERE listId = :listId")
     suspend fun deleteSpecificListWithGroceries(listId: Long)
 

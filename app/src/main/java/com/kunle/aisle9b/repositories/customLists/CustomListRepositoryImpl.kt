@@ -38,7 +38,8 @@ class CustomListRepositoryImpl @Inject constructor(
 
     //Partial Room entries
     override suspend fun updateName(obj: GroceryListNameUpdate) = customListDao.updateName(obj)
-    override suspend fun updateVisibility(obj: GroceryListVisibilityUpdate) = customListDao.updateVisibility(obj)
+    override suspend fun updateVisibility(obj: GroceryListVisibilityUpdate) =
+        customListDao.updateVisibility(obj)
 
     //Get all
     override fun getAllLists(): Flow<List<GroceryList>> = customListDao.getAllLists()

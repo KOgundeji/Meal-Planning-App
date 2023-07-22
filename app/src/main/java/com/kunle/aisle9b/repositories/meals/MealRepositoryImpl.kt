@@ -30,9 +30,10 @@ class MealRepositoryImpl @Inject constructor(
 
     //Partial Room entries
     override suspend fun updateName(obj: MealNameUpdate) = mealDao.updateName(obj)
-    override suspend fun updatePic(obj: PicUpdate) = mealDao.updatePic(obj)
-    override suspend fun updateServingSize(obj: ServingSizeUpdate) = mealDao.updateServingSize(obj)
-    override suspend fun updateNotes(obj: NotesUpdate) = mealDao.updateNotes(obj)
+    override suspend fun updatePic(obj: MealPicUpdate) = mealDao.updatePic(obj)
+    override suspend fun updateServingSize(obj: MealServingSizeUpdate) = mealDao.updateServingSize(obj)
+    override suspend fun updateNotes(obj: MealNotesUpdate) = mealDao.updateNotes(obj)
+    override suspend fun updateVisibility(obj: MealVisibilityUpdate) = mealDao.updateVisibility(obj)
 
     //CRUD
     override suspend fun insertMeal(meal: Meal): Long = mealDao.insertMeal(meal)

@@ -36,7 +36,6 @@ import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.IngredientsListDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.InstructionsListDialog9
 import com.kunle.aisle9b.util.CameraXMode
-import com.kunle.aisle9b.util.DBHelper
 import com.kunle.aisle9b.util.PhotoOptionsDialog9
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -88,7 +87,7 @@ fun MealDetailsScreen(
                 },
                 onSaveServingSizeClick = { servingSize ->
                     mealVM.updateServingSize(
-                        ServingSizeUpdate(
+                        MealServingSizeUpdate(
                             mealId = mwi.meal.mealId,
                             servingSize = servingSize
                         )
@@ -127,7 +126,7 @@ fun MealDetailsScreen(
             PhotoOptionsDialog9(
                 onImageCaptured = { Uri ->
                     mealVM.updatePic(
-                        PicUpdate(
+                        MealPicUpdate(
                             mealId = mwi.meal.mealId,
                             mealPic = Uri
                         )
@@ -137,7 +136,7 @@ fun MealDetailsScreen(
                 toggleCamera = { shouldShowCamera = it },
                 deletePic = {
                     mealVM.updatePic(
-                        PicUpdate(
+                        MealPicUpdate(
                             mealId = mwi.meal.mealId,
                             mealPic =  Uri.EMPTY
                         )
@@ -152,7 +151,7 @@ fun MealDetailsScreen(
         if (shouldShowCamera) {
             CameraXMode(
                 onImageCaptured = { uri ->
-                    mealVM.updatePic(PicUpdate(mealId = mwi.meal.mealId, mealPic = uri))
+                    mealVM.updatePic(MealPicUpdate(mealId = mwi.meal.mealId, mealPic = uri))
                     editPicture = false
                 },
                 toggleCamera = { shouldShowCamera = it })

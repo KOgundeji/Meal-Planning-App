@@ -32,6 +32,66 @@ class GroceryDaoShould {
     }
 
     @Test
+    fun getAllGroceries_GroceryDao() {
+        runTest {
+            val listOfGroceries = listOf(
+                Grocery(name = "apples", quantity = "5", category = "Fruit"),
+                Grocery(name = "bananas", quantity = "3", category = "Fruit"),
+                Grocery(name = "spinach", quantity = "10 oz", category = "Vegetables"),
+                Grocery(name = "bananas", quantity = "2", category = "Toiletries")
+            )
+
+            listOfGroceries.forEach {
+                sutDB.groceryDao().insertGrocery(it)
+            }
+
+            val groceryList = sutDB.groceryDao().getAllGroceries().first()
+
+            assertThat(groceryList.size).isEqualTo(4)
+        }
+    }
+
+    @Test
+    fun getAllFoods_GroceryDao() {
+        runTest {
+            val listOfFoods = listOf(
+                Food(name = "apples", quantity = "5", category = "Fruit"),
+                Food(name = "bananas", quantity = "3", category = "Fruit"),
+                Food(name = "spinach", quantity = "10 oz", category = "Vegetables"),
+                Food(name = "bananas", quantity = "2", category = "Toiletries")
+            )
+
+            listOfFoods.forEach {
+                sutDB.groceryDao().insertFood(it)
+            }
+
+            val foodList = sutDB.groceryDao().getAllFoods().first()
+
+            assertThat(foodList.size).isEqualTo(4)
+        }
+    }
+
+    @Test
+    fun getAllFoodNames_GroceryDao() {
+        runTest {
+            val listOfFoods = listOf(
+                Food(name = "apples", quantity = "5", category = "Fruit"),
+                Food(name = "bananas", quantity = "3", category = "Fruit"),
+                Food(name = "spinach", quantity = "10 oz", category = "Vegetables"),
+                Food(name = "bananas", quantity = "2", category = "Toiletries")
+            )
+
+            listOfFoods.forEach {
+                sutDB.groceryDao().insertFood(it)
+            }
+
+            val foodNameList = sutDB.groceryDao().getAllFoodNames().first()
+
+            assertThat(foodNameList.size).isEqualTo(4)
+        }
+    }
+
+    @Test
     fun insertFood_GroceryDao() {
         runTest {
             val food = Food(name = "apple", quantity = "3", category = "Produce")
@@ -104,9 +164,9 @@ class GroceryDaoShould {
                 Food(foodId = 4, name = "banana", quantity = "2 bunches", category = "Produce")
             sutDB.groceryDao().upsertFood(foodNew)
 
-            val foodListAfterSameInsert = sutDB.groceryDao().getAllFoods().first()
+            val foodListAfterNewInsert = sutDB.groceryDao().getAllFoods().first()
 
-            assertThat(foodListAfterSameInsert.size).isEqualTo(2)
+            assertThat(foodListAfterNewInsert.size).isEqualTo(2)
         }
     }
 
@@ -344,7 +404,7 @@ class GroceryDaoShould {
                 sutDB.groceryDao().insertFood(it)
             }
 
-            sutDB.groceryDao().updateGlobalFoodCategories("bananas","Produce")
+            sutDB.groceryDao().updateGlobalFoodCategories("bananas", "Produce")
 
             val foodListCategories = sutDB.groceryDao().getAllFoods().first()
             val apple = foodListCategories.filter { it.name == "apples" }
@@ -371,7 +431,7 @@ class GroceryDaoShould {
                 sutDB.groceryDao().insertGrocery(it)
             }
 
-            sutDB.groceryDao().updateGlobalGroceryCategories("bananas","Produce")
+            sutDB.groceryDao().updateGlobalGroceryCategories("bananas", "Produce")
 
             val groceryListCategories = sutDB.groceryDao().getAllGroceries().first()
             val apple = groceryListCategories.filter { it.name == "apples" }
@@ -383,66 +443,4 @@ class GroceryDaoShould {
             assertThat(spinach[0].category).isEqualTo("Vegetables")
         }
     }
-
-    @Test
-    fun getAllGroceries_GroceryDao() {
-        runTest {
-            val listOfGroceries = listOf(
-                Grocery(name = "apples", quantity = "5", category = "Fruit"),
-                Grocery(name = "bananas", quantity = "3", category = "Fruit"),
-                Grocery(name = "spinach", quantity = "10 oz", category = "Vegetables"),
-                Grocery(name = "bananas", quantity = "2", category = "Toiletries")
-            )
-
-            listOfGroceries.forEach {
-                sutDB.groceryDao().insertGrocery(it)
-            }
-
-            val groceryList = sutDB.groceryDao().getAllGroceries().first()
-
-            assertThat(groceryList.size).isEqualTo(4)
-        }
-    }
-
-    @Test
-    fun getAllFoods_GroceryDao() {
-        runTest {
-            val listOfFoods = listOf(
-                Food(name = "apples", quantity = "5", category = "Fruit"),
-                Food(name = "bananas", quantity = "3", category = "Fruit"),
-                Food(name = "spinach", quantity = "10 oz", category = "Vegetables"),
-                Food(name = "bananas", quantity = "2", category = "Toiletries")
-            )
-
-            listOfFoods.forEach {
-                sutDB.groceryDao().insertFood(it)
-            }
-
-            val foodList = sutDB.groceryDao().getAllFoods().first()
-
-            assertThat(foodList.size).isEqualTo(4)
-        }
-    }
-
-    @Test
-    fun getAllFoodNames_GroceryDao() {
-        runTest {
-            val listOfFoods = listOf(
-                Food(name = "apples", quantity = "5", category = "Fruit"),
-                Food(name = "bananas", quantity = "3", category = "Fruit"),
-                Food(name = "spinach", quantity = "10 oz", category = "Vegetables"),
-                Food(name = "bananas", quantity = "2", category = "Toiletries")
-            )
-
-            listOfFoods.forEach {
-                sutDB.groceryDao().insertFood(it)
-            }
-
-            val foodNameList = sutDB.groceryDao().getAllFoodNames().first()
-
-            assertThat(foodNameList.size).isEqualTo(4)
-        }
-    }
-
-
 }
