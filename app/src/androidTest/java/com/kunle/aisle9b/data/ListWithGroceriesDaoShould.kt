@@ -33,7 +33,7 @@ class ListWithGroceriesDaoShould {
     }
 
     @Test
-    fun getAllListWithGroceries_LWIDao() {
+    fun getAllListWithGroceries_LWGDao() {
         runTest {
             sutDB.listDao().insertList(GroceryList(listId = 1, listName = "Grocery List A"))
             sutDB.listDao().insertList(GroceryList(listId = 2, listName = "Grocery List B"))
@@ -60,7 +60,7 @@ class ListWithGroceriesDaoShould {
     }
 
     @Test
-    fun insertPair_LWIDao() {
+    fun insertPair_LWGDao() {
         runTest {
             sutDB.listDao().insertList(GroceryList(listId = 1, listName = "Grocery List A"))
             sutDB.groceryDao().insertFood(Food(foodId = 42, name = "apples", quantity = "5"))
@@ -75,7 +75,7 @@ class ListWithGroceriesDaoShould {
     }
 
     @Test
-    fun deletePair_LWIDao() {
+    fun deletePair_LWGDao() {
         runTest {
             sutDB.listDao().insertList(GroceryList(listId = 1, listName = "Grocery List A"))
             sutDB.groceryDao().insertFood(Food(foodId = 42, name = "apples", quantity = "5"))
@@ -97,7 +97,7 @@ class ListWithGroceriesDaoShould {
     }
 
     @Test
-    fun deleteSpecificListWithIngredients_LWIDao() {
+    fun deleteSpecificListWithIngredients_LWGDao() {
         runTest {
             sutDB.listDao().insertList(GroceryList(listId = 1, listName = "Grocery List A"))
             sutDB.listDao().insertList(GroceryList(listId = 2, listName = "Grocery List B"))
@@ -125,10 +125,6 @@ class ListWithGroceriesDaoShould {
             val listWithGroceriesAfterDeletion =
                 sutDB.listWithGroceriesDao().getAllListWithGroceries().first()
             assertThat(listWithGroceriesAfterDeletion.size).isEqualTo(2)
-
-
         }
     }
-
-
 }

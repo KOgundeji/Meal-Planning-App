@@ -164,6 +164,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="835067794">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung" value="120" />
+                  <entry key="samsung&#10; SM-G991U" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="1332150973">
           <value>
             <AndroidTestResultsTableState>
@@ -211,6 +225,20 @@
                 <map>
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_4_API_30" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="adb-R3CR40B0PKT-lbKNk5._adb-tls-connect._tcp" value="120" />
+                  <entry key="samsung&#10; SM-G991U" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="2070819422">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
                   <entry key="adb-R3CR40B0PKT-lbKNk5._adb-tls-connect._tcp" value="120" />
                   <entry key="samsung&#10; SM-G991U" value="120" />
