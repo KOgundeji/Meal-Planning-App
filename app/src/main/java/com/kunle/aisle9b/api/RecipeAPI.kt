@@ -1,11 +1,10 @@
 package com.kunle.aisle9b.api
 
+import com.kunle.aisle9b.api.apiModels.recipeModels.Recipe
+import com.kunle.aisle9b.api.apiModels.recipeModels.RecipeRawAPIData
 import com.kunle.aisle9b.keys.spoonacular_key
 import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
 import com.kunle.aisle9b.models.apiModels.queryModels.RawJSON
-import com.kunle.aisle9b.models.apiModels.recipeModels.BatchRecipes
-import com.kunle.aisle9b.api.apiModels.recipeModels.Recipe
-import com.kunle.aisle9b.api.apiModels.recipeModels.RecipeRawAPIData
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path

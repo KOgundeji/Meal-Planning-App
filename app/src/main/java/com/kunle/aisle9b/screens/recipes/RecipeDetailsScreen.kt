@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.api.apiModels.ApiResponseInstructions
@@ -40,15 +41,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RecipeDetailsScreen(
-    modifier: Modifier = Modifier,
     recipeId: Int?,
-    recipesVM: RecipesVM,
-    generalVM: GeneralVM,
-    topBar: (TopBarOptions) -> Unit,
-    source: (GroceryScreens) -> Unit
+    modifier: Modifier = Modifier,
+    recipesVM: RecipesVM = viewModel(),
+    generalVM: GeneralVM = viewModel()
 ) {
-    topBar(TopBarOptions.Back)
-    source(GroceryScreens.RecipeDetailsScreen)
+    generalVM.setTopBarOption(TopBarOptions.Back)
+    generalVM.setClickSource(GroceryScreens.RecipeDetailsScreen)
 
     if (recipeId != null) {
         LaunchedEffect(key1 = recipeId) {

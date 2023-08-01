@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -12,8 +13,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.kunle.aisle9b.models.SettingsEnum
 import com.kunle.aisle9b.navigation.Aisle9Navigation
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -30,33 +32,32 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val generalVM: GeneralVM by viewModels()
-            ShoppingApp(generalVM = generalVM)
+            val navController = rememberNavController()
+
+            ShoppingAppScaffold(navController) { padVal ->
+                Aisle9Navigation(
+                    modifier = Modifier.padding(padVal),
+                    navController = navController,
+                    generalVM = generalVM
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ShoppingApp(generalVM: GeneralVM) {
-    val navController = rememberNavController()
-    var topBar by remember { mutableStateOf(TopBarOptions.Default) }
+fun ShoppingAppScaffold(
+    navController: NavController,
+    generalVM: GeneralVM = viewModel(),
+    appNavigation: @Composable (PaddingValues) -> Unit
+) {
+    val topBar = generalVM.topBar
+    val source = generalVM.source
     var multiFloatingState by remember { mutableStateOf(MultiFloatingState.Collapsed) }
-    var source by remember { mutableStateOf(GroceryScreens.GroceryListScreen) }
 
-    val settings = generalVM.settingsList.collectAsState().value
+    val darkMode = generalVM.darkModeSetting ?: generalVM.setDarkModeSetting(isSystemInDarkTheme())
 
-    generalVM.darkModeSetting.value = settings.firstOrNull() {
-        it.settingsName == SettingsEnum.DarkMode.name
-    }?.value ?: isSystemInDarkTheme()
-
-    generalVM.categoriesOnSetting.value = settings.firstOrNull {
-        it.settingsName == SettingsEnum.Categories.name
-    }?.value ?: false
-
-    generalVM.keepScreenOnSetting.value = settings.firstOrNull() {
-        it.settingsName == SettingsEnum.ScreenPermOn.name
-    }?.value ?: false
-
-    Aisle9bTheme(darkTheme = generalVM.darkModeSetting.value) {
+    Aisle9bTheme(darkTheme = darkMode) {
         Scaffold(
             topBar = {
                 when (topBar) {
@@ -73,7 +74,7 @@ fun ShoppingApp(generalVM: GeneralVM) {
                                 else ->
                                     navController.popBackStack()
                             }
-                            topBar = TopBarOptions.Default
+                            generalVM.setTopBarOption(TopBarOptions.Default)
                         }
                     TopBarOptions.Default ->
                         DefaultTopAppBar(
@@ -86,34 +87,34 @@ fun ShoppingApp(generalVM: GeneralVM) {
                 when (source) {
                     GroceryScreens.CustomListScreen ->
                         ExpandingFAB(
-                            onAddClick = { navController.navigate(GroceryScreens.AddCustomListScreen.name) },
+                            onAddClick = { navController.navigate(GroceryScreens.AddNewCustomListScreen.name) },
                             onTransferClick = {
                                 generalVM.customListButtonBar.value =
                                     CustomListButtonBar.Transfer
-                                topBar = TopBarOptions.Back
+                                generalVM.setTopBarOption(TopBarOptions.Back)
                             },
                             onDeleteClick = {
                                 generalVM.customListButtonBar.value = CustomListButtonBar.Delete
-                                topBar = TopBarOptions.Back
+                                generalVM.setTopBarOption(TopBarOptions.Back)
                             },
                             multiFloatingState = multiFloatingState,
                             onMultiFabStateChange = { multiFloatingState = it }
                         )
                     GroceryScreens.MealScreen ->
                         ExpandingFAB(
-                            onAddClick = { navController.navigate(GroceryScreens.AddMealsScreenTEST.name) },
+                            onAddClick = { navController.navigate(GroceryScreens.AddNewMealScreen.name) },
                             onTransferClick = {
                                 generalVM.mealButtonBar.value = MealButtonBar.Transfer
-                                topBar = TopBarOptions.Back
+                                generalVM.setTopBarOption(TopBarOptions.Back)
                             },
                             onDeleteClick = {
                                 generalVM.mealButtonBar.value = MealButtonBar.Delete
-                                topBar = TopBarOptions.Back
+                                generalVM.setTopBarOption(TopBarOptions.Back)
                             },
                             multiFloatingState = multiFloatingState,
                             onMultiFabStateChange = { multiFloatingState = it }
                         )
-                    GroceryScreens.AddMealsScreenTEST ->
+                    GroceryScreens.AddNewMealScreen ->
                         SaveFAB { generalVM.saveCreatedMealonFABClick() }
                     GroceryScreens.RecipeDetailsScreen ->
                         SaveFAB {
@@ -137,13 +138,7 @@ fun ShoppingApp(generalVM: GeneralVM) {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                Aisle9Navigation(
-                    modifier = Modifier.padding(it),
-                    source = { screen -> source = screen },
-                    topBar = { top -> topBar = top },
-                    navController = navController,
-                    generalVM = generalVM,
-                )
+                appNavigation(it)
             }
         }
     }

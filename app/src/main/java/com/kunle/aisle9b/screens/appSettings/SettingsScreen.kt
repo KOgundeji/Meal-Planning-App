@@ -1,44 +1,37 @@
 package com.kunle.aisle9b.screens.appSettings
 
 import android.view.View
+import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kunle.aisle9b.TopBarOptions
-import com.kunle.aisle9b.models.AppSettings
-import com.kunle.aisle9b.models.SettingsEnum
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.GeneralVM
 
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM,
-    topBar: (TopBarOptions) -> Unit,
-    source: (GroceryScreens) -> Unit
+    generalVM: GeneralVM = viewModel()
 ) {
-    topBar(TopBarOptions.Default)
-    source(GroceryScreens.SettingsScreen)
+    generalVM.setTopBarOption(TopBarOptions.Default)
+    generalVM.setClickSource(GroceryScreens.SettingsScreen)
 
-    val settingsList = generalVM.settingsList.collectAsState().value
-
-    val darkMode = settingsList.first {
-        it.settingsName == SettingsEnum.DarkMode.name
-    }.value
-
-    val screenPermOn = settingsList.first {
-        it.settingsName == SettingsEnum.ScreenPermOn.name
-    }.value
-
-    val categoriesOn = settingsList.first {
-        it.settingsName == SettingsEnum.Categories.name
-    }.value
+    val screenPermOn = generalVM.screenOnSetting
+    val categoriesOn = generalVM.categoriesSetting
+    val darkMode = generalVM.darkModeSetting ?: generalVM.setDarkModeSetting(isSystemInDarkTheme())
 
     if (screenPermOn) {
         KeepScreenOn()
@@ -52,90 +45,17 @@ fun SettingsScreen(
             fontSize = 16.sp,
             modifier = Modifier.padding(start = 10.dp, bottom = 5.dp, top = 15.dp)
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(.95f),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Dark Mode",
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(start = 15.dp)
-            )
-            Switch(
-                checked = darkMode,
-                colors = SwitchDefaults.colors(),
-                onCheckedChange = {
-                    generalVM.darkModeSetting.value = it
-                    generalVM.upsertSettings(
-                        AppSettings(
-                            settingsName = SettingsEnum.DarkMode.name,
-                            value = it
-                        )
-                    )
-                }
-            )
+        SettingsRow(text = "Dark Mode", checked = darkMode) {
+            generalVM.setDarkModeSetting(it)
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(.95f),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Keep Screen on",
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(start = 15.dp)
-            )
-            Switch(
-                checked = screenPermOn,
-                colors = SwitchDefaults.colors(),
-                onCheckedChange = {
-                    generalVM.keepScreenOnSetting.value = it
-                    generalVM.upsertSettings(
-                        AppSettings(
-                            settingsName = SettingsEnum.ScreenPermOn.name,
-                            value = it
-                        )
-                    )
-                }
-            )
+        SettingsRow(text = "Keep Screen on", checked = screenPermOn) {
+            generalVM.setScreenPermOnSetting(it)
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(.95f),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Add Categories to Grocery List",
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(start = 15.dp),
-                maxLines = 2
-            )
-            Switch(
-                checked = categoriesOn,
-                colors = SwitchDefaults.colors(),
-                onCheckedChange = {
-                    generalVM.categoriesOnSetting.value = it
-                    generalVM.upsertSettings(
-                        AppSettings(
-                            settingsName = SettingsEnum.Categories.name,
-                            value = it
-                        )
-                    )
-                }
-            )
+        SettingsRow(text = "Add Categories to Grocery List", checked = categoriesOn) {
+            generalVM.setCategoriesOnSetting(it)
         }
 
-        Column() {
+        Column {
             Box(modifier = Modifier.weight(1f, true))
             Text(
                 text = "About",
@@ -152,7 +72,7 @@ fun SettingsScreen(
                 modifier = Modifier.padding(start = 15.dp, bottom = 1.dp)
             )
             Text(
-                text = "Sun King Studios",
+                text = "Sun Forged Studios",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 14.sp,
@@ -169,8 +89,42 @@ fun SettingsScreen(
     }
 }
 
+@Composable
+private fun SettingsRow(
+    text: String,
+    checked: Boolean,
+    onChecked: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(.95f),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 16.sp,
+            modifier = Modifier.padding(start = 15.dp)
+        )
+        Switch(
+            checked = checked,
+            colors = SwitchDefaults.colors(),
+            onCheckedChange = {
+                onChecked(it)
+            }
+        )
+    }
+}
 
 @Composable
 fun KeepScreenOn() = AndroidView({ View(it).apply { keepScreenOn = true } })
+
+@Composable
+@Preview
+fun ScreenPreview() {
+    SettingsRow(text = "Dark Mode", checked = true) { }
+}
 
 

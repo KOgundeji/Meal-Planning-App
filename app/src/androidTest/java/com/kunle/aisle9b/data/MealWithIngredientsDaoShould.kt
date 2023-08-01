@@ -58,6 +58,14 @@ class MealWithIngredientsDaoShould {
     }
 
     @Test
+    fun getAllMealsWithIngredients_EmptyList_MWIDao() {
+        runTest {
+                 val mealWithIngredients = sutDB.mealWithIngredientsDao().getAllMealsWithIngredients().first()
+            assertThat(mealWithIngredients.size).isEqualTo(0)
+        }
+    }
+
+    @Test
     fun insertPair_noConflict_MWIDao() {
         runTest {
             sutDB.mealDao().insertMeal(Meal(mealId = 2, name = "Risotto", servingSize = "4", notes = ""))

@@ -23,10 +23,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kunle.aisle9b.R
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
+import com.kunle.aisle9b.models.Grocery
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
@@ -42,18 +44,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroceryScreen(
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM,
-    groceryVM: GroceryVM,
-    navController: NavController,
-    topBar: (TopBarOptions) -> Unit,
-    source: (GroceryScreens) -> Unit
+    generalVM: GeneralVM = viewModel(),
+    groceryVM: GroceryVM = viewModel(),
+    navController: NavController
 ) {
-    topBar(TopBarOptions.Default)
-    source(GroceryScreens.GroceryListScreen)
+    generalVM.setTopBarOption(TopBarOptions.Default)
+    generalVM.setClickSource(GroceryScreens.GroceryListScreen)
 
     val namesOfAllFoods = groceryVM.namesOfAllFoods.collectAsState().value
     val groceryList = groceryVM.groceryList.collectAsState().value
-    val categoriesOn = generalVM.categoriesOnSetting.value
+    val categoriesOn = generalVM.categoriesSetting
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -66,7 +66,7 @@ fun GroceryScreen(
         GroceryInputTextField(namesOfAllFoods) { name, quantity ->
             coroutineScope.launch {
                 listState.animateScrollToItem(index = 0)
-                groceryVM.upsertFood(Food(name = name, quantity = quantity))
+                groceryVM.upsertGrocery(Grocery(name = name, quantity = quantity))
             }
         }
         if (groceryList.isEmpty()) {

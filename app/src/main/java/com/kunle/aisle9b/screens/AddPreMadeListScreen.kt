@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
@@ -17,12 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.customLists.CustomListVM
-import com.kunle.aisle9b.templates.CustomTextField9
 import com.kunle.aisle9b.templates.dialogs.EditFoodDialog9
 import com.kunle.aisle9b.templates.items.CustomUpdateTextField9
 import com.kunle.aisle9b.templates.items.ListItem9
@@ -32,13 +31,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddPreMadeListScreen(
     modifier: Modifier = Modifier,
-    customListVM: CustomListVM,
-    navController: NavController,
-    topBar: (TopBarOptions) -> Unit,
-    source: (GroceryScreens) -> Unit
+    customListVM: CustomListVM = viewModel(),
+    generalVM: GeneralVM = viewModel(),
+    navController: NavController
 ) {
-    topBar(TopBarOptions.Back)
-    source(GroceryScreens.AddCustomListScreen)
+    generalVM.setTopBarOption(TopBarOptions.Back)
+    generalVM.setClickSource(GroceryScreens.AddNewCustomListScreen)
 
     val scope = rememberCoroutineScope()
     val listId = remember { customListVM.insertList(GroceryList.createBlank()) }

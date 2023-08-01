@@ -1,9 +1,12 @@
 package com.kunle.aisle9b.screens
 
+import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
+import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.repositories.general.GeneralRepository
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
 import com.kunle.aisle9b.screens.meals.MealButtonBar
@@ -17,15 +20,24 @@ import javax.inject.Inject
 class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     ViewModel() {
 
+    var topBar by mutableStateOf(TopBarOptions.Default)
+        private set
+    var source by mutableStateOf(GroceryScreens.GroceryListScreen)
+        private set
+
     val mealDeleteList: MutableList<Meal> = mutableListOf()
     val groceryListDeleteList: MutableList<GroceryList> = mutableListOf()
 
 //    val tempIngredientList = mutableStateListOf<Food>()
 //    val tempGroceryList = mutableStateListOf<Food>()
 
-    var darkModeSetting = mutableStateOf(false)
-    var keepScreenOnSetting = mutableStateOf(false)
-    var categoriesOnSetting = mutableStateOf(true)
+    var darkModeSetting: Boolean? by mutableStateOf(false)
+        private set
+    var categoriesSetting by mutableStateOf(true)
+        private set
+    var screenOnSetting by mutableStateOf(false)
+        private set
+
 
     var mealButtonBar = mutableStateOf(MealButtonBar.Default)
     var customListButtonBar = mutableStateOf(CustomListButtonBar.Default)
@@ -36,27 +48,24 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     var apiMealToBeSaved: Meal? = null
 
     private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
-    private val _settings = MutableStateFlow<List<AppSettings>>(emptyList())
     private val _groceryBadgeCount = MutableStateFlow(0)
     private val _numOfMeals = MutableStateFlow(0)
     val groceryList = _groceryList.asStateFlow()
-    val settingsList = _settings.asStateFlow()
     val groceryBadgeCount = _groceryBadgeCount.asStateFlow()
     val numOfMeals = _numOfMeals.asStateFlow()
 
     init {
-        upsertSettings(AppSettings(SettingsEnum.DarkMode.name, false))
-        upsertSettings(AppSettings(SettingsEnum.Categories.name, true))
-        upsertSettings(AppSettings(SettingsEnum.ScreenPermOn.name, false))
-
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             repository.getAllMeals().distinctUntilChanged().collect { listOfMeals ->
                 _numOfMeals.value = listOfMeals.size
             }
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             repository.getAllSettings().distinctUntilChanged().collect { listOfSettings ->
-                _settings.value = listOfSettings
+                Log.d("Test", "Settings refactor")
+                getDarkModeSetting(listOfSettings)
+                getCategoriesOn(listOfSettings)
+                getScreenPermOn(listOfSettings)
             }
         }
     }
@@ -94,6 +103,73 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
             }
         }
     }
+
+    fun setTopBarOption(value: TopBarOptions) {
+        topBar = value
+    }
+
+    fun setClickSource(value: GroceryScreens) {
+        source = value
+    }
+
+    private fun getDarkModeSetting(settingsList: List<AppSettings>) {
+        var setting: Boolean? = false
+        viewModelScope.launch {
+            setting = settingsList.firstOrNull {
+                it.settingsName == SettingsEnum.DarkMode.name
+            }?.value
+        }
+        darkModeSetting = setting
+    }
+
+    fun setDarkModeSetting(value: Boolean): Boolean {
+        upsertSettings(AppSettings(SettingsEnum.DarkMode.name, value))
+        return value
+    }
+
+    private fun getCategoriesOn(settingsList: List<AppSettings>) {
+        var setting = false
+        viewModelScope.launch {
+            val categories = settingsList.firstOrNull {
+                it.settingsName == SettingsEnum.Categories.name
+            }?.value
+
+            if (categories == null) {
+                upsertSettings(AppSettings(SettingsEnum.Categories.name, true))
+                setting = true
+            } else {
+                setting = categories
+            }
+
+        }
+        categoriesSetting = setting
+    }
+
+    fun setCategoriesOnSetting(value: Boolean) {
+        upsertSettings(AppSettings(SettingsEnum.Categories.name, value))
+    }
+
+    private fun getScreenPermOn(settingsList: List<AppSettings>) {
+        var setting = false
+        viewModelScope.launch {
+            val screen = settingsList.firstOrNull {
+                it.settingsName == SettingsEnum.ScreenPermOn.name
+            }?.value
+
+            if (screen == null) {
+                upsertSettings(AppSettings(SettingsEnum.ScreenPermOn.name, false))
+                setting = false
+            } else {
+                setting = screen
+            }
+        }
+        screenOnSetting = setting
+    }
+
+    fun setScreenPermOnSetting(value: Boolean) {
+        upsertSettings(AppSettings(SettingsEnum.ScreenPermOn.name, value))
+    }
+
 
     fun saveAPIMealonFABClick() {
         if (apiMealToBeSaved != null) {

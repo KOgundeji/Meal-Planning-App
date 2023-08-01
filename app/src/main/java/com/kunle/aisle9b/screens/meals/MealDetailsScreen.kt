@@ -28,10 +28,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.GroceryScreens
+import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.IngredientsListDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.InstructionsListDialog9
@@ -43,14 +45,13 @@ import java.util.*
 
 @Composable
 fun MealDetailsScreen(
-    modifier: Modifier = Modifier,
     mealIndex: Int?,
-    mealVM: MealVM,
-    topBar: (TopBarOptions) -> Unit,
-    source: (GroceryScreens) -> Unit
+    modifier: Modifier = Modifier,
+    generalVM: GeneralVM = viewModel(),
+    mealVM: MealVM = viewModel(),
 ) {
-    topBar(TopBarOptions.Back)
-    source(GroceryScreens.MealDetailsScreen)
+    generalVM.setTopBarOption(TopBarOptions.Back)
+    generalVM.setClickSource(GroceryScreens.MealDetailsScreen)
 
     val scope = rememberCoroutineScope()
 

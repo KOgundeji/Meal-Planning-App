@@ -14,11 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.api.apiModels.ApiResponseSearch
 import com.kunle.aisle9b.models.apiModels.queryModels.Result
 import com.kunle.aisle9b.navigation.GroceryScreens
+import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.screens.utilScreens.ErrorScreen
 import com.kunle.aisle9b.screens.utilScreens.LoadingScreen
 import com.kunle.aisle9b.templates.CustomSearchBar9
@@ -28,13 +30,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun RecipeScreen(
     modifier: Modifier = Modifier,
-    recipesVM: RecipesVM,
+    recipesVM: RecipesVM = viewModel(),
+    generalVM: GeneralVM = viewModel(),
     navController: NavController,
-    topBar: (TopBarOptions) -> Unit,
-    source: (GroceryScreens) -> Unit
 ) {
-    topBar(TopBarOptions.Default)
-    source(GroceryScreens.RecipeScreen)
+    generalVM.setTopBarOption(TopBarOptions.Default)
+    generalVM.setClickSource(GroceryScreens.RecipeScreen)
 
     val scope = rememberCoroutineScope()
 

@@ -60,6 +60,15 @@ class ListWithGroceriesDaoShould {
     }
 
     @Test
+    fun getAllListWithGroceries_EmptyList_LWGDao() {
+        runTest {
+            val listWithGroceries = sutDB.listWithGroceriesDao().getAllListWithGroceries().first()
+
+            assertThat(listWithGroceries.size).isEqualTo(0)
+        }
+    }
+
+    @Test
     fun insertPair_LWGDao() {
         runTest {
             sutDB.listDao().insertList(GroceryList(listId = 1, listName = "Grocery List A"))

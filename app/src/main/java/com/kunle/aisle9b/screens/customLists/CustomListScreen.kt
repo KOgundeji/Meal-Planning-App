@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -26,13 +27,11 @@ import com.kunle.aisle9b.util.ReconciliationDialog
 @Composable
 fun CustomListScreen(
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM,
-    customListVM: CustomListVM,
-    topBar: (TopBarOptions) -> Unit,
-    source: (GroceryScreens) -> Unit
+    generalVM: GeneralVM = viewModel(),
+    customListVM: CustomListVM = viewModel()
 ) {
-    topBar(TopBarOptions.Default)
-    source(GroceryScreens.CustomListScreen)
+    generalVM.setTopBarOption(TopBarOptions.Default)
+    generalVM.setClickSource(GroceryScreens.CustomListScreen)
 
     val context = LocalContext.current
     val customLists = customListVM.customLists.collectAsState().value
@@ -54,14 +53,14 @@ fun CustomListScreen(
                 items = foodsForReconciliation,
                 viewModel = customListVM,
                 resetButtonBarToDefault = {
-                    topBar(TopBarOptions.Default)
+                    generalVM.setTopBarOption(TopBarOptions.Default)
                     generalVM.customListButtonBar.value = CustomListButtonBar.Default
                 }
             ) {
                 transferFoodsToGroceryList = false
             }
         } else {
-            topBar(TopBarOptions.Default)
+            generalVM.setTopBarOption(TopBarOptions.Default)
             generalVM.customListButtonBar.value = CustomListButtonBar.Default
         }
         Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT)
@@ -101,9 +100,9 @@ fun CustomListScreen(
             CustomListButtonBar.Default -> {}
             CustomListButtonBar.Delete -> {
                 FinalDeleteListButtonBar(
-                    topAppBar = topBar,
+                    generalVM = generalVM,
                     onBackClick = {
-                        topBar(TopBarOptions.Default)
+                        generalVM.setTopBarOption(TopBarOptions.Default)
                         generalVM.customListButtonBar.value = CustomListButtonBar.Default
                     },
                     onDeleteClick = {
@@ -111,17 +110,17 @@ fun CustomListScreen(
                             customListVM.deleteList(customList)
                             customListVM.deleteSpecificListWithGroceries(customList.listId)
                         }
-                        topBar(TopBarOptions.Default)
+                        generalVM.setTopBarOption(TopBarOptions.Default)
                         generalVM.customListButtonBar.value = CustomListButtonBar.Default
                     })
             }
             CustomListButtonBar.Transfer -> {
                 AddToGroceryListButtonBar(
                     transferList = listsToAddToGroceryList,
-                    topAppBar = topBar,
+                    generalVM = generalVM,
                     addLists = { food -> transferFoodsToGroceryList = food }
                 ) {
-                    topBar(TopBarOptions.Default)
+                    generalVM.setTopBarOption(TopBarOptions.Default)
                     generalVM.customListButtonBar.value = CustomListButtonBar.Default
                 }
             }
@@ -143,11 +142,11 @@ fun CustomListScreen(
 
 @Composable
 fun FinalDeleteListButtonBar(
-    topAppBar: (TopBarOptions) -> Unit,
+    generalVM: GeneralVM = viewModel(),
     onDeleteClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    topAppBar(TopBarOptions.Back)
+    generalVM.setTopBarOption(TopBarOptions.Back)
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -189,11 +188,11 @@ fun FinalDeleteListButtonBar(
 @Composable
 fun AddToGroceryListButtonBar(
     transferList: MutableList<List<Food>>,
-    topAppBar: (TopBarOptions) -> Unit,
+    generalVM: GeneralVM = viewModel(),
     addLists: (Boolean) -> Unit,
     onBackClick: () -> Unit
 ) {
-    topAppBar(TopBarOptions.Back)
+    generalVM.setTopBarOption(TopBarOptions.Back)
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,

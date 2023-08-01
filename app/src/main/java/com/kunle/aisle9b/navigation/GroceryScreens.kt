@@ -7,8 +7,8 @@ enum class GroceryScreens {
     SettingsScreen,
     RecipeScreen,
     CustomListScreen,
-    AddMealsScreenTEST,
-    AddCustomListScreen,
+    AddNewMealScreen,
+    AddNewCustomListScreen,
     RecipeDetailsScreen,
     MealDetailsScreen;
 
@@ -21,8 +21,8 @@ enum class GroceryScreens {
                 SettingsScreen -> "Settings"
                 RecipeScreen -> "Recipes"
                 CustomListScreen -> "Saved Grocery Lists"
-                AddMealsScreenTEST -> "Add New Meal"
-                AddCustomListScreen -> "Create Custom Grocery List"
+                AddNewMealScreen -> "Add New Meal"
+                AddNewCustomListScreen -> "Create Custom Grocery List"
                 RecipeDetailsScreen -> "Recipe Details"
                 MealDetailsScreen -> "Meal Details"
             }

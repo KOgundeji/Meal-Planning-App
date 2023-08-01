@@ -1,53 +1,46 @@
 package com.kunle.aisle9b.screens.groceries
 
-import androidx.activity.ComponentActivity
-import androidx.annotation.StringRes
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.compose.ui.platform.LocalContext
+import androidx.activity.compose.setContent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.navigation.compose.rememberNavController
 import androidx.test.core.app.ApplicationProvider
-import com.kunle.aisle9b.dumpSemanticNodes
-import com.kunle.aisle9b.repositories.general.FakeGeneralRepository
-import com.kunle.aisle9b.repositories.groceries.FakeGroceryRepository
-import com.kunle.aisle9b.screens.GeneralVM
+import com.kunle.aisle9b.MainActivity
+import com.kunle.aisle9b.dagger.AppModule
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@HiltAndroidTest
+@UninstallModules(AppModule::class)
 class GroceryScreenKtTest {
 
-    @get:Rule
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    private lateinit var generalViewModel: GeneralVM
-    private lateinit var groceryViewModel: GroceryVM
+    @get:Rule(order = 1)
+    val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Before
     fun setUp() {
-        generalViewModel = GeneralVM(FakeGeneralRepository())
-        groceryViewModel = GroceryVM(FakeGroceryRepository())
-        composeTestRule.setContent {
+        hiltRule.inject()
+        composeTestRule.activity.setContent {
+            val navController = rememberNavController()
             Aisle9bTheme {
-                GroceryScreen(
-                    generalVM = generalViewModel,
-                    groceryVM = groceryViewModel,
-                    navController = rememberNavController(),
-                    topBar = { },
-                    source = { }
-                )
+                GroceryScreen(navController = navController)
             }
         }
-        composeTestRule.dumpSemanticNodes()
+//        composeTestRule.dumpSemanticNodes()
     }
 
     @Test
     fun emptyScreenShowsCorrectItemsTest() {
+        val context = ApplicationProvider.getApplicationContext<android.content.Context>()
+        context.resources
         composeTestRule.apply {
             onNodeWithContentDescription("Grocery name").assertIsDisplayed()
             onNodeWithContentDescription("Grocery quantity").assertIsDisplayed()

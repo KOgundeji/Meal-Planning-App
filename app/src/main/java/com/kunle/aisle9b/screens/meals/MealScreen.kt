@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
@@ -24,13 +25,11 @@ import com.kunle.aisle9b.util.*
 @Composable
 fun MealScreen(
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM,
-    mealVM: MealVM,
-    navController: NavController,
-    topBar: (TopBarOptions) -> Unit,
-    source: (GroceryScreens) -> Unit
+    generalVM: GeneralVM = viewModel(),
+    mealVM: MealVM = viewModel(),
+    navController: NavController
 ) {
-    source(GroceryScreens.MealScreen)
+    generalVM.setClickSource(GroceryScreens.MealScreen)
 
     val primaryButtonBar = generalVM.mealButtonBar.value
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
@@ -52,14 +51,14 @@ fun MealScreen(
                 items = foodsForReconciliation,
                 viewModel = mealVM,
                 resetButtonBarToDefault = {
-                    topBar(TopBarOptions.Default)
+                    generalVM.setTopBarOption(TopBarOptions.Default)
                     generalVM.mealButtonBar.value = MealButtonBar.Default
                 }
             ) {
                 transferFoodsToGroceryList = false
             }
         } else {
-            topBar(TopBarOptions.Default)
+            generalVM.setTopBarOption(TopBarOptions.Default)
             generalVM.mealButtonBar.value = MealButtonBar.Default
         }
         Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
@@ -97,9 +96,9 @@ fun MealScreen(
             MealButtonBar.Default -> {}
             MealButtonBar.Delete -> {
                 FinalDeleteMeal_ButtonBar(
-                    topAppBar = topBar,
+                    generalVM = generalVM,
                     onBackClick = {
-                        topBar(TopBarOptions.Default)
+                        generalVM.setTopBarOption(TopBarOptions.Default)
                         generalVM.mealButtonBar.value = MealButtonBar.Default
                     },
                     onDeleteClick = {
@@ -113,10 +112,10 @@ fun MealScreen(
             MealButtonBar.Transfer -> {
                 AddMealToGroceryList_ButtonBar(
                     transferList = listsToAddToGroceryList,
-                    topAppBar = topBar,
+                    generalVM = generalVM,
                     addLists = { transferFoodsToGroceryList = true }
                 ) {
-                    topBar(TopBarOptions.Default)
+                    generalVM.setTopBarOption(TopBarOptions.Default)
                     generalVM.mealButtonBar.value = MealButtonBar.Default
                 }
             }
@@ -138,11 +137,11 @@ fun MealScreen(
 
 @Composable
 fun FinalDeleteMeal_ButtonBar(
-    topAppBar: (TopBarOptions) -> Unit,
+    generalVM: GeneralVM = viewModel(),
     onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
-    topAppBar(TopBarOptions.Back)
+    generalVM.setTopBarOption(TopBarOptions.Back)
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -182,11 +181,11 @@ fun FinalDeleteMeal_ButtonBar(
 @Composable
 fun AddMealToGroceryList_ButtonBar(
     transferList: MutableList<List<Food>>,
-    topAppBar: (TopBarOptions) -> Unit,
+    generalVM: GeneralVM = viewModel(),
     addLists: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    topAppBar(TopBarOptions.Back)
+    generalVM.setTopBarOption(TopBarOptions.Back)
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,

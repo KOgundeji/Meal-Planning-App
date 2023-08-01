@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
@@ -42,13 +43,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddMealScreenTest(
     modifier: Modifier = Modifier,
-    mealVM: MealVM,
-    generalVM: GeneralVM,
-    topBar: (TopBarOptions) -> Unit,
-    source: (GroceryScreens) -> Unit
+    mealVM: MealVM = viewModel(),
+    generalVM: GeneralVM = viewModel()
 ) {
-    topBar(TopBarOptions.Back)
-    source(GroceryScreens.AddMealsScreenTEST)
+    generalVM.setTopBarOption(TopBarOptions.Back)
+    generalVM.setClickSource(GroceryScreens.AddNewMealScreen)
+
     val scope = rememberCoroutineScope()
     val mealId = remember { mealVM.insertMeal(Meal.createBlank()) }
 

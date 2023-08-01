@@ -10,7 +10,7 @@ data class Meal(
     val mealId: Long = 0,
     val name: String,
     val servingSize: String,
-    val mealPic: Uri = Uri.EMPTY,
+    val mealPic: Uri? = Uri.EMPTY,
     val notes: String,
     val apiID: Int = -1,
     val visible: Boolean = true
