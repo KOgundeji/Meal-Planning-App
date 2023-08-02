@@ -14,8 +14,6 @@ class GroceryRepositoryImpl @Inject constructor(
     private val groceryDao: GroceryDao
 ) : GroceryRepository, BasicRepositoryFunctions {
 
-    override suspend fun deleteGrocery(grocery: Grocery) = groceryDao.deleteGrocery(grocery)
-
     override suspend fun updateGlobalFoodCategories(foodName: String, newCategory: String) =
         groceryDao.updateGlobalFoodCategories(foodName, newCategory)
 
@@ -29,9 +27,10 @@ class GroceryRepositoryImpl @Inject constructor(
         groceryDao.getAllFoodNames().flowOn(Dispatchers.IO).conflate()
 
     override suspend fun insertFood(food: Food): Long = groceryDao.insertFood(food)
-    override suspend fun insertGrocery(grocery: Grocery) = groceryDao.insertGrocery(grocery)
-    override suspend fun upsertGrocery(grocery: Grocery) = groceryDao.upsertGrocery(grocery)
     override suspend fun upsertFood(food: Food) = groceryDao.upsertFood(food)
     override suspend fun deleteFood(food: Food) = groceryDao.deleteFood(food)
+    override suspend fun insertGrocery(grocery: Grocery) = groceryDao.insertGrocery(grocery)
+    override suspend fun upsertGrocery(grocery: Grocery) = groceryDao.upsertGrocery(grocery)
+    override suspend fun deleteGrocery(grocery: Grocery) = groceryDao.deleteGrocery(grocery)
     override suspend fun deleteGroceryByName(name: String) = groceryDao.deleteGroceryByName(name)
 }

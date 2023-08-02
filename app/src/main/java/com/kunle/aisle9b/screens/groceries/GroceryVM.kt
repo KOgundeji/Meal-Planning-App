@@ -44,6 +44,14 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
         }
     }
 
+    override suspend fun insertGrocery(grocery: Grocery) {
+        viewModelScope.launch { repository.insertGrocery(grocery) }
+    }
+
+    suspend fun upsertGrocery(grocery: Grocery) {
+        viewModelScope.launch { repository.upsertGrocery(grocery) }
+    }
+
     override suspend fun deleteGrocery(grocery: Grocery) {
         viewModelScope.launch { repository.deleteGrocery(grocery) }
     }
@@ -54,14 +62,6 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
             foodId = async { repository.insertFood(food) }.await()
         }
         return foodId
-    }
-
-    override suspend fun insertGrocery(grocery: Grocery) {
-        viewModelScope.launch { repository.insertGrocery(grocery) }
-    }
-
-    suspend fun upsertGrocery(grocery: Grocery) {
-        viewModelScope.launch { repository.upsertGrocery(grocery) }
     }
 
     override suspend fun upsertFood(food: Food) {

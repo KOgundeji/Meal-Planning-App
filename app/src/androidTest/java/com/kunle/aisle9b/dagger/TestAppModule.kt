@@ -6,8 +6,8 @@ import com.kunle.aisle9b.api.RecipeAPI
 import com.kunle.aisle9b.data.*
 import com.kunle.aisle9b.repositories.customLists.CustomListRepository
 import com.kunle.aisle9b.repositories.customLists.CustomListRepositoryImpl
-import com.kunle.aisle9b.repositories.general.GeneralRepositoryImpl
 import com.kunle.aisle9b.repositories.general.GeneralRepository
+import com.kunle.aisle9b.repositories.general.GeneralRepositoryImpl
 import com.kunle.aisle9b.repositories.groceries.GroceryRepository
 import com.kunle.aisle9b.repositories.groceries.GroceryRepositoryImpl
 import com.kunle.aisle9b.repositories.meals.MealRepository

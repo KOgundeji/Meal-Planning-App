@@ -6,8 +6,8 @@ import com.kunle.aisle9b.api.RecipeAPI
 import com.kunle.aisle9b.data.*
 import com.kunle.aisle9b.repositories.customLists.CustomListRepository
 import com.kunle.aisle9b.repositories.customLists.CustomListRepositoryImpl
-import com.kunle.aisle9b.repositories.general.GeneralRepositoryImpl
 import com.kunle.aisle9b.repositories.general.GeneralRepository
+import com.kunle.aisle9b.repositories.general.GeneralRepositoryImpl
 import com.kunle.aisle9b.repositories.groceries.GroceryRepository
 import com.kunle.aisle9b.repositories.groceries.GroceryRepositoryImpl
 import com.kunle.aisle9b.repositories.meals.MealRepository
@@ -42,67 +42,6 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideGeneralRepositoryImpl(
-        groceryDao: GroceryDao,
-        mealDao: MealDao,
-        settingsDao: SettingsDao,
-        instructionDao: InstructionDao,
-        mealWithIngredientsDao: MealWithIngredientsDao
-    ) = GeneralRepositoryImpl(
-        groceryDao,
-        mealWithIngredientsDao,
-        mealDao,
-        instructionDao,
-        settingsDao
-    ) as GeneralRepository
-
-    @Singleton
-    @Provides
-    fun provideCustomListRepositoryImpl(
-        customListDao: CustomListDao,
-        listWithGroceriesDao: ListWithGroceriesDao,
-        groceryDao: GroceryDao
-    ) = CustomListRepositoryImpl(
-        customListDao, listWithGroceriesDao, groceryDao
-    ) as CustomListRepository
-
-    @Singleton
-    @Provides
-    fun provideGroceryRepositoryImpl(groceryDao: GroceryDao) =
-        GroceryRepositoryImpl(groceryDao) as GroceryRepository
-
-    @Singleton
-    @Provides
-    fun provideMealRepositoryImpl(
-        groceryDao: GroceryDao,
-        mealDao: MealDao,
-        instructionDao: InstructionDao,
-        mealWithIngredientsDao: MealWithIngredientsDao,
-        recipeAPI: RecipeAPI
-    ) =
-        MealRepositoryImpl(
-            groceryDao,
-            mealDao,
-            instructionDao,
-            mealWithIngredientsDao,
-            recipeAPI
-        ) as MealRepository
-
-    @Singleton
-    @Provides
-    fun provideRecipeRepositoryImpl(
-        mealDao: MealDao,
-        recipeAPI: RecipeAPI,
-        mealWithIngredientsDao: MealWithIngredientsDao
-    ) =
-        RecipeRepositoryImpl(
-            mealDao,
-            recipeAPI,
-            mealWithIngredientsDao
-        ) as RecipeRepository
-
-    @Singleton
-    @Provides
     fun provideRecipeAPI(): RecipeAPI {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
@@ -113,37 +52,53 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideFoodDao(shoppingRoomDB: ShoppingRoomDB): GroceryDao =
-        shoppingRoomDB.groceryDao()
+    fun provideGeneralRepository(db: ShoppingRoomDB) =
+        GeneralRepositoryImpl(
+            db.groceryDao(),
+            db.mealWithIngredientsDao(),
+            db.mealDao(),
+            db.instructionDao(),
+            db.settingsDao()
+        ) as GeneralRepository
 
     @Singleton
     @Provides
-    fun provideListDao(shoppingRoomDB: ShoppingRoomDB): CustomListDao =
-        shoppingRoomDB.listDao()
+    fun provideCustomListRepository(db: ShoppingRoomDB) =
+        CustomListRepositoryImpl(
+            db.listDao(),
+            db.listWithGroceriesDao(),
+            db.groceryDao()
+        ) as CustomListRepository
 
     @Singleton
     @Provides
-    fun provideMealDao(shoppingRoomDB: ShoppingRoomDB): MealDao =
-        shoppingRoomDB.mealDao()
+    fun provideGroceryRepository(db: ShoppingRoomDB) =
+        GroceryRepositoryImpl(db.groceryDao()) as GroceryRepository
 
     @Singleton
     @Provides
-    fun provideSettingsDao(shoppingRoomDB: ShoppingRoomDB): SettingsDao =
-        shoppingRoomDB.settingsDao()
+    fun provideMealRepository(
+        db: ShoppingRoomDB,
+        recipeAPI: RecipeAPI
+    ) =
+        MealRepositoryImpl(
+            db.groceryDao(),
+            db.mealDao(),
+            db.instructionDao(),
+            db.mealWithIngredientsDao(),
+            recipeAPI
+        ) as MealRepository
 
     @Singleton
     @Provides
-    fun provideInstructionDao(shoppingRoomDB: ShoppingRoomDB): InstructionDao =
-        shoppingRoomDB.instructionDao()
-
-    @Singleton
-    @Provides
-    fun provideLWGDao(shoppingRoomDB: ShoppingRoomDB): ListWithGroceriesDao =
-        shoppingRoomDB.listWithGroceriesDao()
-
-    @Singleton
-    @Provides
-    fun provideMWIDao(shoppingRoomDB: ShoppingRoomDB): MealWithIngredientsDao =
-        shoppingRoomDB.mealWithIngredientsDao()
+    fun provideRecipeRepository(
+        db: ShoppingRoomDB,
+        recipeAPI: RecipeAPI,
+    ) =
+        RecipeRepositoryImpl(
+            db.mealDao(),
+            recipeAPI,
+            db.mealWithIngredientsDao()
+        ) as RecipeRepository
 }
 
