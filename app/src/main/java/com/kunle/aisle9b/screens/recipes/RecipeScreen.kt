@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
@@ -30,8 +31,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun RecipeScreen(
     modifier: Modifier = Modifier,
-    recipesVM: RecipesVM = viewModel(),
-    generalVM: GeneralVM = viewModel(),
+    recipesVM: RecipesVM = hiltViewModel(),
+    generalVM: GeneralVM = hiltViewModel(),
     navController: NavController,
 ) {
     generalVM.setTopBarOption(TopBarOptions.Default)

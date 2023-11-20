@@ -31,7 +31,7 @@ interface MealDao {
     suspend fun updateVisibility(obj: MealVisibilityUpdate)
 
     @Query("SELECT * FROM meal_table WHERE visible")
-    fun getVisibleMeals(): Flow<List<Meal>>
+    fun getAllVisibleMeals(): Flow<List<Meal>>
 
     @Query("SELECT * FROM meal_table")
     fun getAllMeals(): Flow<List<Meal>>

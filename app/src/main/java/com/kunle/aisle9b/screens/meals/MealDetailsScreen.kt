@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
@@ -47,8 +48,8 @@ import java.util.*
 fun MealDetailsScreen(
     mealIndex: Int?,
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM = viewModel(),
-    mealVM: MealVM = viewModel(),
+    generalVM: GeneralVM = hiltViewModel(),
+    mealVM: MealVM = hiltViewModel(),
 ) {
     generalVM.setTopBarOption(TopBarOptions.Back)
     generalVM.setClickSource(GroceryScreens.MealDetailsScreen)
@@ -223,7 +224,7 @@ fun Tabs(
     editIngredients: () -> Unit,
     editInstructions: () -> Unit,
 ) {
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState { 4 }
     val coroutineScope = rememberCoroutineScope()
 
     val tabLabels = listOf(
@@ -269,7 +270,7 @@ fun Tabs(
                 })
         }
     }
-    HorizontalPager(pageCount = tabLabels.size, state = pagerState) {
+    HorizontalPager(state = pagerState) {
         tabLabels[pagerState.currentPage].screen()
     }
 }

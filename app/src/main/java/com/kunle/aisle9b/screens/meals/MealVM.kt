@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens.meals
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.*
@@ -29,6 +30,7 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllMeals().distinctUntilChanged().collect { meals ->
                 _mealList.value = meals
+                Log.d("Test", "MealVM init size: ${meals.size}")
             }
         }
 
@@ -43,6 +45,12 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
                 _instructions.value = list
             }
         }
+    }
+
+    fun findMWI(mealId: Long): MealWithIngredients {
+        return _mealsWithIngredients.value.firstOrNull {
+            it.meal.mealId == mealId
+        } ?: MealWithIngredients(meal = Meal.createBlank(), ingredients = emptyList())
     }
 
     fun insertMeal(meal: Meal): Long {
@@ -61,7 +69,8 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         viewModelScope.launch { repository.updateServingSize(obj) }
 
     fun updateNotes(obj: MealNotesUpdate) = viewModelScope.launch { repository.updateNotes(obj) }
-    fun updateVisibility(obj: MealVisibilityUpdate) = viewModelScope.launch { repository.updateVisibility(obj) }
+    fun updateVisibility(obj: MealVisibilityUpdate) =
+        viewModelScope.launch { repository.updateVisibility(obj) }
 
     fun upsertInstruction(instruction: Instruction) =
         viewModelScope.launch { repository.upsertInstruction(instruction) }

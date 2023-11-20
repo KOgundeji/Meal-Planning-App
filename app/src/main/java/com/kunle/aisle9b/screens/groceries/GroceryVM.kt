@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens.groceries
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.Food
@@ -20,14 +21,17 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
     BasicRepositoryFunctions {
 
     private val _groceryList = MutableStateFlow<List<Grocery>>(emptyList())
+    private val _groupedGroceryList = MutableStateFlow<Map<String, List<Grocery>>>(emptyMap())
     private val _namesOfAllFoods = MutableStateFlow<List<String>>(emptyList())
     val groceryList = _groceryList.asStateFlow()
+    val groupedGroceryList = _groupedGroceryList.asStateFlow()
     val namesOfAllFoods = _namesOfAllFoods.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllGroceries().distinctUntilChanged().collect { groceryItems ->
                 _groceryList.value = groceryItems
+                _groupedGroceryList.value = groceryItems.groupBy { it.category }
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -39,8 +43,14 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
 
     fun updateCategories(foodGroceryName: String, newCategory: String) {
         viewModelScope.launch {
-            repository.updateGlobalFoodCategories(foodName = foodGroceryName, newCategory = newCategory)
-            repository.updateGlobalGroceryCategories(groceryName = foodGroceryName, newCategory = newCategory)
+            repository.updateGlobalFoodCategories(
+                foodName = foodGroceryName,
+                newCategory = newCategory
+            )
+            repository.updateGlobalGroceryCategories(
+                groceryName = foodGroceryName,
+                newCategory = newCategory
+            )
         }
     }
 

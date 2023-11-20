@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
@@ -31,8 +32,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddPreMadeListScreen(
     modifier: Modifier = Modifier,
-    customListVM: CustomListVM = viewModel(),
-    generalVM: GeneralVM = viewModel(),
+    customListVM: CustomListVM = hiltViewModel(),
+    generalVM: GeneralVM = hiltViewModel(),
     navController: NavController
 ) {
     generalVM.setTopBarOption(TopBarOptions.Back)

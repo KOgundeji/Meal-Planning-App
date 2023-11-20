@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
@@ -43,8 +44,8 @@ import kotlinx.coroutines.launch
 fun RecipeDetailsScreen(
     recipeId: Int?,
     modifier: Modifier = Modifier,
-    recipesVM: RecipesVM = viewModel(),
-    generalVM: GeneralVM = viewModel()
+    recipesVM: RecipesVM = hiltViewModel(),
+    generalVM: GeneralVM = hiltViewModel()
 ) {
     generalVM.setTopBarOption(TopBarOptions.Back)
     generalVM.setClickSource(GroceryScreens.RecipeDetailsScreen)
@@ -105,7 +106,7 @@ private fun DetailsScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Tabs(recipe: Recipe, instructions: Instructions) {
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState{ 4 }
     val coroutineScope = rememberCoroutineScope()
 
     val tabLabels = listOf(
@@ -136,7 +137,7 @@ fun Tabs(recipe: Recipe, instructions: Instructions) {
                 })
         }
     }
-    HorizontalPager(pageCount = tabLabels.size, state = pagerState) {
+    HorizontalPager( state = pagerState) {
         tabLabels[pagerState.currentPage].screen()
     }
 }

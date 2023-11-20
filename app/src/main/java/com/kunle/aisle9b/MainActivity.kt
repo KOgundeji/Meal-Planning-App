@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -21,9 +22,13 @@ import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
+import com.kunle.aisle9b.screens.groceries.GroceryVM
 import com.kunle.aisle9b.screens.meals.MealButtonBar
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
-import com.kunle.aisle9b.util.*
+import com.kunle.aisle9b.util.BackTopAppBar
+import com.kunle.aisle9b.util.DefaultTopAppBar
+import com.kunle.aisle9b.util.ExpandingFAB
+import com.kunle.aisle9b.util.SaveFAB
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,10 +36,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val generalVM: GeneralVM by viewModels()
             val navController = rememberNavController()
+            val generalVM: GeneralVM by viewModels()
 
-            ShoppingAppScaffold(navController) { padVal ->
+            ShoppingAppScaffold(navController, generalVM) { padVal ->
                 Aisle9Navigation(
                     modifier = Modifier.padding(padVal),
                     navController = navController,
@@ -48,7 +53,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ShoppingAppScaffold(
     navController: NavController,
-    generalVM: GeneralVM = viewModel(),
+    generalVM: GeneralVM,
     appNavigation: @Composable (PaddingValues) -> Unit
 ) {
     val topBar = generalVM.topBar
@@ -128,7 +133,7 @@ fun ShoppingAppScaffold(
                 BottomNavigationBar9(
                     mealsName = "Meals (${generalVM.numOfMeals.collectAsState().value})",
                     navController = navController,
-                    badgeCount = generalVM.groceryBadgeCount.collectAsState().value,
+                    badgeCount = generalVM.groceryBadgeCount,
                     onItemClick = {
                         navController.navigate(it.route)
                     })

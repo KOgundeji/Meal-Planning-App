@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens.meals
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
@@ -25,8 +27,8 @@ import com.kunle.aisle9b.util.*
 @Composable
 fun MealScreen(
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM = viewModel(),
-    mealVM: MealVM = viewModel(),
+    generalVM: GeneralVM = hiltViewModel(),
+    mealVM: MealVM = hiltViewModel(),
     navController: NavController
 ) {
     generalVM.setClickSource(GroceryScreens.MealScreen)
@@ -39,7 +41,9 @@ fun MealScreen(
     val context = LocalContext.current
 
     val mealList = mealVM.mealList.collectAsState().value
+    Log.d("Test", "mealList size: ${mealList.size}")
     var filteredMealLists by remember { mutableStateOf(mealList) }
+    Log.d("Test", "filteredMeal size: ${filteredMealLists.size}")
 
     if (transferFoodsToGroceryList) {
         val foodsForReconciliation =
@@ -122,6 +126,7 @@ fun MealScreen(
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             items(items = filteredMealLists) { meal ->
+                Log.d("Test", "Meal Screens items list")
                 MealItem9(
                     meal = meal,
                     primaryButtonBarAction = primaryButtonBar,
@@ -137,7 +142,7 @@ fun MealScreen(
 
 @Composable
 fun FinalDeleteMeal_ButtonBar(
-    generalVM: GeneralVM = viewModel(),
+    generalVM: GeneralVM,
     onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
@@ -181,7 +186,7 @@ fun FinalDeleteMeal_ButtonBar(
 @Composable
 fun AddMealToGroceryList_ButtonBar(
     transferList: MutableList<List<Food>>,
-    generalVM: GeneralVM = viewModel(),
+    generalVM: GeneralVM,
     addLists: () -> Unit,
     onBackClick: () -> Unit
 ) {

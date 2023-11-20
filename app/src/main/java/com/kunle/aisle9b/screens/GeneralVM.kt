@@ -39,6 +39,9 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
         private set
 
 
+    var groceryBadgeCount by mutableIntStateOf(0)
+        private set
+
     var mealButtonBar = mutableStateOf(MealButtonBar.Default)
     var customListButtonBar = mutableStateOf(CustomListButtonBar.Default)
 
@@ -48,10 +51,10 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     var apiMealToBeSaved: Meal? = null
 
     private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
-    private val _groceryBadgeCount = MutableStateFlow(0)
+//    private val _groceryBadgeCount = MutableStateFlow(0) //not sure where this comes from
     private val _numOfMeals = MutableStateFlow(0)
     val groceryList = _groceryList.asStateFlow()
-    val groceryBadgeCount = _groceryBadgeCount.asStateFlow()
+//    val groceryBadgeCount = _groceryBadgeCount.asStateFlow()
     val numOfMeals = _numOfMeals.asStateFlow()
 
     init {
@@ -73,9 +76,10 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     fun upsertFood(food: Food) = viewModelScope.launch { repository.upsertFood(food) }
     fun deleteFood(food: Food) = viewModelScope.launch { repository.deleteFood(food) }
     fun insertGrocery(grocery: Grocery) =
-        viewModelScope.launch { repository.insertGrocery(grocery) }
+        viewModelScope.launch {
+            repository.insertGrocery(grocery) }
 
-    fun upsertSettings(settings: AppSettings) =
+    private fun upsertSettings(settings: AppSettings) =
         viewModelScope.launch { repository.upsertSettings(settings) }
 
     fun saveCreatedMealonFABClick() {
@@ -112,14 +116,14 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
         source = value
     }
 
+    fun setGroceryBadge(count: Int) {
+        groceryBadgeCount = count
+    }
+
     private fun getDarkModeSetting(settingsList: List<AppSettings>) {
-        var setting: Boolean? = false
-        viewModelScope.launch {
-            setting = settingsList.firstOrNull {
-                it.settingsName == SettingsEnum.DarkMode.name
-            }?.value
-        }
-        darkModeSetting = setting
+        darkModeSetting = settingsList.firstOrNull {
+            it.settingsName == SettingsEnum.DarkMode.name
+        }?.value
     }
 
     fun setDarkModeSetting(value: Boolean): Boolean {
@@ -128,21 +132,16 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     }
 
     private fun getCategoriesOn(settingsList: List<AppSettings>) {
-        var setting = false
-        viewModelScope.launch {
-            val categories = settingsList.firstOrNull {
-                it.settingsName == SettingsEnum.Categories.name
-            }?.value
+        val categories = settingsList.firstOrNull {
+            it.settingsName == SettingsEnum.Categories.name
+        }?.value
 
-            if (categories == null) {
-                upsertSettings(AppSettings(SettingsEnum.Categories.name, true))
-                setting = true
-            } else {
-                setting = categories
-            }
-
+        categoriesSetting = if (categories == null) {
+            upsertSettings(AppSettings(SettingsEnum.Categories.name, true))
+            true
+        } else {
+            categories
         }
-        categoriesSetting = setting
     }
 
     fun setCategoriesOnSetting(value: Boolean) {
@@ -150,20 +149,16 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     }
 
     private fun getScreenPermOn(settingsList: List<AppSettings>) {
-        var setting = false
-        viewModelScope.launch {
-            val screen = settingsList.firstOrNull {
-                it.settingsName == SettingsEnum.ScreenPermOn.name
-            }?.value
+        val screen = settingsList.firstOrNull {
+            it.settingsName == SettingsEnum.ScreenPermOn.name
+        }?.value
 
-            if (screen == null) {
-                upsertSettings(AppSettings(SettingsEnum.ScreenPermOn.name, false))
-                setting = false
-            } else {
-                setting = screen
-            }
+        screenOnSetting = if (screen == null) {
+            upsertSettings(AppSettings(SettingsEnum.ScreenPermOn.name, false))
+            false
+        } else {
+            screen
         }
-        screenOnSetting = setting
     }
 
     fun setScreenPermOnSetting(value: Boolean) {

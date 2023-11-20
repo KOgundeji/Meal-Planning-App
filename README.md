@@ -10,7 +10,7 @@ Grocery List | Saved Grocery Lists | Saved Recipes and Meals | Recipe Search via
 * **The latest in Kotlin UI Design**: Uses the latest tool in Android UI development, **Jetpack Compose**, to build and test UI
 * **The latest Google Design Tools**: Material 3 is the latest version of Google’s open-source design system.
 * **Coil and CameraX for image processing**
-* **Room Database and Hilt & Dagger for data persistance**
+* **Room Database and Hilt & Dagger for data persistence**
 
 # Key User Features
 * Build custom grocery lists and recipes

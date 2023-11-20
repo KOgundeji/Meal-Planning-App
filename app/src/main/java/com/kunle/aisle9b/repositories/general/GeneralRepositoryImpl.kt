@@ -29,8 +29,7 @@ class GeneralRepositoryImpl @Inject constructor(
 
     override suspend fun upsertMeal(meal: Meal) = mealDao.upsertMeal(meal)
     override suspend fun deleteMeal(meal: Meal) = mealDao.deleteMeal(meal)
-    override fun getAllMeals(): Flow<List<Meal>> =
-        mealDao.getAllMeals().flowOn(Dispatchers.IO).conflate()
+
 
     override suspend fun upsertSettings(settings: AppSettings) =
         settingsDao.upsertSettings(settings)
@@ -38,4 +37,8 @@ class GeneralRepositoryImpl @Inject constructor(
     //Get all
     override fun getAllSettings(): Flow<List<AppSettings>> =
         settingsDao.getAllSettings().flowOn(Dispatchers.IO).conflate()
+
+    override fun getAllMeals(): Flow<List<Meal>> =
+        mealDao.getAllMeals().flowOn(Dispatchers.IO).conflate()
+
 }

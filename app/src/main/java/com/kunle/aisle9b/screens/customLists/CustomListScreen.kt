@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
@@ -27,8 +28,8 @@ import com.kunle.aisle9b.util.ReconciliationDialog
 @Composable
 fun CustomListScreen(
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM = viewModel(),
-    customListVM: CustomListVM = viewModel()
+    generalVM: GeneralVM = hiltViewModel(),
+    customListVM: CustomListVM = hiltViewModel()
 ) {
     generalVM.setTopBarOption(TopBarOptions.Default)
     generalVM.setClickSource(GroceryScreens.CustomListScreen)

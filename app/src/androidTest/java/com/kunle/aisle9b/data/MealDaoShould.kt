@@ -72,7 +72,7 @@ class MealDaoShould {
                 sutDB.mealDao().insertMeal(it)
             }
 
-            val mealList = sutDB.mealDao().getVisibleMeals().first()
+            val mealList = sutDB.mealDao().getAllVisibleMeals().first()
             assertThat(mealList.size).isEqualTo(1)
         }
     }

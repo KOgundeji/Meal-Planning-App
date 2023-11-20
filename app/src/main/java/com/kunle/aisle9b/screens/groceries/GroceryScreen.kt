@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens.groceries
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -23,6 +24,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kunle.aisle9b.R
@@ -44,18 +46,26 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroceryScreen(
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM = viewModel(),
-    groceryVM: GroceryVM = viewModel(),
+    generalVM: GeneralVM = hiltViewModel(),
+    groceryVM: GroceryVM = hiltViewModel(),
     navController: NavController
 ) {
+
     generalVM.setTopBarOption(TopBarOptions.Default)
     generalVM.setClickSource(GroceryScreens.GroceryListScreen)
 
     val namesOfAllFoods = groceryVM.namesOfAllFoods.collectAsState().value
     val groceryList = groceryVM.groceryList.collectAsState().value
+    val groupedGroceryList = groceryVM.groupedGroceryList.collectAsState().value
     val categoriesOn = generalVM.categoriesSetting
 
     val listState = rememberLazyListState()
+    LaunchedEffect(key1 = groceryList.size) {
+        generalVM.setGroceryBadge(groceryList.size)
+        if (groceryList.isNotEmpty() && listState.firstVisibleItemIndex < 5) listState.animateScrollToItem(
+            0
+        )
+    }
     val coroutineScope = rememberCoroutineScope()
 
     Column(
@@ -65,8 +75,7 @@ fun GroceryScreen(
     ) {
         GroceryInputTextField(namesOfAllFoods) { name, quantity ->
             coroutineScope.launch {
-                listState.animateScrollToItem(index = 0)
-                groceryVM.upsertGrocery(Grocery(name = name, quantity = quantity))
+                groceryVM.insertGrocery(Grocery(name = name, quantity = quantity))
             }
         }
         if (groceryList.isEmpty()) {
@@ -146,9 +155,7 @@ fun GroceryScreen(
         } else {
             LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 if (categoriesOn) {
-                    val groupedGroceries =
-                        groceryList.groupBy { food -> food.category }
-                    groupedGroceries.forEach { (category, groceries) ->
+                    groupedGroceryList.forEach { (category, groceries) ->
                         stickyHeader {
                             CategoryHeader(string = category)
                         }

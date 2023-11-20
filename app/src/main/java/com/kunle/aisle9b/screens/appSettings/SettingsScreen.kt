@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -24,7 +25,7 @@ import com.kunle.aisle9b.screens.GeneralVM
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM = viewModel()
+    generalVM: GeneralVM = hiltViewModel()
 ) {
     generalVM.setTopBarOption(TopBarOptions.Default)
     generalVM.setClickSource(GroceryScreens.SettingsScreen)
