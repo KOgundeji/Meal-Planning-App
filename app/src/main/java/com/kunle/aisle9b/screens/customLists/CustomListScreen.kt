@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.DriveFileMoveRtl
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.navigation.GroceryScreens
@@ -31,38 +27,32 @@ fun CustomListScreen(
     generalVM: GeneralVM = hiltViewModel(),
     customListVM: CustomListVM = hiltViewModel()
 ) {
-    generalVM.setTopBarOption(TopBarOptions.Default)
     generalVM.setClickSource(GroceryScreens.CustomListScreen)
 
     val context = LocalContext.current
     val customLists = customListVM.customLists.collectAsState().value
-    var primaryButtonBar = generalVM.customListButtonBar.value
     var searchWord by remember { mutableStateOf("") }
 
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
-    val listsToAddToGroceryList = remember { mutableStateListOf(generalVM.groceryList.value) }
+    var listsToAddToGroceryList by remember { mutableStateOf(emptyList<Food>()) }
 
     var filteredCustomLists by remember { mutableStateOf(customLists) }
 
     if (transferFoodsToGroceryList) {
         val foodsForReconciliation =
             generalVM.filterForReconciliation(
-                lists = listsToAddToGroceryList)
+                listToAdd = listsToAddToGroceryList
+            )
 
         if (foodsForReconciliation.isNotEmpty()) {
             ReconciliationDialog(
                 items = foodsForReconciliation,
                 viewModel = customListVM,
-                resetButtonBarToDefault = {
-                    generalVM.setTopBarOption(TopBarOptions.Default)
-                    generalVM.customListButtonBar.value = CustomListButtonBar.Default
-                }
             ) {
                 transferFoodsToGroceryList = false
             }
         } else {
             generalVM.setTopBarOption(TopBarOptions.Default)
-            generalVM.customListButtonBar.value = CustomListButtonBar.Default
         }
         Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT)
             .show()
@@ -97,147 +87,23 @@ fun CustomListScreen(
                 }
             }
         )
-        when (primaryButtonBar) {
-            CustomListButtonBar.Default -> {}
-            CustomListButtonBar.Delete -> {
-                FinalDeleteListButtonBar(
-                    generalVM = generalVM,
-                    onBackClick = {
-                        generalVM.setTopBarOption(TopBarOptions.Default)
-                        generalVM.customListButtonBar.value = CustomListButtonBar.Default
-                    },
-                    onDeleteClick = {
-                        generalVM.groceryListDeleteList.forEach { customList ->
-                            customListVM.deleteList(customList)
-                            customListVM.deleteSpecificListWithGroceries(customList.listId)
-                        }
-                        generalVM.setTopBarOption(TopBarOptions.Default)
-                        generalVM.customListButtonBar.value = CustomListButtonBar.Default
-                    })
-            }
-            CustomListButtonBar.Transfer -> {
-                AddToGroceryListButtonBar(
-                    transferList = listsToAddToGroceryList,
-                    generalVM = generalVM,
-                    addLists = { food -> transferFoodsToGroceryList = food }
-                ) {
-                    generalVM.setTopBarOption(TopBarOptions.Default)
-                    generalVM.customListButtonBar.value = CustomListButtonBar.Default
-                }
-            }
-        }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             items(items = filteredCustomLists) { listItem ->
                 CustomListItem9(
                     groceryList = listItem,
-                    primaryButtonBarAction = primaryButtonBar,
-                    generalVM = generalVM,
                     customListVM = customListVM,
-                    transferList = listsToAddToGroceryList
+                    deleteList = {
+                        customListVM.deleteList(listItem)
+                        customListVM.deleteSpecificListWithGroceries(listItem.listId)
+                    },
+                    transferFood = { groceries ->
+                        listsToAddToGroceryList = groceries
+                        transferFoodsToGroceryList = true
+                    }
+
+
                 )
             }
         }
     }
-}
-
-
-@Composable
-fun FinalDeleteListButtonBar(
-    generalVM: GeneralVM = viewModel(),
-    onDeleteClick: () -> Unit,
-    onBackClick: () -> Unit
-) {
-    generalVM.setTopBarOption(TopBarOptions.Back)
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Button(
-            onClick = {
-                onBackClick()
-            },
-            modifier = Modifier.width(75.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            )
-        ) {
-            Icon(
-                modifier = Modifier.size(30.dp),
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "Back button"
-            )
-        }
-        Button(
-            onClick = { onDeleteClick() },
-            modifier = Modifier.width(75.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            )
-        ) {
-            Icon(
-                modifier = Modifier.size(30.dp),
-                imageVector = Icons.Filled.DeleteForever,
-                contentDescription = "Delete button"
-            )
-        }
-    }
-}
-
-@Composable
-fun AddToGroceryListButtonBar(
-    transferList: MutableList<List<Food>>,
-    generalVM: GeneralVM = viewModel(),
-    addLists: (Boolean) -> Unit,
-    onBackClick: () -> Unit
-) {
-    generalVM.setTopBarOption(TopBarOptions.Back)
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Button(
-            onClick = {
-                onBackClick()
-            },
-            modifier = Modifier.width(75.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            )
-        ) {
-            Icon(
-                modifier = Modifier.size(30.dp),
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = "Back button"
-            )
-        }
-        Button(
-            onClick = {
-                if (transferList.isNotEmpty()) {
-                    addLists(true)
-                }
-            },
-            modifier = Modifier.width(75.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-            )
-        ) {
-            Icon(
-                modifier = Modifier.size(30.dp),
-                imageVector = Icons.Filled.DriveFileMoveRtl,
-                contentDescription = "transfer to grocery list button"
-            )
-        }
-    }
-}
-
-enum class CustomListButtonBar {
-    Default,
-    Delete,
-    Transfer;
 }

@@ -22,4 +22,5 @@ interface GeneralRepository {
     //Get all
     fun getAllMeals(): Flow<List<Meal>>
     fun getAllSettings(): Flow<List<AppSettings>>
+    fun getAllGroceries(): Flow<List<Grocery>>
 }

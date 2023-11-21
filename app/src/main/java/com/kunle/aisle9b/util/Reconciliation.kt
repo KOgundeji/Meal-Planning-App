@@ -28,7 +28,6 @@ import kotlinx.coroutines.launch
 fun ReconciliationDialog(
     items: Map<String, List<Food>>,
     viewModel: BasicRepositoryFunctions,
-    resetButtonBarToDefault: () -> Unit,
     closeDialog: () -> Unit
 ) {
     val context = LocalContext.current
@@ -36,7 +35,7 @@ fun ReconciliationDialog(
     val keyList = items.keys.toList()
     val totalDialogsNeeded = items.size
 
-    var currentDialogIndex by remember { mutableStateOf(0) }
+    var currentDialogIndex by remember { mutableIntStateOf(0) }
 
     if (keyList.isNotEmpty() && items[keyList[currentDialogIndex]] != null) {
         val list = items[keyList[currentDialogIndex]]
@@ -108,7 +107,6 @@ fun ReconciliationDialog(
                             if ((currentDialogIndex + 1) < totalDialogsNeeded) {
                                 currentDialogIndex += 1
                             } else {
-                                resetButtonBarToDefault()
                                 closeDialog()
                             }
                             Toast.makeText(context, "$it added to Grocery List", Toast.LENGTH_SHORT)

@@ -10,4 +10,12 @@ data class Grocery(
     val name: String,
     val quantity: String,
     val category: String = "Uncategorized"
-)
+) {
+    fun groceryToFood(): Food {
+        return Food(
+            name = this.name,
+            quantity = this.quantity,
+            category = this.category
+        )
+    }
+}

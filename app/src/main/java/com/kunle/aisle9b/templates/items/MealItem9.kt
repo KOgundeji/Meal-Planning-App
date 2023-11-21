@@ -1,20 +1,33 @@
 package com.kunle.aisle9b.templates.items
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowCircleLeft
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,25 +37,27 @@ import androidx.navigation.NavController
 import com.kunle.aisle9b.R
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Meal
+import com.kunle.aisle9b.models.MealWithIngredients
 import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.screens.GeneralVM
-import com.kunle.aisle9b.screens.meals.MealButtonBar
 import com.kunle.aisle9b.screens.meals.MealVM
+import com.kunle.aisle9b.util.ActionDropdown
+import com.kunle.aisle9b.util.DropActions
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MealItem9(
     meal: Meal,
-    primaryButtonBarAction: MealButtonBar,
-    shoppingVM: GeneralVM,
     mealVM: MealVM,
     navController: NavController,
-    transferList: MutableList<List<Food>>
+    deleteMeal: () -> Unit,
+    transferMeal: (List<Food>) -> Unit
 ) {
-    var isChecked by remember { mutableStateOf(false) }
+    var longPress by remember { mutableStateOf(false) }
+    val haptics = LocalHapticFeedback.current
 
     val mwiList = mealVM.mealsWithIngredients.collectAsState().value
-    val mwi = mwiList.find { MWI ->
-        MWI.meal.mealId == meal.mealId
+    val mwi = mwiList.find { mealWI ->
+        mealWI.meal.mealId == meal.mealId
     }
 
     val listedIngredients: String =
@@ -54,11 +69,40 @@ fun MealItem9(
             ""
         }
 
+    if (longPress) {
+        ActionDropdown(expanded = { longPress = it }) { dropActions ->
+            longPress = when (dropActions) {
+                DropActions.Edit -> {
+                    moveToMealDetailsScreen(meal, navController, mwiList, mwi)
+                    false
+                }
+
+                DropActions.Transfer -> {
+                    if (mwi?.ingredients?.isNotEmpty() == true) {
+                        transferMeal(mwi.ingredients)
+                    }
+                    false
+                }
+
+                DropActions.Delete -> {
+                    deleteMeal()
+                    false
+                }
+            }
+        }
+    }
 
     Card(
         modifier = Modifier
             .padding(horizontal = 6.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .combinedClickable(
+                enabled = true, onLongClick = {
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                    longPress = true
+                },
+                onLongClickLabel = "Action Dropdown"
+            ) {},
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         shape = RoundedCornerShape(corner = CornerSize(6.dp))
     ) {
@@ -72,80 +116,18 @@ fun MealItem9(
                 modifier = Modifier.fillMaxWidth(.9f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                when (primaryButtonBarAction) {
-                    MealButtonBar.Delete -> {
-                        Checkbox(
-                            checked = isChecked,
-                            onCheckedChange = {
-                                isChecked = !isChecked
-                                if (isChecked) {
-                                    shoppingVM.mealDeleteList.add(meal)
-                                } else {
-                                    shoppingVM.mealDeleteList.remove(meal)
-                                }
-                            },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = MaterialTheme.colorScheme.secondaryContainer,
-                                uncheckedColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                checkmarkColor = MaterialTheme.colorScheme.primary
-                            ),
-                            modifier = Modifier.size(36.dp)
-                        )
-                    }
-                    MealButtonBar.Transfer -> {
-                        if (meal.apiID < 0) {
-                            Icon(
-                                modifier = Modifier
-                                    .clickable {
-                                        isChecked = !isChecked
-                                        if (isChecked) {
-                                            transferList.add(mwi!!.ingredients)
-                                        } else {
-                                            transferList.remove(mwi!!.ingredients)
-                                        }
-                                    }
-                                    .size(32.dp)
-                                    .border(
-                                        border = BorderStroke(
-                                            1.dp,
-                                            color = MaterialTheme.colorScheme.tertiary
-                                        ),
-                                        shape = CircleShape
-                                    ),
-                                imageVector = Icons.Filled.ArrowCircleLeft,
-                                contentDescription = "Transfer button",
-                                tint = if (!isChecked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                        }
-                    }
-                    else -> {
-                        Image(
-                            painter = painterResource(id = R.drawable.food),
-                            contentDescription = "food",
-                            modifier = Modifier.size(30.dp),
-                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary)
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                    }
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.food),
+                    contentDescription = "food",
+                    modifier = Modifier.size(30.dp),
+                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary)
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 3.dp)
-                        .clickable {
-                            if (primaryButtonBarAction == MealButtonBar.Default) {
-                                if (meal.apiID > 0) {
-                                    val recipeId = meal.apiID
-                                    navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${recipeId}")
-                                } else {
-                                    val index = mwiList.indexOf(mwi)
-                                    navController.navigate(
-                                        GroceryScreens.MealDetailsScreen.name + "/${index}"
-                                    )
-                                }
-                            }
-                        },
+                        .padding(horizontal = 3.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
@@ -164,5 +146,23 @@ fun MealItem9(
                 }
             }
         }
+    }
+}
+
+
+private fun moveToMealDetailsScreen(
+    meal: Meal,
+    navController: NavController,
+    mwiList: List<MealWithIngredients>,
+    mwi: MealWithIngredients?
+) {
+    if (meal.apiID > 0) {
+        val recipeId = meal.apiID
+        navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${recipeId}")
+    } else {
+        val index = mwiList.indexOf(mwi)
+        navController.navigate(
+            GroceryScreens.MealDetailsScreen.name + "/${index}"
+        )
     }
 }

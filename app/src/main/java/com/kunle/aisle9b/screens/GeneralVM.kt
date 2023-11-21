@@ -1,18 +1,25 @@
 package com.kunle.aisle9b.screens
 
-import android.util.Log
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.TopBarOptions
-import com.kunle.aisle9b.models.*
+import com.kunle.aisle9b.models.AppSettings
+import com.kunle.aisle9b.models.Food
+import com.kunle.aisle9b.models.Grocery
+import com.kunle.aisle9b.models.GroceryList
+import com.kunle.aisle9b.models.Instruction
+import com.kunle.aisle9b.models.Meal
+import com.kunle.aisle9b.models.MealFoodMap
+import com.kunle.aisle9b.models.SettingsEnum
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.repositories.general.GeneralRepository
-import com.kunle.aisle9b.screens.customLists.CustomListButtonBar
-import com.kunle.aisle9b.screens.meals.MealButtonBar
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,23 +45,16 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     var screenOnSetting by mutableStateOf(false)
         private set
 
-
-    var groceryBadgeCount by mutableIntStateOf(0)
-        private set
-
-    var mealButtonBar = mutableStateOf(MealButtonBar.Default)
-    var customListButtonBar = mutableStateOf(CustomListButtonBar.Default)
-
     var mealToBeSaved: Meal? = null
     var ingredientListToBeSaved: List<Food>? = null
     var instructionsToBeSaved: List<Instruction>? = null
     var apiMealToBeSaved: Meal? = null
 
-    private var _groceryList = MutableStateFlow<List<Food>>(emptyList())
-//    private val _groceryBadgeCount = MutableStateFlow(0) //not sure where this comes from
+    private var _groceryList = MutableStateFlow<List<Grocery>>(emptyList())
+    private val _groceryBadgeCount = MutableStateFlow(0) //not sure where this comes from
     private val _numOfMeals = MutableStateFlow(0)
     val groceryList = _groceryList.asStateFlow()
-//    val groceryBadgeCount = _groceryBadgeCount.asStateFlow()
+    val groceryBadgeCount = _groceryBadgeCount.asStateFlow()
     val numOfMeals = _numOfMeals.asStateFlow()
 
     init {
@@ -63,9 +63,16 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
                 _numOfMeals.value = listOfMeals.size
             }
         }
+
+        viewModelScope.launch {
+            repository.getAllGroceries().distinctUntilChanged().collect { listOfGroceries ->
+                _groceryList.value = listOfGroceries
+                _groceryBadgeCount.value = listOfGroceries.size
+            }
+        }
+
         viewModelScope.launch {
             repository.getAllSettings().distinctUntilChanged().collect { listOfSettings ->
-                Log.d("Test", "Settings refactor")
                 getDarkModeSetting(listOfSettings)
                 getCategoriesOn(listOfSettings)
                 getScreenPermOn(listOfSettings)
@@ -77,7 +84,8 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     fun deleteFood(food: Food) = viewModelScope.launch { repository.deleteFood(food) }
     fun insertGrocery(grocery: Grocery) =
         viewModelScope.launch {
-            repository.insertGrocery(grocery) }
+            repository.insertGrocery(grocery)
+        }
 
     private fun upsertSettings(settings: AppSettings) =
         viewModelScope.launch { repository.upsertSettings(settings) }
@@ -114,10 +122,6 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
 
     fun setClickSource(value: GroceryScreens) {
         source = value
-    }
-
-    fun setGroceryBadge(count: Int) {
-        groceryBadgeCount = count
     }
 
     private fun getDarkModeSetting(settingsList: List<AppSettings>) {
@@ -174,19 +178,23 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
         }
     }
 
-    fun filterForReconciliation(lists: List<List<Food>>):
-            Map<String, List<Food>> {
-
+    fun filterForReconciliation(listToAdd: List<Food>): Map<String, List<Food>> {
         val ingredientMap: MutableMap<String, MutableList<Food>> = mutableMapOf()
         val filteredIngredientMap: MutableMap<String, MutableList<Food>> = mutableMapOf()
 
-        for (list in lists) {
-            for (food in list) {
-                if (ingredientMap.containsKey(food.name)) {
-                    ingredientMap[food.name]!!.add(food)
-                } else {
-                    ingredientMap[food.name] = mutableListOf(food)
-                }
+        for (grocery in _groceryList.value) {
+            if (ingredientMap.containsKey(grocery.name)) {
+                ingredientMap[grocery.name]!!.add(grocery.groceryToFood())
+            } else {
+                ingredientMap[grocery.name] = mutableListOf(grocery.groceryToFood())
+            }
+        }
+
+        for (food in listToAdd) {
+            if (ingredientMap.containsKey(food.name)) {
+                ingredientMap[food.name]!!.add(food)
+            } else {
+                ingredientMap[food.name] = mutableListOf(food)
             }
         }
 

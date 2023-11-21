@@ -40,5 +40,7 @@ class GeneralRepositoryImpl @Inject constructor(
 
     override fun getAllMeals(): Flow<List<Meal>> =
         mealDao.getAllMeals().flowOn(Dispatchers.IO).conflate()
+    override fun getAllGroceries(): Flow<List<Grocery>> =
+        groceryDao.getAllGroceries().flowOn(Dispatchers.IO).conflate()
 
 }
