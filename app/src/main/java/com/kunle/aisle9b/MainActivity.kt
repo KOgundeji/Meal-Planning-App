@@ -21,9 +21,9 @@ import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
+import com.kunle.aisle9b.util.AddFAB
 import com.kunle.aisle9b.util.BackTopAppBar
 import com.kunle.aisle9b.util.DefaultTopAppBar
-import com.kunle.aisle9b.util.AddFAB
 import com.kunle.aisle9b.util.SaveFAB
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -65,12 +65,7 @@ fun ShoppingAppScaffold(
                         BackTopAppBar(
                             source = source
                         ) {
-                            when (source) {
-                                GroceryScreens.MealScreen -> {}
-                                GroceryScreens.CustomListScreen -> {}
-                                else ->
-                                    navController.popBackStack()
-                            }
+                            navController.popBackStack()
                             generalVM.setTopBarOption(TopBarOptions.Default)
                         }
 

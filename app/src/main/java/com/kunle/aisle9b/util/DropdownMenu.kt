@@ -1,10 +1,18 @@
 package com.kunle.aisle9b.util
 
+import android.graphics.drawable.shapes.Shape
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
@@ -12,11 +20,14 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.ArrowCircleLeft
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,7 +37,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kunle.aisle9b.navigation.GroceryScreens
 
@@ -45,7 +63,6 @@ fun AdditionalScreenOptions(navController: NavController) {
                 contentDescription = "Additional screen options",
                 tint = MaterialTheme.colorScheme.onBackground
             )
-
         }
         DropdownMenu(
             modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer),
@@ -85,9 +102,8 @@ fun ActionDropdown(
                 openAlertDialog = false
                 expanded(false)
             },
-            dialogTitle = "Aisle9",
-            dialogText = "Are you sure you want to delete this meal?",
-            icon = Icons.Filled.ShoppingCart
+            dialogTitle = "Delete",
+            dialogText = "Are you sure you want to delete this meal?"
         )
     }
     Box(
@@ -111,6 +127,7 @@ fun ActionDropdown(
                         contentDescription = "Edit"
                     )
                 })
+            Divider()
             DropdownMenuItem(
                 text = { Text(text = DropActions.Transfer.name) },
                 onClick = {
@@ -122,6 +139,7 @@ fun ActionDropdown(
                         contentDescription = "Transfer"
                     )
                 })
+            Divider()
             DropdownMenuItem(
                 text = { Text(text = DropActions.Delete.name) },
                 onClick = {
@@ -138,41 +156,63 @@ fun ActionDropdown(
 }
 
 @Composable
+fun OptionBubble(
+    expanded: (Boolean) -> Unit,
+    onActionConfirm: (DropActions) -> Unit
+) {
+    Box {
+        Canvas(
+            modifier = Modifier
+                .size(200.dp)
+                .padding(40.dp)
+        ) {
+            val trianglePath = Path().let {
+                it.moveTo(this.size.width * .40f, 0f)
+                it.lineTo(this.size.width * .50f, -30f)
+                it.lineTo(this.size.width * .60f, 0f)
+                it.close()
+                it
+            }
+            drawRoundRect(
+                Color.LightGray,
+                size = Size(this.size.width, this.size.height * 0.95f),
+                cornerRadius = CornerRadius(60f)
+            )
+            drawPath(
+                path = trianglePath,
+                Color.LightGray,
+            )
+        }
+    }
+}
+
+@Composable
 fun CustomAlertDialog9(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
-    dialogText: String,
-    icon: ImageVector,
+    dialogText: String
 ) {
     AlertDialog(
-        icon = {
-            Icon(icon, contentDescription = "Example Icon")
-        },
-        title = {
-            Text(text = dialogTitle)
-        },
-        text = {
-            Text(text = dialogText)
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
+        modifier = Modifier
+            .shadow(5.dp, RoundedCornerShape(24.dp))
+            .border(
+                width = Dp.Hairline,
+                color = MaterialTheme.colorScheme.tertiary,
+                shape = RoundedCornerShape(24.dp)
+            ),
+        icon = { Icon(Icons.Filled.Info, contentDescription = null) },
+        title = { Text(text = dialogTitle) },
+        text = { Text(text = dialogText) },
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        onDismissRequest = { onDismissRequest() },
         confirmButton = {
-            TextButton(
-                onClick = {
-                    onConfirmation()
-                }
-            ) {
+            TextButton(onClick = { onConfirmation() }) {
                 Text("Confirm")
             }
         },
         dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
+            TextButton(onClick = { onDismissRequest() }) {
                 Text("Dismiss")
             }
         }

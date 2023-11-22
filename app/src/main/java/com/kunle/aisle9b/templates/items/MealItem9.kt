@@ -40,7 +40,7 @@ import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.models.MealWithIngredients
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.meals.MealVM
-import com.kunle.aisle9b.util.ActionDropdown
+import com.kunle.aisle9b.templates.dialogs.ItemOptionsDialog9
 import com.kunle.aisle9b.util.DropActions
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -69,28 +69,6 @@ fun MealItem9(
             ""
         }
 
-    if (longPress) {
-        ActionDropdown(expanded = { longPress = it }) { dropActions ->
-            longPress = when (dropActions) {
-                DropActions.Edit -> {
-                    moveToMealDetailsScreen(meal, navController, mwiList, mwi)
-                    false
-                }
-
-                DropActions.Transfer -> {
-                    if (mwi?.ingredients?.isNotEmpty() == true) {
-                        transferMeal(mwi.ingredients)
-                    }
-                    false
-                }
-
-                DropActions.Delete -> {
-                    deleteMeal()
-                    false
-                }
-            }
-        }
-    }
 
     Card(
         modifier = Modifier
@@ -106,6 +84,29 @@ fun MealItem9(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         shape = RoundedCornerShape(corner = CornerSize(6.dp))
     ) {
+        if (longPress) {
+            ItemOptionsDialog9(closeDialog = { longPress = false} ) { dropActions ->
+                longPress = when (dropActions) {
+                    DropActions.Edit -> {
+                        moveToMealDetailsScreen(meal, navController, mwiList, mwi)
+                        false
+                    }
+
+                    DropActions.Transfer -> {
+                        if (mwi?.ingredients?.isNotEmpty() == true) {
+                            transferMeal(mwi.ingredients)
+                        }
+                        false
+                    }
+
+                    DropActions.Delete -> {
+                        deleteMeal()
+                        false
+                    }
+                }
+            }
+        }
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -148,7 +149,6 @@ fun MealItem9(
         }
     }
 }
-
 
 private fun moveToMealDetailsScreen(
     meal: Meal,
