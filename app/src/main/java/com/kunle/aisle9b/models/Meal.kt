@@ -25,7 +25,7 @@ data class Meal(
 
     companion object {
         fun createBlank(): Meal {
-            return Meal(name = "", servingSize = "?", notes = "", visible = false)
+            return Meal(name = "Name of Meal", servingSize = "?", notes = "", visible = false)
         }
     }
 }

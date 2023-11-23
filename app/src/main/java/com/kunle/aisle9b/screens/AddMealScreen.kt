@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.sharp.AddAPhoto
 import androidx.compose.material3.*
@@ -27,16 +28,17 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.meals.MealVM
+import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditInstructionsDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.IngredientsListDialog9
-import com.kunle.aisle9b.templates.dialogs.mealDialogs.InstructionsListDialog9
+import com.kunle.aisle9b.templates.items.mealItems.InstructionItem
 import com.kunle.aisle9b.util.CameraXMode
+import com.kunle.aisle9b.util.DropActions
 import com.kunle.aisle9b.util.PhotoOptionsDialog9
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,19 +53,29 @@ fun AddMealScreenTest(
     generalVM.setClickSource(GroceryScreens.AddNewMealScreen)
 
     val scope = rememberCoroutineScope()
-    val mealId = remember { mealVM.insertMeal(Meal.createBlank()) }
 
-    val mwi = mealVM.findMWI(mealId)
+    val meal = Meal.createBlank()
+    val mealId = remember { mealVM.insertMeal(meal) }
+    val mwi = remember(key1 = mealVM.mealsWithIngredients.collectAsState().value) {
+        mealVM.findMWI(mealId) ?: MealWithIngredients(meal = meal, ingredients = emptyList())
+    }
+    val instructionsList = mealVM.instructions.collectAsState().value
 
-    var instructionsList by remember { mutableStateOf(emptyList<Instruction>()) }
     val mealInstructions = remember(instructionsList) {
         instructionsList.sortedBy { it.position }
     }
-    generalVM.instructionsToBeSaved = mealInstructions
+
+    val newInstructionPosition =
+        if (mealInstructions.isNotEmpty()) {
+            mealInstructions.last().position + 1
+        } else {
+            1
+        }
+//    generalVM.instructionsToBeSaved = mealInstructions
 
     var editSummary by remember { mutableStateOf(false) }
     var editIngredients by remember { mutableStateOf(false) }
-    var editInstructions by remember { mutableStateOf(false) }
+    var addNewInstruction by remember { mutableStateOf(false) }
     var editPicture by remember { mutableStateOf(false) }
     var shouldShowCamera by remember { mutableStateOf(false) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -87,19 +99,17 @@ fun AddMealScreenTest(
             setShowDialog = { editIngredients = false })
     }
 
-    if (editInstructions) {
-        InstructionsListDialog9(
-            mealInstructionList = mealInstructions,
-            updatedInstruction = {
-                instructionsList =
-                    mealVM.reorganizeTempInstructions(
-                        instruction = it,
-                        instructions = mealInstructions
-                    )
-                editInstructions = false
-            },
-            mealId = mealId
-        ) { editInstructions = false }
+    if (addNewInstruction) {
+        val brandNewInstruction = Instruction.createBlank(mealId, newInstructionPosition)
+        EditInstructionsDialog9(
+            instruction = brandNewInstruction,
+            exitDialog = { addNewInstruction = false },
+            deleteInstruction = {}, //instruction doesn't exist yet. No need to delete
+            updatedInstruction = { instruction ->
+                mealVM.upsertInstruction(instruction)
+                addNewInstruction = false
+            }
+        )
     }
 
     if (editSummary) {
@@ -123,7 +133,7 @@ fun AddMealScreenTest(
                 shouldShowCamera = it
             },
             deletePic = {
-                mealVM.updatePic(MealPicUpdate(mealId = mealId, mealPic =  Uri.EMPTY))
+                mealVM.updatePic(MealPicUpdate(mealId = mealId, mealPic = Uri.EMPTY))
                 editPicture = false
             }
         ) {
@@ -192,7 +202,16 @@ fun AddMealScreenTest(
             mealInstructions = mealInstructions,
             editSummary = { editSummary = true },
             editIngredients = { editIngredients = true },
-            editInstructions = { editInstructions = true })
+            addInstructions = { addNewInstruction = true },
+            deleteInstruction = {
+                mealVM.deleteInstruction(it)
+                mealVM.reorderRestOfInstructionList(oldPosition = it.position)
+            },
+            updatedInstruction = { mealVM.upsertInstruction(it) },
+            swappedInstructions = { original, moved ->
+                mealVM.upsertInstruction(original)
+                mealVM.upsertInstruction(moved)
+            })
     }
 }
 
@@ -204,7 +223,10 @@ fun Tabs(
     mealInstructions: List<Instruction>,
     editSummary: () -> Unit,
     editIngredients: () -> Unit,
-    editInstructions: () -> Unit,
+    addInstructions: () -> Unit,
+    deleteInstruction: (Instruction) -> Unit,
+    updatedInstruction: (Instruction) -> Unit,
+    swappedInstructions: (Instruction, Instruction) -> Unit
 ) {
     val pagerState = rememberPagerState { 4 }
     val coroutineScope = rememberCoroutineScope()
@@ -227,8 +249,12 @@ fun Tabs(
         TabItem(
             title = "Instructions",
             screen = {
-                InstructionsScreen(mealInstructions = mealInstructions) {
-                    editInstructions()
+                InstructionsScreen(
+                    mealInstructions = mealInstructions,
+                    addInstructions = { addInstructions() },
+                    deleteInstruction = { deleteInstruction(it) },
+                    updatedInstruction = { updatedInstruction(it) }) { original, moved ->
+                    swappedInstructions(original, moved)
                 }
             }),
     )
@@ -272,7 +298,7 @@ fun SummaryScreen(
         ) {
             Text(
                 text = mealName,
-                fontSize = 20.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
             Icon(
@@ -316,7 +342,7 @@ fun IngredientsTab(
                     }
                     withStyle(
                         style = SpanStyle(
-                            fontSize = 20.sp
+                            fontSize = 24.sp
                         )
                     ) {
                         append(" for ${meal.servingSize} servings")
@@ -348,40 +374,97 @@ fun IngredientsTab(
 @Composable
 fun InstructionsScreen(
     mealInstructions: List<Instruction>,
-    editInstructions: () -> Unit
+    addInstructions: () -> Unit,
+    deleteInstruction: (Instruction) -> Unit,
+    updatedInstruction: (Instruction) -> Unit,
+    swappedInstructions: (Instruction, Instruction) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 5.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = "Preparation",
-                fontSize = 20.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
             Icon(
                 modifier = Modifier
                     .size(36.dp)
-                    .clickable { editInstructions() },
-                imageVector = Icons.Filled.Edit,
-                contentDescription = "Edit Icon",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    .clickable { addInstructions() },
+                imageVector = Icons.Filled.AddCircle,
+                contentDescription = "Add Icon",
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(items = mealInstructions) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = it.position.toString(),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(text = it.step, fontSize = 14.sp)
+            items(items = mealInstructions) { oldInstruction ->
+                InstructionItem(
+                    instruction = oldInstruction,
+                    deleteInstruction = { deleteInstruction(oldInstruction) },
+                    positionChange = { dropAction ->
+
+                        when (dropAction) {
+                            DropActions.MoveUp -> {
+                                if (oldInstruction.position > 1) {
+                                    val movedInstruction1 =
+                                        mealInstructions.find { it.position == (oldInstruction.position - 1) }
+
+                                    val originalInstruction = Instruction(
+                                        instructionId = oldInstruction.instructionId,
+                                        step = oldInstruction.step,
+                                        mealId = oldInstruction.mealId,
+                                        position = oldInstruction.position - 1
+                                    )
+
+                                    val movedInstruction = Instruction(
+                                        instructionId = movedInstruction1!!.instructionId,
+                                        step = movedInstruction1.step,
+                                        mealId = movedInstruction1.mealId,
+                                        position = movedInstruction1.position + 1
+                                    )
+                                    swappedInstructions(originalInstruction, movedInstruction)
+                                }
+                            }
+
+                            DropActions.MoveDown -> {
+                                if (oldInstruction.position < mealInstructions.last().position) {
+                                    val movedInstruction1 =
+                                        mealInstructions.find { it.position == (oldInstruction.position + 1) }
+
+                                    val originalInstruction = Instruction(
+                                        instructionId = oldInstruction.instructionId,
+                                        step = oldInstruction.step,
+                                        mealId = oldInstruction.mealId,
+                                        position = oldInstruction.position + 1
+                                    )
+
+                                    val movedInstruction = Instruction(
+                                        instructionId = movedInstruction1!!.instructionId,
+                                        step = movedInstruction1.step,
+                                        mealId = movedInstruction1.mealId,
+                                        position = movedInstruction1.position - 1
+                                    )
+                                    swappedInstructions(originalInstruction, movedInstruction)
+                                }
+                            }
+
+                            DropActions.Delete -> {
+                                deleteInstruction(oldInstruction)
+                            }
+
+                            else -> {}
+                        }
+                    }) { instruction ->
+                    updatedInstruction(instruction)
                 }
                 Spacer(modifier = Modifier.height(5.dp))
+                Divider()
             }
         }
     }

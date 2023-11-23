@@ -1,12 +1,10 @@
 package com.kunle.aisle9b.util
 
-import android.graphics.drawable.shapes.Shape
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -16,7 +14,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.ArrowCircleLeft
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material3.AlertDialog
@@ -26,8 +23,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ShapeDefaults
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -42,7 +37,6 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -93,7 +87,7 @@ fun ActionDropdown(
 
     if (openAlertDialog) {
         CustomAlertDialog9(
-            onDismissRequest = {
+            onCancelRequest = {
                 openAlertDialog = false
                 expanded(false)
             },
@@ -188,7 +182,7 @@ fun OptionBubble(
 
 @Composable
 fun CustomAlertDialog9(
-    onDismissRequest: () -> Unit,
+    onCancelRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
     dialogText: String
@@ -205,15 +199,15 @@ fun CustomAlertDialog9(
         title = { Text(text = dialogTitle) },
         text = { Text(text = dialogText) },
         containerColor = MaterialTheme.colorScheme.primaryContainer,
-        onDismissRequest = { onDismissRequest() },
+        onDismissRequest = { onCancelRequest() },
         confirmButton = {
             TextButton(onClick = { onConfirmation() }) {
                 Text("Confirm")
             }
         },
         dismissButton = {
-            TextButton(onClick = { onDismissRequest() }) {
-                Text("Dismiss")
+            TextButton(onClick = { onCancelRequest() }) {
+                Text("Cancel")
             }
         }
     )
@@ -222,5 +216,7 @@ fun CustomAlertDialog9(
 enum class DropActions {
     Edit,
     Transfer,
-    Delete
+    Delete,
+    MoveUp,
+    MoveDown
 }

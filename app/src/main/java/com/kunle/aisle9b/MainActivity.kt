@@ -89,7 +89,7 @@ fun ShoppingAppScaffold(
                         }
 
                     GroceryScreens.AddNewMealScreen ->
-                        SaveFAB { generalVM.saveCreatedMealonFABClick() }
+                        SaveFAB { generalVM.turnMealVisible() }
 
                     GroceryScreens.RecipeDetailsScreen ->
                         SaveFAB {

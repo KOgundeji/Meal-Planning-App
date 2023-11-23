@@ -12,8 +12,8 @@ data class Instruction(
     val position: Int
 ) {
     companion object {
-        fun createBlank(mealId: Long): Instruction {
-            return Instruction(step = "", mealId = mealId, position = 0)
+        fun createBlank(mealId: Long, position: Int = 0): Instruction {
+            return Instruction(step = "", mealId = mealId, position = position)
         }
     }
 }

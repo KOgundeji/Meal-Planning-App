@@ -29,8 +29,7 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     init {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllMeals().distinctUntilChanged().collect { meals ->
-                _mealList.value = meals
-                Log.d("Test", "MealVM init size: ${meals.size}")
+                _mealList.value = meals.filter { it.visible }
             }
         }
 
@@ -47,10 +46,10 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         }
     }
 
-    fun findMWI(mealId: Long): MealWithIngredients {
+    fun findMWI(mealId: Long): MealWithIngredients? {
         return _mealsWithIngredients.value.firstOrNull {
             it.meal.mealId == mealId
-        } ?: MealWithIngredients(meal = Meal.createBlank(), ingredients = emptyList())
+        }
     }
 
     fun insertMeal(meal: Meal): Long {
@@ -116,64 +115,23 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         viewModelScope.launch { repository.deleteGroceryByName(name) }
     }
 
-    //I don't think there are temp instructions anymore...
-    fun reorganizeTempInstructions(
-        instruction: Instruction,
-//        newPosition: Int,
-        instructions: List<Instruction>
-    ): List<Instruction> {
-        val oldPosition = instruction.position
-        val newInstructionList = mutableListOf<Instruction>()
+    fun reorderRestOfInstructionList(oldPosition: Int) {
 
-//        newInstructionList.add(
-//            Instruction(
-//                instructionId = instruction.instructionId,
-//                step = instruction.step,
-//                mealId = instruction.mealId,
-//                position = newPosition
-//            )
-//        )
-//
-//        when {
-//            (oldPosition == 0 || oldPosition == newPosition) -> {
-//                instructions.forEach {
-//                    if (it.instructionId != instruction.instructionId) {
-//                        newInstructionList.add(it)
-//                    }
-//                }
-//            }
-//            newPosition < oldPosition -> {
-//                instructions.forEach {
-//                    if (it.position >= newPosition && it.position < instruction.position) {
-//                        newInstructionList.add(
-//                            Instruction(
-//                                instructionId = it.instructionId,
-//                                step = it.step,
-//                                mealId = it.mealId,
-//                                position = it.position + 1
-//                            )
-//                        )
-//                    } else {
-//                        newInstructionList.add(it)
-//                    }
-//                }
-//            }
-//            newPosition > oldPosition -> {
-//                instructions.forEach {
-//                    if (it.position <= newPosition && it.position > instruction.position) {
-//                        newInstructionList.add(
-//                            Instruction(
-//                                instructionId = it.instructionId,
-//                                step = it.step,
-//                                mealId = it.mealId,
-//                                position = it.position - 1
-//                            )
-//                        )
-//                    }
-//                }
-//            }
-//        }
-        return newInstructionList.toList()
+        val instructionsList = _instructions.value.filter { it.position > oldPosition }
+        instructionsList.forEach {
+            Log.d("Test", "instructionlist: $it ")
+        }
+
+        instructionsList.forEach {
+            upsertInstruction(
+                Instruction(
+                    instructionId = it.instructionId,
+                    step = it.step,
+                    mealId = it.mealId,
+                    position = it.position - 1
+                )
+            )
+        }
     }
 
     val oldInstruction =
@@ -215,6 +173,7 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
                         }
                     }
                 }
+
                 newPosition > oldPosition -> {
                     oldInstructionList.forEach {
                         if (it.position in (oldPosition + 1)..newPosition) {

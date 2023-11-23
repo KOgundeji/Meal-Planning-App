@@ -40,7 +40,8 @@ import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.models.MealWithIngredients
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.meals.MealVM
-import com.kunle.aisle9b.templates.dialogs.ItemOptionsDialog9
+import com.kunle.aisle9b.templates.dialogs.OptionPopup
+import com.kunle.aisle9b.templates.dialogs.Options
 import com.kunle.aisle9b.util.DropActions
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -80,15 +81,29 @@ fun MealItem9(
                     longPress = true
                 },
                 onLongClickLabel = "Action Dropdown"
-            ) {},
+            ) {
+                moveToMealDetailsScreen(
+                    meal = meal,
+                    navController = navController,
+                    mwiList = mwiList,
+                    mwi = mwi
+                )
+            },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         shape = RoundedCornerShape(corner = CornerSize(6.dp))
     ) {
         if (longPress) {
-            ItemOptionsDialog9(closeDialog = { longPress = false} ) { dropActions ->
+            OptionPopup(
+                optionType = Options.ETD,
+                closeDialog = { longPress = false }) { dropActions ->
                 longPress = when (dropActions) {
                     DropActions.Edit -> {
-                        moveToMealDetailsScreen(meal, navController, mwiList, mwi)
+                        if (meal.apiID <= 0) {
+                            val index = mwiList.indexOf(mwi)
+                            navController.navigate(
+                                GroceryScreens.MealDetailsScreen.name + "/${index}"
+                            )
+                        }
                         false
                     }
 
@@ -103,6 +118,7 @@ fun MealItem9(
                         deleteMeal()
                         false
                     }
+                    else -> { false }
                 }
             }
         }
@@ -162,7 +178,11 @@ private fun moveToMealDetailsScreen(
     } else {
         val index = mwiList.indexOf(mwi)
         navController.navigate(
-            GroceryScreens.MealDetailsScreen.name + "/${index}"
+            GroceryScreens.ViewMealDetailsScreen.name + "/${index}"
         )
+//        val index = mwiList.indexOf(mwi)
+//        navController.navigate(
+//            GroceryScreens.MealDetailsScreen.name + "/${index}"
+//        )
     }
 }

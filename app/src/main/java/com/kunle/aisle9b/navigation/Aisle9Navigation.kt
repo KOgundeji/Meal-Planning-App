@@ -1,7 +1,6 @@
 package com.kunle.aisle9b.navigation
 
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
@@ -17,7 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,15 +25,14 @@ import com.kunle.aisle9b.screens.appSettings.SettingsScreen
 import com.kunle.aisle9b.screens.customLists.CustomListScreen
 import com.kunle.aisle9b.screens.customLists.CustomListVM
 import com.kunle.aisle9b.screens.groceries.GroceryScreen
-import com.kunle.aisle9b.screens.groceries.GroceryVM
 import com.kunle.aisle9b.screens.meals.MealDetailsScreen
 import com.kunle.aisle9b.screens.meals.MealScreen
 import com.kunle.aisle9b.screens.meals.MealVM
+import com.kunle.aisle9b.screens.meals.ViewMealDetailsScreen
 import com.kunle.aisle9b.screens.recipes.RecipeDetailsScreen
 import com.kunle.aisle9b.screens.recipes.RecipeScreen
 import com.kunle.aisle9b.screens.recipes.RecipesVM
 import com.kunle.aisle9b.screens.splash.SplashScreen
-import com.kunle.aisle9b.ui.theme.*
 
 @Composable
 fun Aisle9Navigation(
@@ -158,6 +155,24 @@ fun Aisle9Navigation(
             val mealVM = hiltViewModel<MealVM>(parentEntry)
 
             MealDetailsScreen(
+                mealIndex = backStackEntry.arguments?.getInt("mealIndex"),
+                mealVM = mealVM,
+                generalVM = generalVM
+            )
+        }
+        composable(
+            route = GroceryScreens.ViewMealDetailsScreen.name + "/{mealIndex}",
+            arguments = listOf(
+                navArgument(name = "mealIndex") {
+                    type = NavType.IntType
+                })
+        ) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(GroceryScreens.GroceryListScreen.name)
+            }
+            val mealVM = hiltViewModel<MealVM>(parentEntry)
+
+            ViewMealDetailsScreen(
                 mealIndex = backStackEntry.arguments?.getInt("mealIndex"),
                 mealVM = mealVM,
                 generalVM = generalVM

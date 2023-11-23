@@ -1,8 +1,6 @@
 package com.kunle.aisle9b.screens.meals
 
-import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +19,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.sharp.AddAPhoto
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -31,11 +28,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -53,32 +46,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Instruction
-import com.kunle.aisle9b.models.MealFoodMap
-import com.kunle.aisle9b.models.MealPicUpdate
-import com.kunle.aisle9b.models.MealServingSizeUpdate
 import com.kunle.aisle9b.models.MealWithIngredients
 import com.kunle.aisle9b.models.TabItem
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.GeneralVM
-import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
-import com.kunle.aisle9b.templates.dialogs.mealDialogs.IngredientsListDialog9
-import com.kunle.aisle9b.templates.dialogs.mealDialogs.InstructionsListDialog9
-import com.kunle.aisle9b.util.CameraXMode
-import com.kunle.aisle9b.util.PhotoOptionsDialog9
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun MealDetailsScreen(
+fun ViewMealDetailsScreen(
     mealIndex: Int?,
     modifier: Modifier = Modifier,
     generalVM: GeneralVM = hiltViewModel(),
     mealVM: MealVM = hiltViewModel(),
 ) {
     generalVM.setTopBarOption(TopBarOptions.Back)
-    generalVM.setClickSource(GroceryScreens.MealDetailsScreen)
-
-    val scope = rememberCoroutineScope()
+    generalVM.setClickSource(GroceryScreens.ViewMealDetailsScreen)
 
     if (mealIndex != null) {
         val mwi = mealVM.mealsWithIngredients.collectAsState().value[mealIndex]
@@ -90,99 +73,6 @@ fun MealDetailsScreen(
                 it.position
             }
 
-        var editSummary by remember { mutableStateOf(false) }
-        var editIngredients by remember { mutableStateOf(false) }
-        var editInstructions by remember { mutableStateOf(false) }
-        var editPicture by remember { mutableStateOf(false) }
-        var shouldShowCamera by remember { mutableStateOf(false) }
-
-        if (editIngredients) {
-            IngredientsListDialog9(
-                foodList = mwi.ingredients,
-                mealVM = mealVM,
-                updateFoodList = { newFood ->
-                    scope.launch {
-                        mealVM.upsertFood(newFood)
-                        mealVM.insertPair(
-                            MealFoodMap(
-                                mealId = mwi.meal.mealId,
-                                foodId = newFood.foodId
-                            )
-                        )
-                    }
-                },
-                onSaveServingSizeClick = { servingSize ->
-                    mealVM.updateServingSize(
-                        MealServingSizeUpdate(
-                            mealId = mwi.meal.mealId,
-                            servingSize = servingSize
-                        )
-                    )
-                },
-                originalServingSize = mwi.meal.servingSize,
-                setShowDialog = { editIngredients = false }
-            )
-        }
-
-        if (editInstructions) {
-            InstructionsListDialog9(
-                mealInstructionList = mealInstructions,
-                updatedInstruction = {
-                    mealVM.reorganizeDBInstructions(
-                        updatedInstruction = it,
-                        oldInstructionList = mealInstructions
-                    )
-                    editInstructions = false
-                },
-                mealId = mwi.meal.mealId
-            ) { editInstructions = false }
-        }
-
-        if (editSummary) {
-            EditSummaryDialog9(
-                meal = mwi.meal,
-                updateMeal = {
-                    mealVM.upsertMeal(it)
-                    editSummary = false
-                },
-                setShowDialog = { editSummary = false })
-        }
-
-        if (editPicture) {
-            PhotoOptionsDialog9(
-                onImageCaptured = { Uri ->
-                    mealVM.updatePic(
-                        MealPicUpdate(
-                            mealId = mwi.meal.mealId,
-                            mealPic = Uri
-                        )
-                    )
-                    editPicture = false
-                },
-                toggleCamera = { shouldShowCamera = it },
-                deletePic = {
-                    mealVM.updatePic(
-                        MealPicUpdate(
-                            mealId = mwi.meal.mealId,
-                            mealPic =  Uri.EMPTY
-                        )
-                    )
-                    editPicture = false
-                }
-            ) {
-                editPicture = false
-            }
-        }
-
-        if (shouldShowCamera) {
-            CameraXMode(
-                onImageCaptured = { uri ->
-                    mealVM.updatePic(MealPicUpdate(mealId = mwi.meal.mealId, mealPic = uri))
-                    editPicture = false
-                },
-                toggleCamera = { shouldShowCamera = it })
-        }
-
         Column(modifier = modifier.fillMaxSize()) {
             if (mwi.meal.mealPic == null) {
                 Box(
@@ -190,9 +80,6 @@ fun MealDetailsScreen(
                         .fillMaxWidth()
                         .fillMaxHeight(.42f)
                         .padding(5.dp)
-                        .clickable {
-                            editPicture = true
-                        }
                         .drawBehind {
                             drawRoundRect(
                                 color = Color.Gray, style = Stroke(
@@ -215,10 +102,7 @@ fun MealDetailsScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(.42f)
-                        .clickable {
-                            editPicture = true
-                        },
+                        .fillMaxHeight(.42f),
                     contentAlignment = Alignment.Center
                 ) {
                     AsyncImage(
@@ -230,23 +114,16 @@ fun MealDetailsScreen(
                     )
                 }
             }
-            Tabs(mwi = mwi,
-                mealInstructions = mealInstructions,
-                editSummary = { editSummary = true },
-                editIngredients = { editIngredients = true },
-                editInstructions = { editInstructions = true })
+            StaticTabs(mwi = mwi, mealInstructions = mealInstructions)
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Tabs(
+fun StaticTabs(
     mwi: MealWithIngredients,
-    mealInstructions: List<Instruction>,
-    editSummary: () -> Unit,
-    editIngredients: () -> Unit,
-    editInstructions: () -> Unit,
+    mealInstructions: List<Instruction>
 ) {
     val pagerState = rememberPagerState { 4 }
     val coroutineScope = rememberCoroutineScope()
@@ -254,28 +131,13 @@ fun Tabs(
     val tabLabels = listOf(
         TabItem(
             title = "Notes",
-            screen = {
-                SummaryScreen(
-                    mealName = mwi.meal.name,
-                    notes = mwi.meal.notes
-                ) {
-                    editSummary()
-                }
-            }),
+            screen = { StaticSummaryScreen(mealName = mwi.meal.name, notes = mwi.meal.notes) }),
         TabItem(
             title = "Ingredients",
-            screen = {
-                IngredientsTab(mealAndIngredients = mwi) {
-                    editIngredients()
-                }
-            }),
+            screen = { StaticIngredientsTab(mealAndIngredients = mwi) }),
         TabItem(
             title = "Instructions",
-            screen = {
-                InstructionsScreen(mealInstructions = mealInstructions) {
-                    editInstructions()
-                }
-            }),
+            screen = { StaticInstructionsScreen(mealInstructions = mealInstructions) }),
     )
 
     TabRow(
@@ -300,10 +162,7 @@ fun Tabs(
 }
 
 @Composable
-fun SummaryScreen(
-    mealName: String, notes: String,
-    editSummary: () -> Unit
-) {
+fun StaticSummaryScreen(mealName: String, notes: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -319,14 +178,6 @@ fun SummaryScreen(
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
-            Icon(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clickable { editSummary() },
-                imageVector = Icons.Filled.Edit,
-                contentDescription = "Edit Icon",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
         }
         Text(
             text = notes,
@@ -337,10 +188,7 @@ fun SummaryScreen(
 }
 
 @Composable
-fun IngredientsTab(
-    mealAndIngredients: MealWithIngredients,
-    editIngredients: () -> Unit
-) {
+fun StaticIngredientsTab(mealAndIngredients: MealWithIngredients) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -366,14 +214,6 @@ fun IngredientsTab(
                     }
                 }
             )
-            Icon(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clickable { editIngredients() },
-                imageVector = Icons.Filled.Edit,
-                contentDescription = "Edit Icon",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
         }
         LazyColumn(
             modifier = Modifier
@@ -389,10 +229,7 @@ fun IngredientsTab(
 }
 
 @Composable
-fun InstructionsScreen(
-    mealInstructions: List<Instruction>,
-    editInstructions: () -> Unit
-) {
+fun StaticInstructionsScreen(mealInstructions: List<Instruction>) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -402,14 +239,6 @@ fun InstructionsScreen(
                 text = "Preparation",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
-            )
-            Icon(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clickable { editInstructions() },
-                imageVector = Icons.Filled.Edit,
-                contentDescription = "Edit Icon",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
         LazyColumn(
@@ -429,6 +258,8 @@ fun InstructionsScreen(
         }
     }
 }
+
+
 
 
 

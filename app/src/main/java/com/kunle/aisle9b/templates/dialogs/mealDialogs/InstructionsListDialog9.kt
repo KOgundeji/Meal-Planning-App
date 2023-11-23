@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,11 +29,13 @@ fun InstructionsListDialog9(
     setShowDialog: () -> Unit
 ) {
     var addInstructionDialog by remember { mutableStateOf(false) }
+    val newInstructionPosition = mealInstructionList.last().position + 1
 
     if (addInstructionDialog) {
         EditInstructionsDialog9(
-            instruction = Instruction.createBlank(mealId),
-            setShowDialog = { addInstructionDialog = false },
+            instruction = Instruction.createBlank(mealId, newInstructionPosition),
+            exitDialog = { addInstructionDialog = false },
+            deleteInstruction = {},
             updatedInstruction = { instruction ->
                 updatedInstruction(instruction)
             }
@@ -88,25 +89,13 @@ fun InstructionsListDialog9(
                             contentDescription = "Add button"
                         )
                     }
-                    Button(
-                        onClick = { },
-                        modifier = Modifier.width(75.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "Delete button",
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
                 }
                 LazyColumn {
                     items(items = mealInstructionList) {
                         InstructionItem(
                             instruction = it,
+                            positionChange = {},
+                            deleteInstruction = {} ,
                             updatedInstruction = {
                                 updatedInstruction(it)
                             },

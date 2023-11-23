@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -15,28 +14,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Instruction
-import com.kunle.aisle9b.screens.meals.MealVM
 import com.kunle.aisle9b.templates.CustomTextField9
 
 @Composable
 fun EditInstructionsDialog9(
     instruction: Instruction,
     updatedInstruction: (Instruction) -> Unit,
-    setShowDialog: () -> Unit
+    deleteInstruction: () -> Unit,
+    exitDialog: () -> Unit
 ) {
-    var newPosition by remember { mutableStateOf(instruction.position.toString()) }
     var instructionStep by remember { mutableStateOf(instruction.step) }
 
-    Dialog(onDismissRequest = { setShowDialog() }) {
-        Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.background) {
+    Dialog(onDismissRequest = { exitDialog() }) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.background,
+            shadowElevation = 5.dp
+        ) {
             Column(
                 modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -56,27 +59,9 @@ fun EditInstructionsDialog9(
                         modifier = Modifier
                             .width(30.dp)
                             .height(30.dp)
-                            .clickable { setShowDialog() }
+                            .clickable { exitDialog() }
                     )
                 }
-                CustomTextField9(
-                    modifier = Modifier
-                        .height(45.dp)
-                        .verticalScroll(rememberScrollState())
-                        .fillMaxWidth(),
-                    text = newPosition,
-                    onValueChange = {
-                        newPosition = if (it != "") {
-                            it
-                        } else {
-                            ""
-                        }
-                    },
-                    label = "Step #...",
-                    textStyle = TextStyle(fontSize = 16.sp),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
                 CustomTextField9(
                     modifier = Modifier
                         .height(235.dp)
@@ -90,7 +75,7 @@ fun EditInstructionsDialog9(
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     Button(
                         onClick = {
@@ -99,17 +84,39 @@ fun EditInstructionsDialog9(
                                     instructionId = instruction.instructionId,
                                     step = instructionStep,
                                     mealId = instruction.mealId,
-                                    position = newPosition.toInt()
+                                    position = instruction.position
                                 )
                             )
                         },
-                        modifier = Modifier.width(200.dp),
+                        modifier = Modifier.width(110.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                             contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                     ) {
-                        Text(text = "Save Changes", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(
+                            text = "Save Changes",
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            deleteInstruction()
+                        },
+                        modifier = Modifier.width(110.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    ) {
+                        Text(
+                            text = "Delete Step",
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
                     }
                 }
             }
