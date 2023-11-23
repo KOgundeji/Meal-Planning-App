@@ -2,6 +2,7 @@ package com.kunle.aisle9b.screens
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,7 +33,10 @@ import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.GroceryScreens
+import com.kunle.aisle9b.screens.meals.MealResponse
 import com.kunle.aisle9b.screens.meals.MealVM
+import com.kunle.aisle9b.screens.utilScreens.ErrorScreen
+import com.kunle.aisle9b.screens.utilScreens.LoadingScreen
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditInstructionsDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.IngredientsListDialog9
@@ -44,7 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun AddMealScreenTest(
+fun AddMealScreenGate(
     modifier: Modifier = Modifier,
     mealVM: MealVM = hiltViewModel(),
     generalVM: GeneralVM = hiltViewModel()
@@ -52,17 +56,43 @@ fun AddMealScreenTest(
     generalVM.setTopBarOption(TopBarOptions.Back)
     generalVM.setClickSource(GroceryScreens.AddNewMealScreen)
 
-    val scope = rememberCoroutineScope()
-
-    val meal = Meal.createBlank()
-    val mealId = remember { mealVM.insertMeal(meal) }
-    val mwi = remember(key1 = mealVM.mealsWithIngredients.collectAsState().value) {
-        mealVM.findMWI(mealId) ?: MealWithIngredients(meal = meal, ingredients = emptyList())
+    LaunchedEffect(key1 = Unit) {
+        mealVM.getBrandNewMeal()
     }
+
+    when (val retrievedMealState = mealVM.createdNewMealState.collectAsState().value) {
+        is MealResponse.Error -> ErrorScreen(errorText = retrievedMealState.getMessage())
+        is MealResponse.Loading -> LoadingScreen()
+        is MealResponse.Success -> AddMealScreen(
+            modifier = modifier,
+            meal = retrievedMealState.meal,
+            mealVM = mealVM
+        )
+
+        MealResponse.Neutral -> {}
+    }
+}
+
+
+@Composable
+fun AddMealScreen(
+    modifier: Modifier = Modifier,
+    meal: Meal,
+    mealVM: MealVM = hiltViewModel()
+) {
+    val scope = rememberCoroutineScope()
+    val mealId = meal.mealId
+
+    val mwi = remember { MealWithIngredients(meal = meal, ingredients = emptyList()) }
+    Log.d("Test", "mealId in AddMealScreen: $mealId")
+    Log.d("Test", "mwi in AddMealScreen: $mwi")
+
     val instructionsList = mealVM.instructions.collectAsState().value
 
     val mealInstructions = remember(instructionsList) {
-        instructionsList.sortedBy { it.position }
+        instructionsList
+            .filter { it.mealId == mealId }
+            .sortedBy { it.position }
     }
 
     val newInstructionPosition =
@@ -71,7 +101,6 @@ fun AddMealScreenTest(
         } else {
             1
         }
-//    generalVM.instructionsToBeSaved = mealInstructions
 
     var editSummary by remember { mutableStateOf(false) }
     var editIngredients by remember { mutableStateOf(false) }

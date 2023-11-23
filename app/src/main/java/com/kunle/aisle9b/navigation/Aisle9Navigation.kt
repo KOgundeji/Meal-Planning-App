@@ -30,7 +30,7 @@ import com.kunle.aisle9b.screens.meals.MealScreen
 import com.kunle.aisle9b.screens.meals.MealVM
 import com.kunle.aisle9b.screens.meals.ViewMealDetailsScreen
 import com.kunle.aisle9b.screens.recipes.RecipeDetailsScreen
-import com.kunle.aisle9b.screens.recipes.RecipeScreen
+import com.kunle.aisle9b.screens.recipes.RecipeScreenGate
 import com.kunle.aisle9b.screens.recipes.RecipesVM
 import com.kunle.aisle9b.screens.splash.SplashScreen
 
@@ -92,7 +92,7 @@ fun Aisle9Navigation(
             }
             val recipesVM = hiltViewModel<RecipesVM>(parentEntry)
 
-            RecipeScreen(
+            RecipeScreenGate(
                 navController = navController,
                 recipesVM = recipesVM,
                 generalVM = generalVM
@@ -105,7 +105,7 @@ fun Aisle9Navigation(
             }
             val mealVM = hiltViewModel<MealVM>(parentEntry)
 
-            AddMealScreenTest(
+            AddMealScreenGate(
                 mealVM = mealVM,
                 generalVM = generalVM
             )

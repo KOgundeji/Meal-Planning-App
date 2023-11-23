@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.api.apiModels.ApiResponseSearch
@@ -29,7 +28,7 @@ import com.kunle.aisle9b.templates.items.RecipeItem9
 import kotlinx.coroutines.launch
 
 @Composable
-fun RecipeScreen(
+fun RecipeScreenGate(
     modifier: Modifier = Modifier,
     recipesVM: RecipesVM = hiltViewModel(),
     generalVM: GeneralVM = hiltViewModel(),
@@ -55,7 +54,7 @@ fun RecipeScreen(
                 is ApiResponseSearch.Error -> ErrorScreen(errorText = searchState.getMessage())
                 is ApiResponseSearch.Loading -> LoadingScreen()
                 is ApiResponseSearch.Success ->
-                    Screen(
+                    RecipeScreen(
                         recipeList = searchState.recipes,
                         navController = navController,
                     )
@@ -66,7 +65,7 @@ fun RecipeScreen(
 }
 
 @Composable
-private fun Screen(
+private fun RecipeScreen(
     recipeList: List<Result>,
     navController: NavController
 ) {

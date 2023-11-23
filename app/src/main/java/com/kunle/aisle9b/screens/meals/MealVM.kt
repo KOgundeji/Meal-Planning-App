@@ -22,9 +22,13 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     private val _mealList = MutableStateFlow<List<Meal>>(emptyList())
     private val _mealsWithIngredients = MutableStateFlow<List<MealWithIngredients>>(emptyList())
     private val _instructions = MutableStateFlow<List<Instruction>>(emptyList())
+    private var _mealId = MutableStateFlow<Long>(-1)
+    private var _createdNewMealState = MutableStateFlow<MealResponse>(MealResponse.Neutral)
     val mealList = _mealList.asStateFlow()
     val mealsWithIngredients = _mealsWithIngredients.asStateFlow()
     val instructions = _instructions.asStateFlow()
+    val mealId = _mealId.asStateFlow()
+    val createdNewMealState = _createdNewMealState.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -46,18 +50,31 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         }
     }
 
+    suspend fun getBrandNewMeal() {
+        viewModelScope.launch {
+            _createdNewMealState.value = MealResponse.Loading
+            try {
+                val mealId = repository.insertMeal(Meal.createBlank())
+                Log.d("Test", "mealId from VM: ${mealId}")
+                _createdNewMealState.value = MealResponse.Success(meal = Meal.createBlank(mealId))
+            } catch (e: Exception) {
+                _createdNewMealState.value = MealResponse.Error(exception = e)
+            }
+        }
+    }
+
     fun findMWI(mealId: Long): MealWithIngredients? {
         return _mealsWithIngredients.value.firstOrNull {
             it.meal.mealId == mealId
         }
     }
 
-    fun insertMeal(meal: Meal): Long {
-        var mealId = -1L
+    fun insertMeal(meal: Meal) { //not used anymore. Only tests call this method
         viewModelScope.launch {
-            mealId = async { repository.insertMeal(meal) }.await()
+            _mealId.value = repository.insertMeal(meal)
+            Log.d("Test", "mealId1 from VM: ${_mealId.value}")
         }
-        return mealId
+        Log.d("Test", "mealId2 from VM: ${_mealId.value}")
     }
 
     fun upsertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }

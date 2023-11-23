@@ -39,9 +39,7 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     var screenOnSetting by mutableStateOf(false)
         private set
 
-    var mealToBeSaved = mutableStateOf<Meal?>(null)
-    var ingredientListToBeSaved = mutableStateListOf<Food?>(null)
-    var instructionsToBeSaved = mutableStateListOf<Instruction?>(null)
+    private var mealToBeSaved = mutableStateOf<Meal?>(null)
     var apiMealToBeSaved = mutableStateOf<Meal?>(null)
 
     private var _groceryList = MutableStateFlow<List<Grocery>>(emptyList())
@@ -84,7 +82,13 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     private fun upsertSettings(settings: AppSettings) =
         viewModelScope.launch { repository.upsertSettings(settings) }
 
+    fun setMealToBeSaved(meal: Meal) {
+        mealToBeSaved.value = meal
+    }
     fun turnMealVisible() {
+        if (mealToBeSaved != null) {
+
+        }
 
     }
 
