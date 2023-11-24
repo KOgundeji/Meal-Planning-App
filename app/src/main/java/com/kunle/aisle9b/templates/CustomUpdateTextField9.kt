@@ -1,4 +1,4 @@
-package com.kunle.aisle9b.templates.items
+package com.kunle.aisle9b.templates
 
 import androidx.compose.animation.core.EaseOutQuint
 import androidx.compose.animation.core.animateFloatAsState
@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kunle.aisle9b.templates.CustomTextField9
 
 @Composable
 fun CustomUpdateTextField9(

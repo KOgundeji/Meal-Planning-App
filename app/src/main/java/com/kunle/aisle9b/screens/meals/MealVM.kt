@@ -1,6 +1,5 @@
 package com.kunle.aisle9b.screens.meals
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.*
@@ -19,21 +18,27 @@ import javax.inject.Inject
 class MealVM @Inject constructor(private val repository: MealRepository) : ViewModel(),
     BasicRepositoryFunctions {
 
-    private val _mealList = MutableStateFlow<List<Meal>>(emptyList())
+    private val _visibleMealList = MutableStateFlow<List<Meal>>(emptyList())
+    private val _allMeals = MutableStateFlow<List<Meal>>(emptyList())
     private val _mealsWithIngredients = MutableStateFlow<List<MealWithIngredients>>(emptyList())
     private val _instructions = MutableStateFlow<List<Instruction>>(emptyList())
     private var _mealId = MutableStateFlow<Long>(-1)
     private var _createdNewMealState = MutableStateFlow<MealResponse>(MealResponse.Neutral)
-    val mealList = _mealList.asStateFlow()
+    private var _ingredientListState =
+        MutableStateFlow<IngredientResponse>(IngredientResponse.Neutral)
+    val visibleMealList = _visibleMealList.asStateFlow()
+    val allMeals = _allMeals.asStateFlow()
     val mealsWithIngredients = _mealsWithIngredients.asStateFlow()
     val instructions = _instructions.asStateFlow()
     val mealId = _mealId.asStateFlow()
     val createdNewMealState = _createdNewMealState.asStateFlow()
+    val ingredientResponse = _ingredientListState.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllMeals().distinctUntilChanged().collect { meals ->
-                _mealList.value = meals.filter { it.visible }
+                _allMeals.value = meals
+                _visibleMealList.value = meals.filter { it.visible }
             }
         }
 
@@ -51,11 +56,10 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     }
 
     suspend fun getBrandNewMeal() {
+        _createdNewMealState.value = MealResponse.Loading
         viewModelScope.launch {
-            _createdNewMealState.value = MealResponse.Loading
             try {
                 val mealId = repository.insertMeal(Meal.createBlank())
-                Log.d("Test", "mealId from VM: ${mealId}")
                 _createdNewMealState.value = MealResponse.Success(meal = Meal.createBlank(mealId))
             } catch (e: Exception) {
                 _createdNewMealState.value = MealResponse.Error(exception = e)
@@ -63,18 +67,25 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         }
     }
 
-    fun findMWI(mealId: Long): MealWithIngredients? {
-        return _mealsWithIngredients.value.firstOrNull {
-            it.meal.mealId == mealId
+    suspend fun getIngredientState(food: Food?, mealId: Long) {
+        if (food != null) {
+            _ingredientListState.value = IngredientResponse.Loading
+            viewModelScope.launch {
+                try {
+                    val foodId = repository.insertFood(food)
+                    repository.insertPair(MealFoodMap(mealId, foodId))
+                    _ingredientListState.value = IngredientResponse.Success(foodId = foodId)
+                } catch (e: Exception) {
+                    _ingredientListState.value = IngredientResponse.Error(exception = e)
+                }
+            }
         }
     }
 
     fun insertMeal(meal: Meal) { //not used anymore. Only tests call this method
         viewModelScope.launch {
             _mealId.value = repository.insertMeal(meal)
-            Log.d("Test", "mealId1 from VM: ${_mealId.value}")
         }
-        Log.d("Test", "mealId2 from VM: ${_mealId.value}")
     }
 
     fun upsertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }
@@ -135,9 +146,6 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     fun reorderRestOfInstructionList(oldPosition: Int) {
 
         val instructionsList = _instructions.value.filter { it.position > oldPosition }
-        instructionsList.forEach {
-            Log.d("Test", "instructionlist: $it ")
-        }
 
         instructionsList.forEach {
             upsertInstruction(
@@ -151,18 +159,6 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         }
     }
 
-    val oldInstruction =
-        Instruction(instructionId = 12, step = "second thing", mealId = 1, position = 4)
-    val updatedInstruction =
-        Instruction(instructionId = 12, step = "first thing", mealId = 1, position = 2)
-
-    val oldInstructionList = listOf(
-        Instruction(instructionId = 11, step = "first thing", mealId = 1, position = 1),
-        Instruction(instructionId = 22, step = "second thing", mealId = 1, position = 2),
-        Instruction(instructionId = 33, step = "third thing", mealId = 1, position = 3),
-        Instruction(instructionId = 44, step = "fourth thing", mealId = 1, position = 4),
-        Instruction(instructionId = 55, step = "fifth thing", mealId = 1, position = 5)
-    )
 
     fun reorganizeDBInstructions(
         updatedInstruction: Instruction,

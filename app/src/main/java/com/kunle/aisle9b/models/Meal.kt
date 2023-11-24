@@ -23,6 +23,24 @@ data class Meal(
                 apiID = apiID
             )
 
+    constructor(
+        mealId: Long,
+        name: String,
+        servingSize: String,
+        mealPic: Uri,
+        notes: String,
+        visible: Boolean
+    ) :
+            this(
+                mealId = mealId,
+                name = name,
+                servingSize = servingSize,
+                mealPic = mealPic,
+                notes = notes,
+                apiID = -1,
+                visible = visible
+            )
+
     constructor(mealId: Long, name: String, servingSize: String, apiID: Int) :
             this(
                 mealId = mealId,
@@ -35,12 +53,24 @@ data class Meal(
     companion object {
         fun createBlank(mealId: Long = 0L): Meal {
             return Meal(
-                mealId = mealId ,
+                mealId = mealId,
                 name = "Name of Meal",
                 servingSize = "?",
                 notes = "",
                 visible = false
             )
+        }
+
+        fun makeNewMealVisible(meal: Meal): Meal {
+            return Meal(
+                mealId = meal.mealId,
+                name = meal.name,
+                servingSize = meal.servingSize,
+                mealPic = meal.mealPic,
+                notes = meal.notes,
+                visible = true
+            )
+
         }
     }
 }

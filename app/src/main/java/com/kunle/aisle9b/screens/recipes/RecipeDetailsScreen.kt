@@ -73,7 +73,6 @@ fun RecipeDetailsScreen(
         else -> {}
     }
 }
-
 @Composable
 private fun DetailsScreen(
     modifier: Modifier,

@@ -36,7 +36,7 @@ fun MealScreen(
     var searchWord by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    val mealList = mealVM.mealList.collectAsState().value
+    val mealList = mealVM.visibleMealList.collectAsState().value
     var filteredMealLists by remember { mutableStateOf(mealList) }
 
     if (transferFoodsToGroceryList) {

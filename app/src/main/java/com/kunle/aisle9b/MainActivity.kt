@@ -67,6 +67,7 @@ fun ShoppingAppScaffold(
                         ) {
                             navController.popBackStack()
                             generalVM.setTopBarOption(TopBarOptions.Default)
+                            generalVM.cleanListsInDatabase()
                         }
 
                     TopBarOptions.Default ->
@@ -89,7 +90,7 @@ fun ShoppingAppScaffold(
                         }
 
                     GroceryScreens.AddNewMealScreen ->
-                        SaveFAB { generalVM.turnMealVisible() }
+                        SaveFAB { generalVM.turnNewMealVisible() }
 
                     GroceryScreens.RecipeDetailsScreen ->
                         SaveFAB {

@@ -21,7 +21,7 @@ import com.kunle.aisle9b.templates.CustomTextField9
 @Composable
 fun EditSummaryDialog9(
     meal: Meal,
-    updateMeal: (Meal) -> Unit,
+    updateMeal: (String, String) -> Unit,
     setShowDialog: () -> Unit
 ) {
     var name by remember { mutableStateOf(meal.name) }
@@ -82,15 +82,7 @@ fun EditSummaryDialog9(
                     Button(
                         modifier = Modifier.width(200.dp),
                         onClick = {
-                            updateMeal(
-                                Meal(
-                                    mealId = meal.mealId,
-                                    name = name,
-                                    servingSize = meal.servingSize,
-                                    mealPic = meal.mealPic,
-                                    notes = notes
-                                )
-                            )
+                            updateMeal(name, notes)
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer,

@@ -54,6 +54,8 @@ import coil.compose.AsyncImage
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Instruction
 import com.kunle.aisle9b.models.MealFoodMap
+import com.kunle.aisle9b.models.MealNameUpdate
+import com.kunle.aisle9b.models.MealNotesUpdate
 import com.kunle.aisle9b.models.MealPicUpdate
 import com.kunle.aisle9b.models.MealServingSizeUpdate
 import com.kunle.aisle9b.models.MealWithIngredients
@@ -61,6 +63,7 @@ import com.kunle.aisle9b.models.TabItem
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
+import com.kunle.aisle9b.templates.dialogs.mealDialogs.IngredientHeadlineDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.IngredientsListDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.InstructionsListDialog9
 import com.kunle.aisle9b.util.CameraXMode
@@ -141,8 +144,9 @@ fun MealDetailsScreen(
         if (editSummary) {
             EditSummaryDialog9(
                 meal = mwi.meal,
-                updateMeal = {
-                    mealVM.upsertMeal(it)
+                updateMeal = { name, notes ->
+                    mealVM.updateName(MealNameUpdate(mealId = mwi.meal.mealId, name = name))
+                    mealVM.updateNotes(MealNotesUpdate(mealId = mwi.meal.mealId, notes = notes))
                     editSummary = false
                 },
                 setShowDialog = { editSummary = false })
@@ -164,7 +168,7 @@ fun MealDetailsScreen(
                     mealVM.updatePic(
                         MealPicUpdate(
                             mealId = mwi.meal.mealId,
-                            mealPic =  Uri.EMPTY
+                            mealPic = Uri.EMPTY
                         )
                     )
                     editPicture = false

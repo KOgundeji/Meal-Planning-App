@@ -22,7 +22,7 @@ import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.meals.MealVM
 import com.kunle.aisle9b.templates.dialogs.EditFoodDialog9
-import com.kunle.aisle9b.templates.items.CustomUpdateTextField9
+import com.kunle.aisle9b.templates.CustomUpdateTextField9
 import com.kunle.aisle9b.templates.items.ListItem9
 
 @Composable

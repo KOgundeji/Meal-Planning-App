@@ -1,7 +1,6 @@
 package com.kunle.aisle9b.screens
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -10,9 +9,7 @@ import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.AppSettings
 import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Grocery
-import com.kunle.aisle9b.models.Instruction
 import com.kunle.aisle9b.models.Meal
-import com.kunle.aisle9b.models.MealFoodMap
 import com.kunle.aisle9b.models.SettingsEnum
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.repositories.general.GeneralRepository
@@ -39,12 +36,13 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     var screenOnSetting by mutableStateOf(false)
         private set
 
-    private var mealToBeSaved = mutableStateOf<Meal?>(null)
+    private var newMealToBeSaved = mutableStateOf<Meal?>(null)
     var apiMealToBeSaved = mutableStateOf<Meal?>(null)
 
     private var _groceryList = MutableStateFlow<List<Grocery>>(emptyList())
     private val _groceryBadgeCount = MutableStateFlow(0) //not sure where this comes from
     private val _numOfMeals = MutableStateFlow(0)
+    private val _allMeals = MutableStateFlow<List<Meal>>(emptyList())
     val groceryList = _groceryList.asStateFlow()
     val groceryBadgeCount = _groceryBadgeCount.asStateFlow()
     val numOfMeals = _numOfMeals.asStateFlow()
@@ -52,6 +50,7 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     init {
         viewModelScope.launch {
             repository.getAllMeals().distinctUntilChanged().collect { listOfMeals ->
+                _allMeals.value = listOfMeals
                 _numOfMeals.value = listOfMeals.filter { it.visible }.size
             }
         }
@@ -82,18 +81,28 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     private fun upsertSettings(settings: AppSettings) =
         viewModelScope.launch { repository.upsertSettings(settings) }
 
-    fun setMealToBeSaved(meal: Meal) {
-        mealToBeSaved.value = meal
+    fun setNewMealToBeVisible(meal: Meal) {
+        newMealToBeSaved.value = meal
     }
-    fun turnMealVisible() {
-        if (mealToBeSaved != null) {
 
+    fun turnNewMealVisible() {
+        if (newMealToBeSaved.value != null) {
+            viewModelScope.launch {
+                repository.upsertMeal(
+                    Meal.makeNewMealVisible(newMealToBeSaved.value!!)
+                )
+            }
         }
-
     }
 
-    fun cleanMealList() {
-
+    fun cleanListsInDatabase() {
+        viewModelScope.launch {
+            _allMeals.value
+                .filter { !it.visible }
+                .forEach { dirtyMeal ->
+                    repository.deleteMeal(dirtyMeal)
+                }
+        }
     }
 
     fun setTopBarOption(value: TopBarOptions) {

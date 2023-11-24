@@ -8,6 +8,14 @@ sealed class MealResponse {
     class Error(private val exception: Exception) : MealResponse() {
         fun getMessage(): String? = exception.localizedMessage
     }
-
     data class Success(val meal: Meal) : MealResponse()
+}
+
+sealed class IngredientResponse {
+    object Loading : IngredientResponse()
+    object Neutral : IngredientResponse()
+    class Error(private val exception: Exception) : IngredientResponse() {
+        fun getMessage(): String? = exception.localizedMessage
+    }
+    data class Success(val foodId: Long) : IngredientResponse()
 }

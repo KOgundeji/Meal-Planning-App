@@ -24,8 +24,7 @@ import com.kunle.aisle9b.models.GroceryList
 import com.kunle.aisle9b.models.GroceryListNameUpdate
 import com.kunle.aisle9b.models.ListFoodMap
 import com.kunle.aisle9b.screens.customLists.CustomListVM
-import com.kunle.aisle9b.templates.CustomTextField9
-import com.kunle.aisle9b.templates.items.CustomUpdateTextField9
+import com.kunle.aisle9b.templates.CustomUpdateTextField9
 import com.kunle.aisle9b.templates.items.ListItem9
 import kotlinx.coroutines.launch
 

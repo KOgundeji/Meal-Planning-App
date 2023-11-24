@@ -17,14 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.customLists.CustomListVM
 import com.kunle.aisle9b.templates.dialogs.EditFoodDialog9
-import com.kunle.aisle9b.templates.items.CustomUpdateTextField9
+import com.kunle.aisle9b.templates.CustomUpdateTextField9
 import com.kunle.aisle9b.templates.items.ListItem9
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch

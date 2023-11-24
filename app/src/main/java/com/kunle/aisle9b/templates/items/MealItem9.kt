@@ -62,14 +62,12 @@ fun MealItem9(
     }
 
     val listedIngredients: String =
-        if (mwi?.ingredients?.isNotEmpty() == true) {
-            mwi.ingredients.joinToString { it.name }
-        } else if (mwi?.meal?.apiID != null) {
-            "Sourced from Spoonacular API"
-        } else {
-            ""
+        when {
+            mwi?.ingredients?.isNotEmpty() == true -> mwi.ingredients.joinToString { it.name }
+            mwi?.meal?.apiID != null && mwi.meal.apiID > 0 -> "Sourced from Spoonacular API"
+            mwi?.meal?.apiID != null -> "No ingredients yet"
+            else -> ""
         }
-
 
     Card(
         modifier = Modifier
@@ -118,7 +116,10 @@ fun MealItem9(
                         deleteMeal()
                         false
                     }
-                    else -> { false }
+
+                    else -> {
+                        false
+                    }
                 }
             }
         }

@@ -42,14 +42,14 @@ class MealVMShould {
 
     @Test
     fun getAllMeals_callsCorrectRepositoryMethod() {
-        sutMealViewModel.mealList
+        sutMealViewModel.visibleMealList
         verify { mRepositoryImpl.getAllMeals() }
     }
 
     @Test
     fun getAllMeals_returnsCorrectList() {
         runTest {
-            val actualList = sutMealViewModel.mealList.first()
+            val actualList = sutMealViewModel.visibleMealList.first()
             assertThat(actualList).isEqualTo(allMeals)
         }
     }
