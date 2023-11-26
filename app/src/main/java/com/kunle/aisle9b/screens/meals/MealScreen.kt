@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens.meals
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,7 +38,7 @@ fun MealScreen(
     val context = LocalContext.current
 
     val mealList = mealVM.visibleMealList.collectAsState().value
-    var filteredMealLists by remember { mutableStateOf(mealList) }
+    var filteredMealLists by remember(mealList) { mutableStateOf(mealList) }
 
     if (transferFoodsToGroceryList) {
         val foodsForReconciliation =

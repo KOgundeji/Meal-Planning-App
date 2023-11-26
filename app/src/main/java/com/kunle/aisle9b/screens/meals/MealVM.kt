@@ -1,10 +1,13 @@
 package com.kunle.aisle9b.screens.meals
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.repositories.BasicRepositoryFunctions
 import com.kunle.aisle9b.repositories.meals.MealRepository
+import com.kunle.aisle9b.util.IngredientResponse
+import com.kunle.aisle9b.util.MealResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -23,8 +26,9 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     private val _mealsWithIngredients = MutableStateFlow<List<MealWithIngredients>>(emptyList())
     private val _instructions = MutableStateFlow<List<Instruction>>(emptyList())
     private var _mealId = MutableStateFlow<Long>(-1)
-    private var _createdNewMealState = MutableStateFlow<MealResponse>(MealResponse.Neutral)
-    private var _ingredientListState =
+    private var _createdNewMealState = MutableStateFlow<MealResponse>(MealResponse.Loading)
+    private var _editIngredientScreenListState = MutableStateFlow<IngredientResponse>(IngredientResponse.Neutral)
+    private var _addIngredientScreenListState =
         MutableStateFlow<IngredientResponse>(IngredientResponse.Neutral)
     val visibleMealList = _visibleMealList.asStateFlow()
     val allMeals = _allMeals.asStateFlow()
@@ -32,11 +36,14 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     val instructions = _instructions.asStateFlow()
     val mealId = _mealId.asStateFlow()
     val createdNewMealState = _createdNewMealState.asStateFlow()
-    val ingredientResponse = _ingredientListState.asStateFlow()
+    val editedIngredientState = _editIngredientScreenListState.asStateFlow()
+    val addedIngredientState = _addIngredientScreenListState.asStateFlow()
 
     init {
+        Log.i("Test", "MealVM instantiated")
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllMeals().distinctUntilChanged().collect { meals ->
+                Log.i("Test", "change in meals")
                 _allMeals.value = meals
                 _visibleMealList.value = meals.filter { it.visible }
             }
@@ -67,17 +74,34 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         }
     }
 
-    suspend fun getIngredientState(food: Food?, mealId: Long) {
+    suspend fun getIngredientState(food: Food?, mealId: Long, origin: MealScreens) {
         if (food != null) {
-            _ingredientListState.value = IngredientResponse.Loading
-            viewModelScope.launch {
-                try {
-                    val foodId = repository.insertFood(food)
-                    repository.insertPair(MealFoodMap(mealId, foodId))
-                    _ingredientListState.value = IngredientResponse.Success(foodId = foodId)
-                } catch (e: Exception) {
-                    _ingredientListState.value = IngredientResponse.Error(exception = e)
+            when (origin) {
+                MealScreens.Add -> {
+                    _addIngredientScreenListState.value = IngredientResponse.Loading
+                    viewModelScope.launch {
+                        try {
+                            val foodId = repository.insertFood(food)
+                            repository.insertPair(MealFoodMap(mealId, foodId))
+                            _addIngredientScreenListState.value = IngredientResponse.Success(foodId = foodId)
+                        } catch (e: Exception) {
+                            _addIngredientScreenListState.value = IngredientResponse.Error(exception = e)
+                        }
+                    }
                 }
+                MealScreens.Edit -> {
+                    _editIngredientScreenListState.value = IngredientResponse.Loading
+                    viewModelScope.launch {
+                        try {
+                            val foodId = repository.insertFood(food)
+                            repository.insertPair(MealFoodMap(mealId, foodId))
+                            _editIngredientScreenListState.value = IngredientResponse.Success(foodId = foodId)
+                        } catch (e: Exception) {
+                            _editIngredientScreenListState.value = IngredientResponse.Error(exception = e)
+                        }
+                    }
+                }
+                else -> {}
             }
         }
     }

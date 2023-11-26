@@ -28,6 +28,7 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
     val namesOfAllFoods = _namesOfAllFoods.asStateFlow()
 
     init {
+        Log.i("Test", "groceryVM instantiated")
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllGroceries().distinctUntilChanged().collect { groceryItems ->
                 _groceryList.value = groceryItems

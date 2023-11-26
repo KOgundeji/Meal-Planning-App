@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -25,7 +24,8 @@ import com.kunle.aisle9b.screens.appSettings.SettingsScreen
 import com.kunle.aisle9b.screens.customLists.CustomListScreen
 import com.kunle.aisle9b.screens.customLists.CustomListVM
 import com.kunle.aisle9b.screens.groceries.GroceryScreen
-import com.kunle.aisle9b.screens.meals.MealDetailsScreen
+import com.kunle.aisle9b.screens.groceries.GroceryVM
+import com.kunle.aisle9b.screens.meals.EditMealDetailsScreen
 import com.kunle.aisle9b.screens.meals.MealScreen
 import com.kunle.aisle9b.screens.meals.MealVM
 import com.kunle.aisle9b.screens.meals.ViewMealDetailsScreen
@@ -40,42 +40,48 @@ fun Aisle9Navigation(
     modifier: Modifier = Modifier,
     generalVM: GeneralVM
 ) {
+    val groceryVM = hiltViewModel<GroceryVM>()
+    val mealVM = hiltViewModel<MealVM>()
+    val recipesVM = hiltViewModel<RecipesVM>()
+    val customListVM = hiltViewModel<CustomListVM>()
 
     NavHost(
         navController = navController,
         startDestination = GroceryScreens.GroceryListScreen.name,
         modifier = modifier
     ) {
-
         composable(route = GroceryScreens.SplashScreen.name) {
             SplashScreen(
                 navController = navController
             )
         }
-        composable(route = GroceryScreens.GroceryListScreen.name) { backStackEntry ->
-
+        composable(route = GroceryScreens.GroceryListScreen.name) {
             GroceryScreen(
                 navController = navController,
+                groceryVM = groceryVM,
                 generalVM = generalVM
             )
         }
-        composable(route = GroceryScreens.CustomListScreen.name) { backStackEntry ->
-
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(GroceryScreens.GroceryListScreen.name)
-            }
-            val customListVM = hiltViewModel<CustomListVM>(parentEntry)
-
+        composable(route = GroceryScreens.CustomListScreen.name) {
             CustomListScreen(
-                customListVM = customListVM,
                 generalVM = generalVM
             )
         }
-        composable(route = GroceryScreens.MealScreen.name) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(GroceryScreens.GroceryListScreen.name)
-            }
-            val mealVM = hiltViewModel<MealVM>(parentEntry)
+        composable(
+            route = GroceryScreens.MealScreen.name,
+//            enterTransition = {
+//            slideIntoContainer(
+//                AnimatedContentTransitionScope.SlideDirection.Start,
+//                animationSpec = tween(700)
+//            )
+//        }, exitTransition = {
+//            slideOutOfContainer(
+//                AnimatedContentTransitionScope.SlideDirection.Down,
+//                animationSpec = tween(700)
+//            )
+//        }
+        ) {
+
             MealScreen(
                 navController = navController,
                 mealVM = mealVM,
@@ -85,38 +91,20 @@ fun Aisle9Navigation(
         composable(route = GroceryScreens.SettingsScreen.name) {
             SettingsScreen()
         }
-        composable(route = GroceryScreens.RecipeScreen.name) { backStackEntry ->
-
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(GroceryScreens.GroceryListScreen.name)
-            }
-            val recipesVM = hiltViewModel<RecipesVM>(parentEntry)
-
+        composable(route = GroceryScreens.RecipeScreen.name) {
             RecipeScreenGate(
                 navController = navController,
                 recipesVM = recipesVM,
                 generalVM = generalVM
             )
         }
-        composable(route = GroceryScreens.AddNewMealScreen.name) { backStackEntry ->
-
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(GroceryScreens.GroceryListScreen.name)
-            }
-            val mealVM = hiltViewModel<MealVM>(parentEntry)
-
+        composable(route = GroceryScreens.AddNewMealScreen.name) {
             AddMealScreenGate(
                 mealVM = mealVM,
                 generalVM = generalVM
             )
         }
-        composable(route = GroceryScreens.AddNewCustomListScreen.name) { backStackEntry ->
-
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(GroceryScreens.GroceryListScreen.name)
-            }
-            val customListVM = hiltViewModel<CustomListVM>(parentEntry)
-
+        composable(route = GroceryScreens.AddNewCustomListScreen.name) {
             AddPreMadeListScreen(
                 navController = navController,
                 customListVM = customListVM,
@@ -131,11 +119,6 @@ fun Aisle9Navigation(
                 })
         ) { backStackEntry ->
 
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(GroceryScreens.GroceryListScreen.name)
-            }
-            val recipesVM = hiltViewModel<RecipesVM>(parentEntry)
-
             RecipeDetailsScreen(
                 recipeId = backStackEntry.arguments?.getInt("recipeIndex"),
                 recipesVM = recipesVM,
@@ -149,12 +132,7 @@ fun Aisle9Navigation(
                     type = NavType.IntType
                 })
         ) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(GroceryScreens.GroceryListScreen.name)
-            }
-            val mealVM = hiltViewModel<MealVM>(parentEntry)
-
-            MealDetailsScreen(
+            EditMealDetailsScreen(
                 mealIndex = backStackEntry.arguments?.getInt("mealIndex"),
                 mealVM = mealVM,
                 generalVM = generalVM
@@ -167,11 +145,6 @@ fun Aisle9Navigation(
                     type = NavType.IntType
                 })
         ) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(GroceryScreens.GroceryListScreen.name)
-            }
-            val mealVM = hiltViewModel<MealVM>(parentEntry)
-
             ViewMealDetailsScreen(
                 mealIndex = backStackEntry.arguments?.getInt("mealIndex"),
                 mealVM = mealVM,
