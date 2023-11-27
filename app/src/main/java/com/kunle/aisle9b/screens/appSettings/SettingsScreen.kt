@@ -27,9 +27,6 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     generalVM: GeneralVM = hiltViewModel()
 ) {
-    generalVM.setTopBarOption(TopBarOptions.Default)
-    generalVM.setClickSource(GroceryScreens.SettingsScreen)
-
     val screenPermOn = generalVM.screenOnSetting
     val categoriesOn = generalVM.categoriesSetting
     val darkMode = generalVM.darkModeSetting ?: generalVM.setDarkModeSetting(isSystemInDarkTheme())

@@ -1,16 +1,17 @@
 package com.kunle.aisle9b.util
 
+import com.kunle.aisle9b.models.GroceryList
 import com.kunle.aisle9b.models.Meal
 
-sealed class ScreenState {
-    object Loading : ScreenState()
-    object Neutral : ScreenState()
-    class Error(private val exception: Exception) : ScreenState() {
+sealed class MealGateState {
+    object Loading : MealGateState()
+    object Neutral : MealGateState()
+    class Error(private val exception: Exception) : MealGateState() {
         fun getMessage(): String? = exception.localizedMessage
     }
-    data class Success(val foodId: Long) : ScreenState()
-}
 
+    data class Success(val foodId: Long) : MealGateState()
+}
 
 
 sealed class MealResponse {
@@ -18,6 +19,7 @@ sealed class MealResponse {
     class Error(private val exception: Exception) : MealResponse() {
         fun getMessage(): String? = exception.localizedMessage
     }
+
     data class Success(val meal: Meal) : MealResponse()
 }
 
@@ -27,5 +29,15 @@ sealed class IngredientResponse {
     class Error(private val exception: Exception) : IngredientResponse() {
         fun getMessage(): String? = exception.localizedMessage
     }
+
     data class Success(val foodId: Long) : IngredientResponse()
+}
+
+sealed class CustomListGateState {
+    object Loading : CustomListGateState()
+    class Error(private val exception: Exception) : CustomListGateState() {
+        fun getMessage(): String? = exception.localizedMessage
+    }
+
+    data class Success(var groceryList: GroceryList) : CustomListGateState()
 }

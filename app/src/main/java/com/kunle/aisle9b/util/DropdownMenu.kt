@@ -43,7 +43,7 @@ import androidx.navigation.NavController
 import com.kunle.aisle9b.navigation.GroceryScreens
 
 @Composable
-fun AdditionalScreenOptions(navController: NavController) {
+fun AdditionalScreenOptions(navigate: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
 
     Box(
@@ -65,7 +65,7 @@ fun AdditionalScreenOptions(navController: NavController) {
             DropdownMenuItem(
                 text = { Text(text = GroceryScreens.headerTitle(GroceryScreens.SettingsScreen)) },
                 onClick = {
-                    navController.navigate(GroceryScreens.SettingsScreen.name)
+                    navigate()
                     expanded = false
                 },
                 leadingIcon = {

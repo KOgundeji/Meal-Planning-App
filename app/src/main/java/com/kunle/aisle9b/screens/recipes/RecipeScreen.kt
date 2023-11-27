@@ -31,12 +31,8 @@ import kotlinx.coroutines.launch
 fun RecipeScreenGate(
     modifier: Modifier = Modifier,
     recipesVM: RecipesVM = hiltViewModel(),
-    generalVM: GeneralVM = hiltViewModel(),
-    navController: NavController,
+    navToRecipeDetails: (Int) -> Unit
 ) {
-    generalVM.setTopBarOption(TopBarOptions.Default)
-    generalVM.setClickSource(GroceryScreens.RecipeScreen)
-
     val scope = rememberCoroutineScope()
 
     Surface(color = MaterialTheme.colorScheme.background) {
@@ -56,7 +52,7 @@ fun RecipeScreenGate(
                 is ApiResponseSearch.Success ->
                     RecipeScreen(
                         recipeList = searchState.recipes,
-                        navController = navController,
+                        navToRecipeDetails = { navToRecipeDetails(it) }
                     )
                 ApiResponseSearch.Neutral -> {}
             }
@@ -67,7 +63,7 @@ fun RecipeScreenGate(
 @Composable
 private fun RecipeScreen(
     recipeList: List<Result>,
-    navController: NavController
+    navToRecipeDetails: (Int) -> Unit
 ) {
     val listState = rememberLazyGridState()
 
@@ -75,15 +71,14 @@ private fun RecipeScreen(
         columns = GridCells.Fixed(count = 2),
         state = listState,
     ) {
-        items(items = recipeList) {
+        items(items = recipeList) {recipe ->
             RecipeItem9(
                 modifier = Modifier.padding(5.dp),
-                navController = navController,
-                id = it.id,
-                imageURL = it.image,
-                name = it.title,
-                source = it.sourceName,
-                readyTimeInMinutes = it.readyInMinutes
+                navToRecipeDetails = { navToRecipeDetails(recipe.id) },
+                imageURL = recipe.image,
+                name = recipe.title,
+                source = recipe.sourceName,
+                readyTimeInMinutes = recipe.readyInMinutes
             )
         }
     }

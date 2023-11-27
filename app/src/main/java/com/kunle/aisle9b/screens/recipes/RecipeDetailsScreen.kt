@@ -47,9 +47,6 @@ fun RecipeDetailsScreen(
     recipesVM: RecipesVM = hiltViewModel(),
     generalVM: GeneralVM = hiltViewModel()
 ) {
-    generalVM.setTopBarOption(TopBarOptions.Back)
-    generalVM.setClickSource(GroceryScreens.RecipeDetailsScreen)
-
     if (recipeId != null) {
         LaunchedEffect(key1 = recipeId) {
             recipesVM.getRecipe(id = recipeId)

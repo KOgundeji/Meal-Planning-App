@@ -20,8 +20,7 @@ import com.kunle.aisle9b.navigation.GroceryScreens
 @Composable
 fun RecipeItem9(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    id: Int,
+    navToRecipeDetails: () -> Unit,
     readyTimeInMinutes: Int,
     imageURL: String,
     name: String,
@@ -30,9 +29,7 @@ fun RecipeItem9(
     Card(
         modifier = modifier
             .fillMaxSize()
-            .clickable {
-                navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${id}")
-            },
+            .clickable { navToRecipeDetails() },
         elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
     ) {

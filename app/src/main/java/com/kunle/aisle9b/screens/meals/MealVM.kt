@@ -40,10 +40,8 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     val addedIngredientState = _addIngredientScreenListState.asStateFlow()
 
     init {
-        Log.i("Test", "MealVM instantiated")
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllMeals().distinctUntilChanged().collect { meals ->
-                Log.i("Test", "change in meals")
                 _allMeals.value = meals
                 _visibleMealList.value = meals.filter { it.visible }
             }
@@ -103,6 +101,21 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
                 }
                 else -> {}
             }
+        }
+    }
+
+    fun reorderRestOfInstructionList(oldPosition: Int) {
+        val instructionsList = _instructions.value.filter { it.position > oldPosition }
+
+        instructionsList.forEach {
+            upsertInstruction(
+                Instruction(
+                    instructionId = it.instructionId,
+                    step = it.step,
+                    mealId = it.mealId,
+                    position = it.position - 1
+                )
+            )
         }
     }
 
@@ -167,65 +180,5 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         viewModelScope.launch { repository.deleteGroceryByName(name) }
     }
 
-    fun reorderRestOfInstructionList(oldPosition: Int) {
 
-        val instructionsList = _instructions.value.filter { it.position > oldPosition }
-
-        instructionsList.forEach {
-            upsertInstruction(
-                Instruction(
-                    instructionId = it.instructionId,
-                    step = it.step,
-                    mealId = it.mealId,
-                    position = it.position - 1
-                )
-            )
-        }
-    }
-
-
-    fun reorganizeDBInstructions(
-        updatedInstruction: Instruction,
-        oldInstructionList: List<Instruction>
-    ) {
-        val oldPosition =
-            oldInstructionList.find { it.instructionId == updatedInstruction.instructionId }!!.position
-        val newPosition = updatedInstruction.position
-
-        if (newPosition > 0) {
-            upsertInstruction(updatedInstruction)
-
-            when {
-                newPosition < oldPosition -> {
-                    oldInstructionList.forEach {
-                        if (it.position in newPosition until oldPosition) {
-                            upsertInstruction(
-                                Instruction(
-                                    instructionId = it.instructionId,
-                                    step = it.step,
-                                    mealId = it.mealId,
-                                    position = it.position + 1
-                                )
-                            )
-                        }
-                    }
-                }
-
-                newPosition > oldPosition -> {
-                    oldInstructionList.forEach {
-                        if (it.position in (oldPosition + 1)..newPosition) {
-                            upsertInstruction(
-                                Instruction(
-                                    instructionId = it.instructionId,
-                                    step = it.step,
-                                    mealId = it.mealId,
-                                    position = it.position - 1
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

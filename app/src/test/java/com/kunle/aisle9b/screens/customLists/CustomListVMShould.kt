@@ -32,7 +32,7 @@ class CustomListVMShould {
     @Test
     fun getAllLists_callsCorrectRepositoryMethod() {
         runTest {
-            sutCustomListVM.customLists
+            sutCustomListVM.allGroceryLists
             verify { mRepository.getAllLists() }
         }
     }
@@ -40,7 +40,7 @@ class CustomListVMShould {
     @Test
     fun getAllLists_returnsCorrectList() {
         runTest {
-            val actualList = sutCustomListVM.customLists.first()
+            val actualList = sutCustomListVM.allGroceryLists.first()
             assertThat(actualList).isEqualTo(expectedGroceryList)
         }
     }

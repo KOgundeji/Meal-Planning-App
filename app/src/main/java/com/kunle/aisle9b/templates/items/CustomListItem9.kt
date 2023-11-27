@@ -44,6 +44,7 @@ fun CustomListItem9(
     groceryList: GroceryList,
     customListVM: CustomListVM,
     deleteList: () -> Unit,
+    navToListDetails: () -> Unit,
     transferFood: (List<Food>) -> Unit
 ) {
     var longPress by remember { mutableStateOf(false) }
@@ -97,7 +98,9 @@ fun CustomListItem9(
                     longPress = true
                 },
                 onLongClickLabel = "Action Dropdown"
-            ) {},
+            ) {
+              navToListDetails()
+            },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         shape = RoundedCornerShape(corner = CornerSize(6.dp))
     ) {

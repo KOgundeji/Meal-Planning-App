@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.*
 import com.kunle.aisle9b.repositories.BasicRepositoryFunctions
 import com.kunle.aisle9b.repositories.customLists.CustomListRepository
+import com.kunle.aisle9b.util.CustomListGateState
+import com.kunle.aisle9b.util.IngredientResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -12,21 +14,31 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
 class CustomListVM @Inject constructor(private val repository: CustomListRepository) : ViewModel(),
     BasicRepositoryFunctions {
 
-    private val _customLists = MutableStateFlow<List<GroceryList>>(emptyList())
+    private val _allGroceryLists = MutableStateFlow<List<GroceryList>>(emptyList())
+    private val _visibleGroceryLists = MutableStateFlow<List<GroceryList>>(emptyList())
     private val _groceriesOfCustomLists = MutableStateFlow<List<ListWithGroceries>>(emptyList())
-    val customLists = _customLists.asStateFlow()
+    private val _gateState = MutableStateFlow<CustomListGateState>(CustomListGateState.Loading)
+    private val _ingredientState =
+        MutableStateFlow<IngredientResponse>(IngredientResponse.Neutral)
+
+    val allGroceryLists = _allGroceryLists.asStateFlow()
+    val visibleGroceryLists = _visibleGroceryLists.asStateFlow()
     val groceriesOfCustomLists = _groceriesOfCustomLists.asStateFlow()
+    val gateState = _gateState.asStateFlow()
+    val ingredientState = _ingredientState.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getAllLists().distinctUntilChanged().collect {
-                _customLists.value = it
+            repository.getAllLists().distinctUntilChanged().collect { lists ->
+                _allGroceryLists.value = lists
+                _visibleGroceryLists.value = lists.filter { it.visible }
             }
         }
 
@@ -37,12 +49,39 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
         }
     }
 
-    fun insertList(list: GroceryList): Long {
-        var listId = -1L
+    suspend fun getBrandNewGroceryList() {
         viewModelScope.launch {
-            listId = async { repository.insertList(list) }.await()
+            try {
+                val listId = repository.insertList(GroceryList.createBlank())
+                _gateState.value =
+                    CustomListGateState.Success(groceryList = GroceryList.createBlank(listId))
+            } catch (e: Exception) {
+                _gateState.value = CustomListGateState.Error(exception = e)
+            }
         }
-        return listId
+    }
+
+    fun setGateStateToSuccess(groceryList: GroceryList) {
+        _gateState.value = CustomListGateState.Success(groceryList = groceryList)
+    }
+
+    suspend fun updateFoodList(food: Food?, listId: Long) {
+        if (food != null) {
+            _ingredientState.value = IngredientResponse.Loading
+            viewModelScope.launch {
+                try {
+                    val foodId = repository.insertFood(food)
+                    repository.insertPair(ListFoodMap(listId, foodId))
+                    _ingredientState.value = IngredientResponse.Success(foodId = foodId)
+                } catch (e: Exception) {
+                    _ingredientState.value = IngredientResponse.Error(exception = e)
+                }
+            }
+        }
+    }
+
+    fun insertList(list: GroceryList) {
+        viewModelScope.launch { repository.insertList(list) }
     }
 
     fun deleteList(list: GroceryList) = viewModelScope.launch { repository.deleteList(list) }
@@ -90,4 +129,8 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
         viewModelScope.launch { repository.deleteGroceryByName(name) }
     }
 
+    enum class GroceryListScreens {
+        Add,
+        Edit
+    }
 }

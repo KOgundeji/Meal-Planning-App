@@ -11,8 +11,8 @@ data class GroceryList(
     val visible: Boolean = true
 ) {
     companion object {
-        fun createBlank(): GroceryList {
-            return GroceryList(listName = "", visible = false)
+        fun createBlank(listId: Long = 0L): GroceryList {
+            return GroceryList(listId = listId, listName = "Grocery List Name", visible = false)
         }
     }
 }

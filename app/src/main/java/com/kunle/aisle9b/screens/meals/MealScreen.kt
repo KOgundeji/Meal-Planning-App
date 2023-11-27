@@ -27,10 +27,10 @@ fun MealScreen(
     modifier: Modifier = Modifier,
     generalVM: GeneralVM = hiltViewModel(),
     mealVM: MealVM = hiltViewModel(),
-    navController: NavController
+    navToDetailsScreen: (Long) -> Unit,
+    navToViewDetails: (Long) -> Unit,
+    navToRecipeDetails: (Int) -> Unit,
 ) {
-    generalVM.setClickSource(GroceryScreens.MealScreen)
-
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
 
     var listsToAddToGroceryList by remember { mutableStateOf(emptyList<Food>()) }
@@ -91,7 +91,9 @@ fun MealScreen(
                 MealItem9(
                     meal = meal,
                     mealVM = mealVM,
-                    navController = navController,
+                    navToMealDetailsScreen = { navToDetailsScreen(it)},
+                    navToViewDetails = { navToViewDetails(it)},
+                    navToRecipeDetails = { navToRecipeDetails(it) } ,
                     deleteMeal = {
                         mealVM.deleteMeal(meal)
                         mealVM.deleteSpecificMealWithIngredients(meal.mealId)

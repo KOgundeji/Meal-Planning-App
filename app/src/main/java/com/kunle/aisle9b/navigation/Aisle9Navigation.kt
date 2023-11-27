@@ -1,6 +1,7 @@
 package com.kunle.aisle9b.navigation
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
@@ -19,6 +20,7 @@ import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.screens.*
 import com.kunle.aisle9b.screens.appSettings.SettingsScreen
 import com.kunle.aisle9b.screens.customLists.CustomListScreen
@@ -51,20 +53,31 @@ fun Aisle9Navigation(
         modifier = modifier
     ) {
         composable(route = GroceryScreens.SplashScreen.name) {
-            SplashScreen(
-                navController = navController
-            )
+            SplashScreen()
         }
         composable(route = GroceryScreens.GroceryListScreen.name) {
+            generalVM.setTopBarOption(TopBarOptions.Default)
+            generalVM.setClickSource(GroceryScreens.GroceryListScreen)
+
             GroceryScreen(
-                navController = navController,
                 groceryVM = groceryVM,
-                generalVM = generalVM
+                generalVM = generalVM,
+                navToCustomLists = { navController.navigate(GroceryScreens.CustomListScreen.name) },
+                navToMealScreen = { navController.navigate(GroceryScreens.MealScreen.name) }
             )
         }
         composable(route = GroceryScreens.CustomListScreen.name) {
+            generalVM.setTopBarOption(TopBarOptions.Default)
+            generalVM.setClickSource(GroceryScreens.CustomListScreen)
+
             CustomListScreen(
-                generalVM = generalVM
+                generalVM = generalVM,
+                customListVM = customListVM,
+                navToListDetails = {
+                    navController.navigate(
+                        GroceryScreens.AddNewCustomListScreen.name + "/${it}"
+                    )
+                }
             )
         }
         composable(
@@ -81,34 +94,64 @@ fun Aisle9Navigation(
 //            )
 //        }
         ) {
+            generalVM.setTopBarOption(TopBarOptions.Default)
+            generalVM.setClickSource(GroceryScreens.MealScreen)
 
             MealScreen(
-                navController = navController,
                 mealVM = mealVM,
-                generalVM = generalVM
+                generalVM = generalVM,
+                navToDetailsScreen = {
+                    navController.navigate(
+                        GroceryScreens.MealDetailsScreen.name + "/${it}"
+                    )
+                },
+                navToViewDetails = {
+                    navController.navigate(
+                        GroceryScreens.ViewMealDetailsScreen.name + "/${it}"
+                    )
+                },
+                navToRecipeDetails = { navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${it}") }
             )
         }
         composable(route = GroceryScreens.SettingsScreen.name) {
-            SettingsScreen()
+            generalVM.setTopBarOption(TopBarOptions.Default)
+            generalVM.setClickSource(GroceryScreens.SettingsScreen)
+
+            SettingsScreen(generalVM = generalVM)
         }
         composable(route = GroceryScreens.RecipeScreen.name) {
+            generalVM.setTopBarOption(TopBarOptions.Default)
+            generalVM.setClickSource(GroceryScreens.RecipeScreen)
+
             RecipeScreenGate(
-                navController = navController,
                 recipesVM = recipesVM,
-                generalVM = generalVM
+                navToRecipeDetails = { navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${it}") },
             )
         }
         composable(route = GroceryScreens.AddNewMealScreen.name) {
+            generalVM.setTopBarOption(TopBarOptions.Back)
+            generalVM.setClickSource(GroceryScreens.AddNewMealScreen)
+
             AddMealScreenGate(
                 mealVM = mealVM,
                 generalVM = generalVM
             )
         }
-        composable(route = GroceryScreens.AddNewCustomListScreen.name) {
-            AddPreMadeListScreen(
-                navController = navController,
+        composable(
+            route = GroceryScreens.AddNewCustomListScreen.name + "/{listIndex}",
+            arguments = listOf(
+                navArgument(name = "listIndex") {
+                    type = NavType.LongType
+                })
+        ) { backStackEntry ->
+            generalVM.setTopBarOption(TopBarOptions.Back)
+            generalVM.setClickSource(GroceryScreens.AddNewCustomListScreen)
+
+            Log.d("Test", "listIndex: ${backStackEntry.arguments?.getLong("listIndex")} ")
+            PreMadeListScreenGate(
+                listId = backStackEntry.arguments?.getLong("listIndex"),
                 customListVM = customListVM,
-                generalVM = generalVM
+                saveAndExitScreen = { navController.navigate(GroceryScreens.CustomListScreen.name) }
             )
         }
         composable(
@@ -118,6 +161,8 @@ fun Aisle9Navigation(
                     type = NavType.IntType
                 })
         ) { backStackEntry ->
+            generalVM.setTopBarOption(TopBarOptions.Back)
+            generalVM.setClickSource(GroceryScreens.RecipeDetailsScreen)
 
             RecipeDetailsScreen(
                 recipeId = backStackEntry.arguments?.getInt("recipeIndex"),
@@ -129,26 +174,30 @@ fun Aisle9Navigation(
             route = GroceryScreens.MealDetailsScreen.name + "/{mealIndex}",
             arguments = listOf(
                 navArgument(name = "mealIndex") {
-                    type = NavType.IntType
+                    type = NavType.LongType
                 })
         ) { backStackEntry ->
+            generalVM.setTopBarOption(TopBarOptions.Back)
+            generalVM.setClickSource(GroceryScreens.MealDetailsScreen)
+
             EditMealDetailsScreen(
-                mealIndex = backStackEntry.arguments?.getInt("mealIndex"),
-                mealVM = mealVM,
-                generalVM = generalVM
+                mealId = backStackEntry.arguments?.getLong("mealIndex"),
+                mealVM = mealVM
             )
         }
         composable(
             route = GroceryScreens.ViewMealDetailsScreen.name + "/{mealIndex}",
             arguments = listOf(
                 navArgument(name = "mealIndex") {
-                    type = NavType.IntType
+                    type = NavType.LongType
                 })
         ) { backStackEntry ->
+            generalVM.setTopBarOption(TopBarOptions.Back)
+            generalVM.setClickSource(GroceryScreens.ViewMealDetailsScreen)
+
             ViewMealDetailsScreen(
-                mealIndex = backStackEntry.arguments?.getInt("mealIndex"),
-                mealVM = mealVM,
-                generalVM = generalVM
+                mealId = backStackEntry.arguments?.getLong("mealIndex"),
+                mealVM = mealVM
             )
         }
     }

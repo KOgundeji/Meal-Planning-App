@@ -25,18 +25,17 @@ import com.kunle.aisle9b.util.ReconciliationDialog
 fun CustomListScreen(
     modifier: Modifier = Modifier,
     generalVM: GeneralVM = hiltViewModel(),
-    customListVM: CustomListVM = hiltViewModel()
+    customListVM: CustomListVM = hiltViewModel(),
+    navToListDetails: (Long) -> Unit
 ) {
-    generalVM.setClickSource(GroceryScreens.CustomListScreen)
-
     val context = LocalContext.current
-    val customLists = customListVM.customLists.collectAsState().value
+    val customLists = customListVM.visibleGroceryLists.collectAsState().value
     var searchWord by remember { mutableStateOf("") }
 
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
     var listsToAddToGroceryList by remember { mutableStateOf(emptyList<Food>()) }
 
-    var filteredCustomLists by remember { mutableStateOf(customLists) }
+    var filteredCustomLists by remember(customLists) { mutableStateOf(customLists) }
 
     if (transferFoodsToGroceryList) {
         val foodsForReconciliation =
@@ -92,6 +91,7 @@ fun CustomListScreen(
                 CustomListItem9(
                     groceryList = listItem,
                     customListVM = customListVM,
+                    navToListDetails = { navToListDetails(listItem.listId) },
                     deleteList = {
                         customListVM.deleteList(listItem)
                         customListVM.deleteSpecificListWithGroceries(listItem.listId)

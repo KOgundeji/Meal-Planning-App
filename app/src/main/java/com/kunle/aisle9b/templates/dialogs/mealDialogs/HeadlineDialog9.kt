@@ -31,12 +31,13 @@ import androidx.compose.ui.window.Dialog
 import com.kunle.aisle9b.templates.CustomUpdateTextField9
 
 @Composable
-fun IngredientHeadlineDialog9(
-    originalServingSize: String,
-    onSaveServingSize: (String) -> Unit,
+fun HeadlineDialog9(
+    original: String,
+    labelText: String,
+    onSave: (String) -> Unit,
     closeDialog: () -> Unit
 ) {
-    var newServingSize by remember { mutableStateOf(originalServingSize) }
+    var newServingSize by remember { mutableStateOf(original) }
 
     Dialog(onDismissRequest = { closeDialog() }) {
         Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.background) {
@@ -70,9 +71,9 @@ fun IngredientHeadlineDialog9(
                     text = newServingSize,
                     onValueChange = { newServingSize = it },
                     onSaveClick = {
-                        onSaveServingSize(newServingSize)
+                        onSave(newServingSize)
                     },
-                    label = "# of servings recipe makes"
+                    label = labelText
                 )
             }
         }

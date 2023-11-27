@@ -52,15 +52,14 @@ fun ShoppingAppScaffold(
     generalVM: GeneralVM,
     appNavigation: @Composable (PaddingValues) -> Unit
 ) {
-    val topBar = generalVM.topBar
-    val source = generalVM.source
+    val source = generalVM.source.collectAsState().value
 
     val darkMode = generalVM.darkModeSetting ?: generalVM.setDarkModeSetting(isSystemInDarkTheme())
 
     Aisle9bTheme(darkTheme = darkMode) {
         Scaffold(
             topBar = {
-                when (topBar) {
+                when (generalVM.topBar.collectAsState().value) {
                     TopBarOptions.Back ->
                         BackTopAppBar(
                             source = source
@@ -72,18 +71,19 @@ fun ShoppingAppScaffold(
 
                     TopBarOptions.Default ->
                         DefaultTopAppBar(
-                            navController = navController,
+                            navigate = { navController.navigate(GroceryScreens.SettingsScreen.name) },
                             source = source
                         )
                 }
             },
             floatingActionButton = {
                 when (source) {
-                    GroceryScreens.CustomListScreen ->
+                    GroceryScreens.CustomListScreen -> {
+                        val item: Long = 0
                         AddFAB {
-                            navController.navigate(GroceryScreens.AddNewCustomListScreen.name)
+                            navController.navigate(GroceryScreens.AddNewCustomListScreen.name + "/${item}")
                         }
-
+                    }
                     GroceryScreens.MealScreen ->
                         AddFAB {
                             navController.navigate(GroceryScreens.AddNewMealScreen.name)

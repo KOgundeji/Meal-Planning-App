@@ -49,7 +49,9 @@ import com.kunle.aisle9b.util.DropActions
 fun MealItem9(
     meal: Meal,
     mealVM: MealVM,
-    navController: NavController,
+    navToMealDetailsScreen: (Long) -> Unit,
+    navToViewDetails: (Long) -> Unit,
+    navToRecipeDetails: (Int) -> Unit,
     deleteMeal: () -> Unit,
     transferMeal: (List<Food>) -> Unit
 ) {
@@ -80,12 +82,12 @@ fun MealItem9(
                 },
                 onLongClickLabel = "Action Dropdown"
             ) {
-                moveToMealDetailsScreen(
-                    meal = meal,
-                    navController = navController,
-                    mwiList = mwiList,
-                    mwi = mwi
-                )
+                if (meal.apiID > 0) {
+                    val recipeId = meal.apiID
+                    navToRecipeDetails(recipeId)
+                } else {
+                    navToViewDetails(meal.mealId)
+                }
             },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         shape = RoundedCornerShape(corner = CornerSize(6.dp))
@@ -97,10 +99,7 @@ fun MealItem9(
                 longPress = when (dropActions) {
                     DropActions.Edit -> {
                         if (meal.apiID <= 0) {
-                            val index = mwiList.indexOf(mwi)
-                            navController.navigate(
-                                GroceryScreens.MealDetailsScreen.name + "/${index}"
-                            )
+                            navToMealDetailsScreen(meal.mealId)
                         }
                         false
                     }
@@ -164,26 +163,5 @@ fun MealItem9(
                 }
             }
         }
-    }
-}
-
-private fun moveToMealDetailsScreen(
-    meal: Meal,
-    navController: NavController,
-    mwiList: List<MealWithIngredients>,
-    mwi: MealWithIngredients?
-) {
-    if (meal.apiID > 0) {
-        val recipeId = meal.apiID
-        navController.navigate(GroceryScreens.RecipeDetailsScreen.name + "/${recipeId}")
-    } else {
-        val index = mwiList.indexOf(mwi)
-        navController.navigate(
-            GroceryScreens.ViewMealDetailsScreen.name + "/${index}"
-        )
-//        val index = mwiList.indexOf(mwi)
-//        navController.navigate(
-//            GroceryScreens.MealDetailsScreen.name + "/${index}"
-//        )
     }
 }

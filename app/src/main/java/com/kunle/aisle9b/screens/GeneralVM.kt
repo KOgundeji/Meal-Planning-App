@@ -24,10 +24,11 @@ import javax.inject.Inject
 class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     ViewModel() {
 
-    var topBar by mutableStateOf(TopBarOptions.Default)
-        private set
-    var source by mutableStateOf(GroceryScreens.GroceryListScreen)
-        private set
+    private var _topBar = MutableStateFlow(TopBarOptions.Default)
+    val topBar = _topBar.asStateFlow()
+
+    private var _source = MutableStateFlow(GroceryScreens.GroceryListScreen)
+    val source = _source.asStateFlow()
 
     var darkModeSetting: Boolean? by mutableStateOf(false)
         private set
@@ -106,11 +107,11 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     }
 
     fun setTopBarOption(value: TopBarOptions) {
-        topBar = value
+        _topBar.value = value
     }
 
     fun setClickSource(value: GroceryScreens) {
-        source = value
+        _source.value = value
     }
 
     private fun getDarkModeSetting(settingsList: List<AppSettings>) {

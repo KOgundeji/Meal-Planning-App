@@ -39,32 +39,28 @@ import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditInstructionsDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
-import com.kunle.aisle9b.templates.dialogs.mealDialogs.IngredientHeadlineDialog9
+import com.kunle.aisle9b.templates.dialogs.mealDialogs.HeadlineDialog9
 import com.kunle.aisle9b.util.CameraXMode
 import com.kunle.aisle9b.util.PhotoOptionsDialog9
 import kotlinx.coroutines.launch
 
 @Composable
 fun EditMealDetailsScreen(
-    mealIndex: Int?,
+    mealId: Long?,
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM = hiltViewModel(),
     mealVM: MealVM = hiltViewModel(),
 ) {
-    generalVM.setTopBarOption(TopBarOptions.Back)
-    generalVM.setClickSource(GroceryScreens.MealDetailsScreen)
-
     val scope = rememberCoroutineScope()
 
-    if (mealIndex != null) {
+    if (mealId != null) {
         val ingredientState by mealVM.editedIngredientState.collectAsState()
 
-        val mwi = mealVM.mealsWithIngredients.collectAsState().value[mealIndex]
-        val meal = remember(key1 = mwi) { mwi.meal }
-        val ingredients = remember(key1 = mwi) { mwi.ingredients}
+        val mwi = mealVM.mealsWithIngredients.collectAsState().value.find { it.meal.mealId == mealId }
+        val meal = remember(key1 = mwi) { mwi!!.meal }
+        val ingredients = remember(key1 = mwi) { mwi!!.ingredients}
 
         val mealInstructions = mealVM.instructions.collectAsState().value
-            .filter { it.mealId == mwi.meal.mealId }
+            .filter { it.mealId == mwi!!.meal.mealId }
             .sortedBy { it.position }
 
         val newInstructionPosition =
@@ -94,9 +90,9 @@ fun EditMealDetailsScreen(
         }
 
         if (modifyServingSize) {
-            IngredientHeadlineDialog9(
-                originalServingSize = mwi.meal.servingSize,
-                onSaveServingSize = {
+            HeadlineDialog9(
+                original = meal.servingSize,
+                onSave = {
                     mealVM.updateServingSize(
                         MealServingSizeUpdate(
                             mealId = meal.mealId,
@@ -105,15 +101,16 @@ fun EditMealDetailsScreen(
                     )
                     modifyServingSize = false
                 },
+                labelText = "# of servings recipe makes",
                 closeDialog = { modifyServingSize = false })
         }
 
         if (editSummary) {
             EditSummaryDialog9(
-                meal = mwi.meal,
+                meal = meal,
                 updateMeal = { name, notes ->
-                    mealVM.updateName(MealNameUpdate(mealId = mwi.meal.mealId, name = name))
-                    mealVM.updateNotes(MealNotesUpdate(mealId = mwi.meal.mealId, notes = notes))
+                    mealVM.updateName(MealNameUpdate(mealId = meal.mealId, name = name))
+                    mealVM.updateNotes(MealNotesUpdate(mealId = meal.mealId, notes = notes))
                     editSummary = false
                 },
                 setShowDialog = { editSummary = false })
@@ -124,7 +121,7 @@ fun EditMealDetailsScreen(
                 onImageCaptured = { Uri ->
                     mealVM.updatePic(
                         MealPicUpdate(
-                            mealId = mwi.meal.mealId,
+                            mealId = meal.mealId,
                             mealPic = Uri
                         )
                     )
@@ -134,7 +131,7 @@ fun EditMealDetailsScreen(
                 deletePic = {
                     mealVM.updatePic(
                         MealPicUpdate(
-                            mealId = mwi.meal.mealId,
+                            mealId = meal.mealId,
                             mealPic = Uri.EMPTY
                         )
                     )
@@ -148,14 +145,14 @@ fun EditMealDetailsScreen(
         if (shouldShowCamera) {
             CameraXMode(
                 onImageCaptured = { uri ->
-                    mealVM.updatePic(MealPicUpdate(mealId = mwi.meal.mealId, mealPic = uri))
+                    mealVM.updatePic(MealPicUpdate(mealId = meal.mealId, mealPic = uri))
                     editPicture = false
                 },
                 toggleCamera = { shouldShowCamera = it })
         }
 
         Column(modifier = modifier.fillMaxSize()) {
-            if (mwi.meal.mealPic == null) {
+            if (meal.mealPic == null) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -194,7 +191,7 @@ fun EditMealDetailsScreen(
                 ) {
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
-                        model = mwi.meal.mealPic,
+                        model = meal.mealPic,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         alignment = Alignment.Center

@@ -55,26 +55,22 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ViewMealDetailsScreen(
-    mealIndex: Int?,
+    mealId: Long?,
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM = hiltViewModel(),
     mealVM: MealVM = hiltViewModel(),
 ) {
-    generalVM.setTopBarOption(TopBarOptions.Back)
-    generalVM.setClickSource(GroceryScreens.ViewMealDetailsScreen)
-
-    if (mealIndex != null) {
-        val mwi = mealVM.mealsWithIngredients.collectAsState().value[mealIndex]
+    if (mealId != null) {
+        val mwi = mealVM.mealsWithIngredients.collectAsState().value.find { it.meal.mealId == mealId }
         val mealInstructions = mealVM.instructions.collectAsState().value
             .filter {
-                it.mealId == mwi.meal.mealId
+                it.mealId == mwi!!.meal.mealId
             }
             .sortedBy {
                 it.position
             }
 
         Column(modifier = modifier.fillMaxSize()) {
-            if (mwi.meal.mealPic == null) {
+            if (mwi!!.meal.mealPic == null) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

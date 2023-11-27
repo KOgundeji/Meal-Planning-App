@@ -22,7 +22,7 @@ import com.kunle.aisle9b.navigation.GroceryScreens
 @Composable
 fun DefaultTopAppBar(
     source: GroceryScreens,
-    navController: NavController,
+    navigate: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -36,7 +36,7 @@ fun DefaultTopAppBar(
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
-                AdditionalScreenOptions(navController = navController)
+                AdditionalScreenOptions{ navigate() }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

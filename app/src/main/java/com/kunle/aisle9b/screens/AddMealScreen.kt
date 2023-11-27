@@ -28,7 +28,7 @@ import com.kunle.aisle9b.screens.utilScreens.ErrorScreen
 import com.kunle.aisle9b.screens.utilScreens.LoadingScreen
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditInstructionsDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
-import com.kunle.aisle9b.templates.dialogs.mealDialogs.IngredientHeadlineDialog9
+import com.kunle.aisle9b.templates.dialogs.mealDialogs.HeadlineDialog9
 import com.kunle.aisle9b.util.CameraXMode
 import com.kunle.aisle9b.util.MealResponse
 import com.kunle.aisle9b.util.PhotoOptionsDialog9
@@ -40,16 +40,11 @@ fun AddMealScreenGate(
     mealVM: MealVM = hiltViewModel(),
     generalVM: GeneralVM = hiltViewModel()
 ) {
-    generalVM.setTopBarOption(TopBarOptions.Back)
-    generalVM.setClickSource(GroceryScreens.AddNewMealScreen)
-
     LaunchedEffect(key1 = Unit) {
         mealVM.getBrandNewMeal()
     }
 
-    val retrievedMealState = mealVM.createdNewMealState.collectAsState().value
-
-    when (retrievedMealState) {
+    when (val retrievedMealState = mealVM.createdNewMealState.collectAsState().value) {
         is MealResponse.Error -> ErrorScreen(errorText = retrievedMealState.getMessage())
         is MealResponse.Loading -> LoadingScreen()
         is MealResponse.Success -> {
@@ -123,9 +118,9 @@ fun AddMealScreen(
         }
 
         if (modifyServingSize) {
-            IngredientHeadlineDialog9(
-                originalServingSize = createdMeal.servingSize,
-                onSaveServingSize = {
+            HeadlineDialog9(
+                original = createdMeal.servingSize,
+                onSave = {
                     mealVM.updateServingSize(
                         MealServingSizeUpdate(
                             mealId = mealId,
@@ -134,6 +129,7 @@ fun AddMealScreen(
                     )
                     modifyServingSize = false
                 },
+                labelText = "# of servings recipe makes",
                 closeDialog = { modifyServingSize = false })
         }
 

@@ -64,12 +64,9 @@ fun GroceryScreen(
     modifier: Modifier = Modifier,
     generalVM: GeneralVM = hiltViewModel(),
     groceryVM: GroceryVM = hiltViewModel(),
-    navController: NavController
+    navToCustomLists: ()-> Unit,
+    navToMealScreen: ()-> Unit
 ) {
-
-    generalVM.setTopBarOption(TopBarOptions.Default)
-    generalVM.setClickSource(GroceryScreens.GroceryListScreen)
-
     val namesOfAllFoods = groceryVM.namesOfAllFoods.collectAsState().value
     val groceryList = groceryVM.groceryList.collectAsState().value
     val groupedGroceryList = groceryVM.groupedGroceryList.collectAsState().value
@@ -115,9 +112,7 @@ fun GroceryScreen(
                     ),
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
-                    onClick = {
-                        navController.navigate(GroceryScreens.CustomListScreen.name)
-                    }) {
+                    onClick = { navToCustomLists() }) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
@@ -145,9 +140,7 @@ fun GroceryScreen(
                     ),
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
-                    onClick = {
-                        navController.navigate(GroceryScreens.MealScreen.name)
-                    }) {
+                    onClick = { navToMealScreen() }) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
