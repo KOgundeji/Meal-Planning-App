@@ -22,6 +22,7 @@ interface MealRepository {
     suspend fun upsertMeal(meal: Meal)
     suspend fun deleteMeal(meal: Meal)
     suspend fun insertGrocery(grocery: Grocery)
+    suspend fun upsertGrocery(grocery: Grocery)
     suspend fun deleteGrocery(grocery: Grocery)
     suspend fun deleteGroceryByName(name: String)
     suspend fun insertFood(food: Food) : Long

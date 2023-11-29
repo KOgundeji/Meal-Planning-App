@@ -10,7 +10,7 @@ import com.kunle.aisle9b.util.UriConverter
     entities = [Grocery::class, Food::class,
         GroceryList::class, Meal::class, AppSettings::class,
         ListFoodMap::class, MealFoodMap::class, Instruction::class],
-    version = 2,
+    version = 1,
     exportSchema = false
 )
 @TypeConverters(UriConverter::class)

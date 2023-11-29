@@ -40,6 +40,7 @@ class MealRepositoryImpl @Inject constructor(
     override suspend fun upsertMeal(meal: Meal) = mealDao.upsertMeal(meal)
     override suspend fun deleteMeal(meal: Meal) = mealDao.deleteMeal(meal)
     override suspend fun insertGrocery(grocery: Grocery) = groceryDao.insertGrocery(grocery)
+    override suspend fun upsertGrocery(grocery: Grocery) = groceryDao.upsertGrocery(grocery)
     override suspend fun deleteGroceryByName(name: String) = groceryDao.deleteGroceryByName(name)
     override suspend fun insertFood(food: Food): Long = groceryDao.insertFood(food)
     override suspend fun upsertFood(food: Food) = groceryDao.upsertFood(food)

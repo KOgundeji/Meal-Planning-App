@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -78,6 +79,9 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
         viewModelScope.launch {
             repository.insertGrocery(grocery)
         }
+
+    fun upsertGrocery(grocery: Grocery) =
+        viewModelScope.launch { repository.upsertGrocery(grocery) }
 
     private fun upsertSettings(settings: AppSettings) =
         viewModelScope.launch { repository.upsertSettings(settings) }
@@ -168,38 +172,36 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
         }
     }
 
-    fun filterForReconciliation(listToAdd: List<Food>): Map<String, List<Food>> {
-        val ingredientMap: MutableMap<String, MutableList<Food>> = mutableMapOf()
-        val filteredIngredientMap: MutableMap<String, MutableList<Food>> = mutableMapOf()
+    fun filterForReconciliation(
+        groceryList: List<Grocery>,
+        listToAdd: List<Food>
+    ): Map<String, List<Grocery>> {
+        val ingredientMap: MutableMap<String, MutableList<Grocery>> = mutableMapOf()
+        val filteredIngredientMap: MutableMap<String, MutableList<Grocery>> = mutableMapOf()
 
-        for (grocery in _groceryList.value) {
-            if (ingredientMap.containsKey(grocery.name)) {
-                ingredientMap[grocery.name]!!.add(grocery.groceryToFood())
-            } else {
-                ingredientMap[grocery.name] = mutableListOf(grocery.groceryToFood())
-            }
+        Log.i("Test", "grocerylist: $groceryList ")
+        for (grocery in groceryList) {
+            ingredientMap[grocery.name] = mutableListOf(grocery)
         }
 
+        Log.i("Test", "listtoadd: $listToAdd ")
         for (food in listToAdd) {
             if (ingredientMap.containsKey(food.name)) {
-                ingredientMap[food.name]!!.add(food)
+                ingredientMap[food.name]!!.add(food.foodToGrocery())
             } else {
-                ingredientMap[food.name] = mutableListOf(food)
+                ingredientMap[food.name] = mutableListOf(food.foodToGrocery())
             }
         }
 
+        Log.i("Test", "ingredient map: $ingredientMap ")
         ingredientMap.forEach { (key, value) ->
-            if (value.size == 1) {
-                val addToGroceryList = Grocery(
-                    name = key,
-                    quantity = value[0].quantity,
-                    category = value[0].category
-                )
-                viewModelScope.launch { insertGrocery(addToGroceryList) }
-            } else {
+            if (value.size > 1) {
                 filteredIngredientMap[key] = value
+            } else if (!groceryList.contains(value[0])) {
+                viewModelScope.launch { insertGrocery(value[0]) }
             }
         }
+        Log.i("Test", "filtered ingredient map: $filteredIngredientMap ")
         return filteredIngredientMap
     }
 }

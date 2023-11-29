@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ReconciliationDialog(
-    items: Map<String, List<Food>>,
+    items: Map<String, List<Grocery>>,
     viewModel: BasicRepositoryFunctions,
     closeDialog: () -> Unit
 ) {
@@ -63,7 +63,7 @@ fun ReconciliationDialog(
                     ) {
                         ListItem9(
                             modifier = Modifier.height(40.dp),
-                            food = list[0],
+                            food = list[0].groceryToFood(),
                             viewModel = viewModel,
                             editPencilShown = false,
                             checkBoxShown = false,
@@ -81,7 +81,7 @@ fun ReconciliationDialog(
                                 )
                                 ListItem9(
                                     modifier = Modifier.height(40.dp),
-                                    food = list[currentNum + 1],
+                                    food = list[currentNum + 1].groceryToFood(),
                                     viewModel = viewModel,
                                     editPencilShown = false,
                                     checkBoxShown = false,

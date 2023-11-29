@@ -9,6 +9,7 @@ interface GeneralRepository {
     suspend fun deleteFood(food: Food)
 
     suspend fun insertGrocery(grocery: Grocery)
+    suspend fun upsertGrocery(grocery: Grocery)
 
     suspend fun insertPair(crossRef: MealFoodMap)
 

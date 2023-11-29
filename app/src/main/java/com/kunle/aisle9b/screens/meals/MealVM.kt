@@ -27,7 +27,8 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     private val _instructions = MutableStateFlow<List<Instruction>>(emptyList())
     private var _mealId = MutableStateFlow<Long>(-1)
     private var _createdNewMealState = MutableStateFlow<MealResponse>(MealResponse.Loading)
-    private var _editIngredientScreenListState = MutableStateFlow<IngredientResponse>(IngredientResponse.Neutral)
+    private var _editIngredientScreenListState =
+        MutableStateFlow<IngredientResponse>(IngredientResponse.Neutral)
     private var _addIngredientScreenListState =
         MutableStateFlow<IngredientResponse>(IngredientResponse.Neutral)
     val visibleMealList = _visibleMealList.asStateFlow()
@@ -81,24 +82,30 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
                         try {
                             val foodId = repository.insertFood(food)
                             repository.insertPair(MealFoodMap(mealId, foodId))
-                            _addIngredientScreenListState.value = IngredientResponse.Success(foodId = foodId)
+                            _addIngredientScreenListState.value =
+                                IngredientResponse.Success(foodId = foodId)
                         } catch (e: Exception) {
-                            _addIngredientScreenListState.value = IngredientResponse.Error(exception = e)
+                            _addIngredientScreenListState.value =
+                                IngredientResponse.Error(exception = e)
                         }
                     }
                 }
+
                 MealScreens.Edit -> {
                     _editIngredientScreenListState.value = IngredientResponse.Loading
                     viewModelScope.launch {
                         try {
                             val foodId = repository.insertFood(food)
                             repository.insertPair(MealFoodMap(mealId, foodId))
-                            _editIngredientScreenListState.value = IngredientResponse.Success(foodId = foodId)
+                            _editIngredientScreenListState.value =
+                                IngredientResponse.Success(foodId = foodId)
                         } catch (e: Exception) {
-                            _editIngredientScreenListState.value = IngredientResponse.Error(exception = e)
+                            _editIngredientScreenListState.value =
+                                IngredientResponse.Error(exception = e)
                         }
                     }
                 }
+
                 else -> {}
             }
         }
@@ -162,6 +169,10 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
 
     override suspend fun insertGrocery(grocery: Grocery) {
         viewModelScope.launch { repository.insertGrocery(grocery) }
+    }
+
+    override suspend fun upsertGrocery(grocery: Grocery) {
+        viewModelScope.launch { repository.upsertGrocery(grocery) }
     }
 
     override suspend fun upsertFood(food: Food) {

@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens.customLists
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +31,9 @@ fun CustomListScreen(
 ) {
     val context = LocalContext.current
     val customLists = customListVM.visibleGroceryLists.collectAsState().value
+    val groceryList = remember(key1 = Unit) {
+        generalVM.groceryList.value
+    }
     var searchWord by remember { mutableStateOf("") }
 
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
@@ -40,8 +44,11 @@ fun CustomListScreen(
     if (transferFoodsToGroceryList) {
         val foodsForReconciliation =
             generalVM.filterForReconciliation(
+                groceryList = groceryList,
                 listToAdd = listsToAddToGroceryList
             )
+
+        Log.i("Test", "foodForRecon: $foodsForReconciliation")
 
         if (foodsForReconciliation.isNotEmpty()) {
             ReconciliationDialog(
@@ -51,8 +58,9 @@ fun CustomListScreen(
                 transferFoodsToGroceryList = false
             }
         } else {
-            generalVM.setTopBarOption(TopBarOptions.Default)
+            transferFoodsToGroceryList = false
         }
+
         Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT)
             .show()
     }

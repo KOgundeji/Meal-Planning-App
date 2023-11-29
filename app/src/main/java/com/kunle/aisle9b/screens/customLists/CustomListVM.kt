@@ -125,6 +125,10 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
         viewModelScope.launch { repository.insertGrocery(grocery) }
     }
 
+    override suspend fun upsertGrocery(grocery: Grocery) {
+        viewModelScope.launch { repository.upsertGrocery(grocery) }
+    }
+
     override suspend fun deleteGroceryByName(name: String) {
         viewModelScope.launch { repository.deleteGroceryByName(name) }
     }

@@ -34,6 +34,9 @@ fun MealScreen(
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
 
     var listsToAddToGroceryList by remember { mutableStateOf(emptyList<Food>()) }
+    val groceryList = remember(key1 = Unit) {
+        generalVM.groceryList.value
+    }
     var searchWord by remember { mutableStateOf("") }
     val context = LocalContext.current
 
@@ -43,6 +46,7 @@ fun MealScreen(
     if (transferFoodsToGroceryList) {
         val foodsForReconciliation =
             generalVM.filterForReconciliation(
+                groceryList = groceryList,
                 listToAdd = listsToAddToGroceryList
             )
 
@@ -53,8 +57,11 @@ fun MealScreen(
             ) {
                 transferFoodsToGroceryList = false
             }
-            Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
+        } else {
+            transferFoodsToGroceryList = false
         }
+
+        Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT).show()
     }
 
     Column(
@@ -91,9 +98,9 @@ fun MealScreen(
                 MealItem9(
                     meal = meal,
                     mealVM = mealVM,
-                    navToMealDetailsScreen = { navToDetailsScreen(it)},
-                    navToViewDetails = { navToViewDetails(it)},
-                    navToRecipeDetails = { navToRecipeDetails(it) } ,
+                    navToMealDetailsScreen = { navToDetailsScreen(it) },
+                    navToViewDetails = { navToViewDetails(it) },
+                    navToRecipeDetails = { navToRecipeDetails(it) },
                     deleteMeal = {
                         mealVM.deleteMeal(meal)
                         mealVM.deleteSpecificMealWithIngredients(meal.mealId)
