@@ -56,9 +56,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Tabs(
-    meal: Meal,
-    ingredientList: List<Food>,
-    mealInstructions: List<Instruction>,
+    fullMealSet: MealVM.FullMealSet,
     ingredientState: IngredientResponse,
     editSummary: () -> Unit,
     addNewIngredient: (Food?, Long) -> Unit,
@@ -78,8 +76,7 @@ fun Tabs(
             title = "Notes",
             screen = {
                 SummaryScreen(
-                    mealName = meal.name,
-                    notes = meal.notes,
+                    meal = fullMealSet.meal,
                     editSummary = { editSummary() }
                 )
             }),
@@ -87,9 +84,8 @@ fun Tabs(
             title = "Ingredients",
             screen = {
                 IngredientsTabGate(
-                    meal = meal,
+                    fullMealSet = fullMealSet,
                     ingredientState = ingredientState,
-                    ingredientList = ingredientList,
                     addNewIngredient = { ingredient, mealId ->
                         addNewIngredient(
                             ingredient,
@@ -104,7 +100,7 @@ fun Tabs(
             title = "Instructions",
             screen = {
                 InstructionsScreen(
-                    mealInstructions = mealInstructions,
+                    mealInstructions = fullMealSet.instructions,
                     addInstruction = { addInstruction() },
                     deleteInstruction = { deleteInstruction(it) },
                     updateInstruction = { updateInstruction(it) },
@@ -138,8 +134,7 @@ fun Tabs(
 
 @Composable
 fun SummaryScreen(
-    mealName: String,
-    notes: String,
+    meal: Meal,
     editSummary: () -> Unit
 ) {
     Column(
@@ -153,7 +148,7 @@ fun SummaryScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = mealName,
+                text = meal.name,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -167,7 +162,7 @@ fun SummaryScreen(
             )
         }
         Text(
-            text = notes,
+            text = meal.notes,
             modifier = Modifier.verticalScroll(rememberScrollState()),
             fontSize = 14.sp,
         )
@@ -176,9 +171,8 @@ fun SummaryScreen(
 
 @Composable
 fun IngredientsTabGate(
-    meal: Meal,
+    fullMealSet: MealVM.FullMealSet,
     ingredientState: IngredientResponse,
-    ingredientList: List<Food>,
     addNewIngredient: (Food?, Long) -> Unit,
     deleteIngredients: (Food) -> Unit,
     updateIngredient: (Food) -> Unit,
@@ -189,7 +183,7 @@ fun IngredientsTabGate(
 
     if (triggerFood != null) {
         LaunchedEffect(key1 = triggerFood) {
-            addNewIngredient(triggerFood, meal.mealId)
+            addNewIngredient(triggerFood, fullMealSet.meal.mealId)
             triggerFood = null
         }
     }
@@ -198,8 +192,7 @@ fun IngredientsTabGate(
         is IngredientResponse.Error -> ErrorScreen(errorText = ingredientState.getMessage())
         is IngredientResponse.Success, is IngredientResponse.Neutral -> {
             IngredientsTab(
-                meal = meal,
-                ingredientList = ingredientList,
+                fullMealSet = fullMealSet,
                 addIngredient = { triggerFood = it },
                 deleteIngredient = deleteIngredients,
                 updateIngredient = updateIngredient,
@@ -213,8 +206,7 @@ fun IngredientsTabGate(
 
 @Composable
 private fun IngredientsTab(
-    meal: Meal,
-    ingredientList: List<Food>,
+    fullMealSet: MealVM.FullMealSet,
     addIngredient: (Food) -> Unit,
     deleteIngredient: (Food) -> Unit,
     updateIngredient: (Food) -> Unit,
@@ -265,7 +257,7 @@ private fun IngredientsTab(
                             fontSize = 24.sp
                         )
                     ) {
-                        append(" for ${meal.servingSize} servings")
+                        append(" for ${fullMealSet.meal.servingSize} servings")
                     }
                 }
             )
@@ -284,7 +276,7 @@ private fun IngredientsTab(
                 .padding(start = 6.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(items = ingredientList) {
+            items(items = fullMealSet.ingredients) {
                 IngredientItem9(
                     ingredient = it,
                     deleteIngredient = { deleteIngredient(it) },
@@ -402,6 +394,5 @@ fun InstructionsScreen(
 
 enum class MealScreens {
     Add,
-    Edit,
-    View
+    Edit
 }

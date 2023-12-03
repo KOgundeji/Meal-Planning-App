@@ -13,6 +13,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
@@ -22,17 +23,25 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
     BasicRepositoryFunctions {
 
     private val _allGroceryLists = MutableStateFlow<List<GroceryList>>(emptyList())
+    val allGroceryLists = _allGroceryLists.asStateFlow()
+
     private val _visibleGroceryLists = MutableStateFlow<List<GroceryList>>(emptyList())
+
     private val _groceriesOfCustomLists = MutableStateFlow<List<ListWithGroceries>>(emptyList())
+    val groceriesOfCustomLists = _groceriesOfCustomLists.asStateFlow()
+
     private val _gateState = MutableStateFlow<CustomListGateState>(CustomListGateState.Loading)
+    val gateState = _gateState.asStateFlow()
+
     private val _ingredientState =
         MutableStateFlow<IngredientResponse>(IngredientResponse.Neutral)
-
-    val allGroceryLists = _allGroceryLists.asStateFlow()
-    val visibleGroceryLists = _visibleGroceryLists.asStateFlow()
-    val groceriesOfCustomLists = _groceriesOfCustomLists.asStateFlow()
-    val gateState = _gateState.asStateFlow()
     val ingredientState = _ingredientState.asStateFlow()
+
+    private val _filteredCustomLists = MutableStateFlow<List<GroceryList>>(emptyList())
+    val filteredCustomList = _filteredCustomLists.asStateFlow()
+
+    private val _searchWord = MutableStateFlow("")
+    val searchWord = _searchWord.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -63,6 +72,26 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
 
     fun setGateStateToSuccess(groceryList: GroceryList) {
         _gateState.value = CustomListGateState.Success(groceryList = groceryList)
+    }
+
+    fun setSearchWord(searchWord: String) {
+        _searchWord.update { _ -> searchWord }
+        searchForCustomList(searchWord)
+    }
+
+    private fun searchForCustomList(searchWord: String) {
+        _filteredCustomLists.update {
+            if (searchWord != "") {
+                _visibleGroceryLists.value.filter {
+                    it.listName.contains(
+                        searchWord,
+                        ignoreCase = true
+                    )
+                }
+            } else {
+                _visibleGroceryLists.value
+            }
+        }
     }
 
     suspend fun updateFoodList(food: Food?, listId: Long) {

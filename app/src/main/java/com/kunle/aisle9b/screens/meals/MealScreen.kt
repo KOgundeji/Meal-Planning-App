@@ -32,21 +32,16 @@ fun MealScreen(
     navToRecipeDetails: (Int) -> Unit,
 ) {
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
-
     var listsToAddToGroceryList by remember { mutableStateOf(emptyList<Food>()) }
-    val groceryList = remember(key1 = Unit) {
-        generalVM.groceryList.value
-    }
-    var searchWord by remember { mutableStateOf("") }
+
     val context = LocalContext.current
 
-    val mealList = mealVM.visibleMealList.collectAsState().value
-    var filteredMealLists by remember(mealList) { mutableStateOf(mealList) }
+    val searchWord = mealVM.searchWord.collectAsState().value
+    val filteredMealLists = mealVM.filteredMealList.collectAsState().value
 
     if (transferFoodsToGroceryList) {
         val foodsForReconciliation =
             generalVM.filterForReconciliation(
-                groceryList = groceryList,
                 listToAdd = listsToAddToGroceryList
             )
 
@@ -72,17 +67,13 @@ fun MealScreen(
         CustomSearchBar9(
             text = searchWord,
             onValueChange = { string ->
-                searchWord = string
-                filteredMealLists = mealList.filter { meal ->
-                    meal.name.contains(searchWord, ignoreCase = true)
-                }
+                mealVM.setSearchWord(string)
             },
             label = "Search in Meals",
             trailingIcon = {
                 if (searchWord.isNotEmpty()) {
                     IconButton(onClick = {
-                        searchWord = ""
-                        filteredMealLists = mealList
+                        mealVM.setSearchWord("")
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Cancel,

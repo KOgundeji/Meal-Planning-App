@@ -1,6 +1,10 @@
 package com.kunle.aisle9b.screens.groceries
 
 import android.util.Log
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.Food
@@ -13,6 +17,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,12 +30,13 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
     private val _groceryList = MutableStateFlow<List<Grocery>>(emptyList())
     private val _groupedGroceryList = MutableStateFlow<Map<String, List<Grocery>>>(emptyMap())
     private val _namesOfAllFoods = MutableStateFlow<List<String>>(emptyList())
+    private val _suggestions = MutableStateFlow<List<String>>(emptyList())
     val groceryList = _groceryList.asStateFlow()
     val groupedGroceryList = _groupedGroceryList.asStateFlow()
     val namesOfAllFoods = _namesOfAllFoods.asStateFlow()
+    val suggestions = _suggestions.asStateFlow()
 
     init {
-        Log.i("Test", "groceryVM instantiated")
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllGroceries().distinctUntilChanged().collect { groceryItems ->
                 _groceryList.value = groceryItems
@@ -53,6 +61,20 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
                 newCategory = newCategory
             )
         }
+    }
+
+    fun updateAutoComplete(text: String) {
+            Log.i("Test", "updateAutoComplete: text $text ")
+            _suggestions.update { _ ->
+                if (text != "") {
+                    _namesOfAllFoods.value.filter { string ->
+                        string.contains(text, ignoreCase = true) && text != string
+                    }
+                        .take(3)
+                } else {
+                    emptyList()
+                }
+            }
     }
 
     override suspend fun insertGrocery(grocery: Grocery) {

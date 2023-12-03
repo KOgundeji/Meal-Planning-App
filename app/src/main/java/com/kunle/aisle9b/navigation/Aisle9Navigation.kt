@@ -4,12 +4,14 @@ package com.kunle.aisle9b.navigation
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.DinnerDining
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +33,8 @@ import com.kunle.aisle9b.screens.meals.EditMealDetailsScreen
 import com.kunle.aisle9b.screens.meals.MealScreen
 import com.kunle.aisle9b.screens.meals.MealVM
 import com.kunle.aisle9b.screens.meals.ViewMealDetailsScreen
+import com.kunle.aisle9b.screens.planning.PlanningScreen
+import com.kunle.aisle9b.screens.planning.PlanningVM
 import com.kunle.aisle9b.screens.recipes.RecipeDetailsScreen
 import com.kunle.aisle9b.screens.recipes.RecipeScreenGate
 import com.kunle.aisle9b.screens.recipes.RecipesVM
@@ -46,6 +50,7 @@ fun Aisle9Navigation(
     val mealVM = hiltViewModel<MealVM>()
     val recipesVM = hiltViewModel<RecipesVM>()
     val customListVM = hiltViewModel<CustomListVM>()
+    val planningVM = hiltViewModel<PlanningVM>()
 
     NavHost(
         navController = navController,
@@ -64,6 +69,14 @@ fun Aisle9Navigation(
                 generalVM = generalVM,
                 navToCustomLists = { navController.navigate(GroceryScreens.CustomListScreen.name) },
                 navToMealScreen = { navController.navigate(GroceryScreens.MealScreen.name) }
+            )
+        }
+        composable(route = GroceryScreens.Planning.name) {
+            generalVM.setTopBarOption(TopBarOptions.Default)
+            generalVM.setClickSource(GroceryScreens.Planning)
+
+            PlanningScreen(
+                viewModel = mealVM
             )
         }
         composable(route = GroceryScreens.CustomListScreen.name) {
@@ -147,7 +160,6 @@ fun Aisle9Navigation(
             generalVM.setTopBarOption(TopBarOptions.Back)
             generalVM.setClickSource(GroceryScreens.AddNewCustomListScreen)
 
-            Log.d("Test", "listIndex: ${backStackEntry.arguments?.getLong("listIndex")} ")
             PreMadeListScreenGate(
                 listId = backStackEntry.arguments?.getLong("listIndex"),
                 customListVM = customListVM,
@@ -213,7 +225,7 @@ fun BottomNavigationBar9(
 ) {
     val backStackEntry = navController.currentBackStackEntryAsState()
 
-    screenList[2].name = mealsName
+    screenList[3].name = mealsName
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -258,6 +270,11 @@ val screenList = listOf(
         name = GroceryScreens.headerTitle(GroceryScreens.GroceryListScreen),
         route = GroceryScreens.GroceryListScreen.name,
         icon = Icons.Filled.Checklist
+    ),
+    BottomNavItem(
+        name = "Planning",
+        route = GroceryScreens.Planning.name,
+        icon = Icons.Filled.CalendarMonth
     ),
     BottomNavItem(
         name = "Saved Lists",

@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.kunle.aisle9b.navigation.Aisle9Navigation
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
@@ -35,38 +36,30 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val generalVM: GeneralVM by viewModels()
 
-            ShoppingAppScaffold(navController, generalVM) { padVal ->
-                Aisle9Navigation(
-                    modifier = Modifier.padding(padVal),
-                    navController = navController,
-                    generalVM = generalVM
-                )
-            }
+            ShoppingAppScaffold(navController, generalVM)
         }
     }
 }
 
 @Composable
 fun ShoppingAppScaffold(
-    navController: NavController,
-    generalVM: GeneralVM,
-    appNavigation: @Composable (PaddingValues) -> Unit
+    navController: NavHostController,
+    generalVM: GeneralVM
 ) {
     val source = generalVM.source.collectAsState().value
-
+    val topBarState = generalVM.topBar.collectAsState().value
+    val numOfMeals = generalVM.numOfMeals.collectAsState().value
+    val groceryCounter = generalVM.groceryBadgeCount.collectAsState().value
     val darkMode = generalVM.darkModeSetting ?: generalVM.setDarkModeSetting(isSystemInDarkTheme())
 
     Aisle9bTheme(darkTheme = darkMode) {
         Scaffold(
             topBar = {
-                when (generalVM.topBar.collectAsState().value) {
+                when (topBarState) {
                     TopBarOptions.Back ->
-                        BackTopAppBar(
-                            source = source
-                        ) {
+                        BackTopAppBar(source = source) {
                             navController.popBackStack()
                             generalVM.setTopBarOption(TopBarOptions.Default)
-                            generalVM.cleanListsInDatabase()
                         }
 
                     TopBarOptions.Default ->
@@ -84,6 +77,7 @@ fun ShoppingAppScaffold(
                             navController.navigate(GroceryScreens.AddNewCustomListScreen.name + "/${item}")
                         }
                     }
+
                     GroceryScreens.MealScreen ->
                         AddFAB {
                             navController.navigate(GroceryScreens.AddNewMealScreen.name)
@@ -93,9 +87,7 @@ fun ShoppingAppScaffold(
                         SaveFAB { generalVM.turnNewMealVisible() }
 
                     GroceryScreens.RecipeDetailsScreen ->
-                        SaveFAB {
-                            generalVM.saveAPIMealonFABClick()
-                        }
+                        SaveFAB { generalVM.saveAPIMealonFABClick() }
 
                     else -> {}
 
@@ -103,19 +95,21 @@ fun ShoppingAppScaffold(
             },
             bottomBar = {
                 BottomNavigationBar9(
-                    mealsName = "Meals (${generalVM.numOfMeals.collectAsState().value})",
+                    mealsName = "Meals (${numOfMeals})",
                     navController = navController,
-                    badgeCount = generalVM.groceryBadgeCount.collectAsState().value,
-                    onItemClick = {
-                        navController.navigate(it.route)
-                    })
+                    badgeCount = groceryCounter,
+                    onItemClick = { navController.navigate(it.route) })
             })
-        {
+        { paddingValues ->
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                appNavigation(it)
+                Aisle9Navigation(
+                    modifier = Modifier.padding(paddingValues),
+                    navController = navController,
+                    generalVM = generalVM
+                )
             }
         }
     }

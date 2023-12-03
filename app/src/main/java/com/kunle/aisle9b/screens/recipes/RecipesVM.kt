@@ -18,12 +18,14 @@ import javax.inject.Inject
 class RecipesVM @Inject constructor(private val repository: RecipeRepository) : ViewModel() {
 
     private val _searchState = MutableStateFlow<ApiResponseSearch>(ApiResponseSearch.Neutral)
+    val searchState = _searchState.asStateFlow()
+
     private val _retrievedRecipeState =
         MutableStateFlow<ApiResponseRecipe>(ApiResponseRecipe.Neutral)
+    val retrievedRecipeState = _retrievedRecipeState.asStateFlow()
+
     private val _instructionsState =
         MutableStateFlow<ApiResponseInstructions>(ApiResponseInstructions.Loading)
-    val searchState = _searchState.asStateFlow()
-    val retrievedRecipeState = _retrievedRecipeState.asStateFlow()
     val instructions = _instructionsState.asStateFlow()
 
     suspend fun getRecipe(id: Int) {

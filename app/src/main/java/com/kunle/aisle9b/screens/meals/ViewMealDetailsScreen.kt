@@ -44,12 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Instruction
-import com.kunle.aisle9b.models.MealWithIngredients
 import com.kunle.aisle9b.models.TabItem
-import com.kunle.aisle9b.navigation.GroceryScreens
-import com.kunle.aisle9b.screens.GeneralVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -60,17 +56,11 @@ fun ViewMealDetailsScreen(
     mealVM: MealVM = hiltViewModel(),
 ) {
     if (mealId != null) {
-        val mwi = mealVM.mealsWithIngredients.collectAsState().value.find { it.meal.mealId == mealId }
-        val mealInstructions = mealVM.instructions.collectAsState().value
-            .filter {
-                it.mealId == mwi!!.meal.mealId
-            }
-            .sortedBy {
-                it.position
-            }
+        mealVM.setMealId(mealId)
+        val fullMealSet = mealVM.fullMeal.collectAsState().value
 
         Column(modifier = modifier.fillMaxSize()) {
-            if (mwi!!.meal.mealPic == null) {
+            if (fullMealSet.meal.mealPic == null) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,37 +93,34 @@ fun ViewMealDetailsScreen(
                 ) {
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
-                        model = mwi.meal.mealPic,
+                        model = fullMealSet.meal.mealPic,
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         alignment = Alignment.Center
                     )
                 }
             }
-            StaticTabs(mwi = mwi, mealInstructions = mealInstructions)
+            StaticTabs(fms = fullMealSet)
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun StaticTabs(
-    mwi: MealWithIngredients,
-    mealInstructions: List<Instruction>
-) {
+fun StaticTabs(fms: MealVM.FullMealSet) {
     val pagerState = rememberPagerState { 4 }
     val coroutineScope = rememberCoroutineScope()
 
     val tabLabels = listOf(
         TabItem(
             title = "Notes",
-            screen = { StaticSummaryScreen(mealName = mwi.meal.name, notes = mwi.meal.notes) }),
+            screen = { StaticSummaryScreen(mealName = fms.meal.name, notes = fms.meal.notes) }),
         TabItem(
             title = "Ingredients",
-            screen = { StaticIngredientsTab(mealAndIngredients = mwi) }),
+            screen = { StaticIngredientsTab(fullMealSet = fms) }),
         TabItem(
             title = "Instructions",
-            screen = { StaticInstructionsScreen(mealInstructions = mealInstructions) }),
+            screen = { StaticInstructionsScreen(mealInstructions = fms.instructions) }),
     )
 
     TabRow(
@@ -184,7 +171,7 @@ fun StaticSummaryScreen(mealName: String, notes: String) {
 }
 
 @Composable
-fun StaticIngredientsTab(mealAndIngredients: MealWithIngredients) {
+fun StaticIngredientsTab(fullMealSet: MealVM.FullMealSet) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -206,7 +193,7 @@ fun StaticIngredientsTab(mealAndIngredients: MealWithIngredients) {
                             fontSize = 20.sp
                         )
                     ) {
-                        append(" for ${mealAndIngredients.meal.servingSize} servings")
+                        append(" for ${fullMealSet.meal.servingSize} servings")
                     }
                 }
             )
@@ -217,8 +204,8 @@ fun StaticIngredientsTab(mealAndIngredients: MealWithIngredients) {
                 .padding(start = 6.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(items = mealAndIngredients.ingredients) {
-                Text(text = "${it.name}: ${it.quantity}", fontSize = 14.sp)
+            items(items = fullMealSet.ingredients) {
+                Text(text = "${it.name} (${it.quantity})", fontSize = 14.sp)
             }
         }
     }

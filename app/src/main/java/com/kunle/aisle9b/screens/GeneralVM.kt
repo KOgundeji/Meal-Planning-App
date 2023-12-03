@@ -1,6 +1,7 @@
 package com.kunle.aisle9b.screens
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -172,19 +173,14 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
         }
     }
 
-    fun filterForReconciliation(
-        groceryList: List<Grocery>,
-        listToAdd: List<Food>
-    ): Map<String, List<Grocery>> {
+    fun filterForReconciliation(listToAdd: List<Food>): Map<String, List<Grocery>> {
         val ingredientMap: MutableMap<String, MutableList<Grocery>> = mutableMapOf()
         val filteredIngredientMap: MutableMap<String, MutableList<Grocery>> = mutableMapOf()
 
-        Log.i("Test", "grocerylist: $groceryList ")
-        for (grocery in groceryList) {
+        for (grocery in _groceryList.value) {
             ingredientMap[grocery.name] = mutableListOf(grocery)
         }
 
-        Log.i("Test", "listtoadd: $listToAdd ")
         for (food in listToAdd) {
             if (ingredientMap.containsKey(food.name)) {
                 ingredientMap[food.name]!!.add(food.foodToGrocery())
@@ -193,11 +189,10 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
             }
         }
 
-        Log.i("Test", "ingredient map: $ingredientMap ")
         ingredientMap.forEach { (key, value) ->
             if (value.size > 1) {
                 filteredIngredientMap[key] = value
-            } else if (!groceryList.contains(value[0])) {
+            } else if (!_groceryList.value.contains(value[0])) {
                 viewModelScope.launch { insertGrocery(value[0]) }
             }
         }

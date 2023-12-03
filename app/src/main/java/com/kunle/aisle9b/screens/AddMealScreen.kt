@@ -51,8 +51,7 @@ fun AddMealScreenGate(
             AddMealScreen(
                 modifier = modifier,
                 createdMeal = retrievedMealState.meal,
-                mealVM = mealVM,
-                generalVM = generalVM
+                mealVM = mealVM
             )
         }
     }
@@ -64,37 +63,19 @@ fun AddMealScreen(
     modifier: Modifier = Modifier,
     createdMeal: Meal,
     mealVM: MealVM,
-    generalVM: GeneralVM
 ) {
-    val meal = mealVM.allMeals.collectAsState().value.find { it.mealId == createdMeal.mealId }
+    if (createdMeal.mealId != 0L) {
+        mealVM.setMealId(createdMeal.mealId)
+        val fullMealSet = mealVM.fullMeal.collectAsState().value
+        val mealId = fullMealSet.meal.mealId
 
-    if (meal != null) {
-        generalVM.setNewMealToBeVisible(meal)
+        mealVM.upsertMeal(fullMealSet.meal.copy(visible = true))
+        val newInstructionPosition = mealVM.newInstructionNumber.intValue
+
         val scope = rememberCoroutineScope()
-        val mealId = meal.mealId
 
         //states
         val ingredientState by mealVM.addedIngredientState.collectAsState()
-        val instructionsList by mealVM.instructions.collectAsState()
-        val mwiList by mealVM.mealsWithIngredients.collectAsState()
-
-        val mealInstructions = remember(instructionsList) {
-            instructionsList
-                .filter { it.mealId == mealId }
-                .sortedBy { it.position }
-        }
-
-        val ingredientList = remember(mwiList) {
-            mwiList.first { it.meal.mealId == mealId }
-                .ingredients
-        }
-
-        val newInstructionPosition =
-            if (mealInstructions.isNotEmpty()) {
-                mealInstructions.last().position + 1
-            } else {
-                1
-            }
 
         var editSummary by remember { mutableStateOf(false) }
         var modifyServingSize by remember { mutableStateOf(false) }
@@ -135,7 +116,7 @@ fun AddMealScreen(
 
         if (editSummary) {
             EditSummaryDialog9(
-                meal = meal,
+                meal = fullMealSet.meal,
                 updateMeal = { name, notes ->
                     mealVM.updateName(MealNameUpdate(mealId = mealId, name = name))
                     mealVM.updateNotes(MealNotesUpdate(mealId = mealId, notes = notes))
@@ -172,7 +153,7 @@ fun AddMealScreen(
         }
 
         Column(modifier = modifier.fillMaxSize()) {
-            if (meal.mealPic == null) {
+            if (fullMealSet.meal.mealPic == null) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -219,9 +200,7 @@ fun AddMealScreen(
                 }
             }
             Tabs(
-                meal = meal,
-                ingredientList = ingredientList,
-                mealInstructions = mealInstructions,
+                fullMealSet = fullMealSet,
                 ingredientState = ingredientState,
                 editSummary = { editSummary = true },
                 addNewIngredient = { ingredient, mealId ->

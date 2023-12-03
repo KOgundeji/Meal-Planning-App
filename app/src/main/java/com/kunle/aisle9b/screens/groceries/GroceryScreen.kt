@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,7 +68,6 @@ fun GroceryScreen(
     navToCustomLists: ()-> Unit,
     navToMealScreen: ()-> Unit
 ) {
-    val namesOfAllFoods = groceryVM.namesOfAllFoods.collectAsState().value
     val groceryList = groceryVM.groceryList.collectAsState().value
     val groupedGroceryList = groceryVM.groupedGroceryList.collectAsState().value
     val categoriesOn = generalVM.categoriesSetting
@@ -85,7 +85,7 @@ fun GroceryScreen(
             .fillMaxSize()
             .semantics { contentDescription = R.string.grocery_screen.toString() }
     ) {
-        GroceryInputTextField(namesOfAllFoods) { name, quantity ->
+        GroceryInputTextField(groceryVM) { name, quantity ->
             coroutineScope.launch {
                 groceryVM.insertGrocery(Grocery(name = name, quantity = quantity))
             }
@@ -194,7 +194,7 @@ fun GroceryScreen(
 }
 
 @Composable
-fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (String, String) -> Unit) {
+fun GroceryInputTextField(viewModel: GroceryVM, onAddGrocery: (String, String) -> Unit) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     var item by remember { mutableStateOf("") }
@@ -209,10 +209,9 @@ fun GroceryInputTextField(foodList: List<String>, onAddGrocery: (String, String)
     ) {
         Box(modifier = Modifier.weight(.7f)) {
             CustomAutoComplete9(
-                modifier = Modifier.semantics { contentDescription = "Grocery name" },
+                viewModel = viewModel,
                 value = item,
                 setValue = { item = it },
-                originalList = foodList,
                 label = "Add grocery"
             )
         }

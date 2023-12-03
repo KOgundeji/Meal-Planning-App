@@ -1,6 +1,6 @@
 package com.kunle.aisle9b.screens.meals
 
-import android.util.Log
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kunle.aisle9b.models.*
@@ -12,8 +12,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,29 +26,68 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     BasicRepositoryFunctions {
 
     private val _visibleMealList = MutableStateFlow<List<Meal>>(emptyList())
+    val visibleMealList = _visibleMealList.asStateFlow()
+
     private val _allMeals = MutableStateFlow<List<Meal>>(emptyList())
+    val allMeals = _allMeals.asStateFlow()
+
+    private val _filteredMealList = MutableStateFlow<List<Meal>>(emptyList())
+    val filteredMealList = _filteredMealList.asStateFlow()
+
+    private val _searchWord = MutableStateFlow("")
+    val searchWord = _searchWord.asStateFlow()
+
     private val _mealsWithIngredients = MutableStateFlow<List<MealWithIngredients>>(emptyList())
+    val mealsWithIngredients = _mealsWithIngredients.asStateFlow()
+
     private val _instructions = MutableStateFlow<List<Instruction>>(emptyList())
+    val instructions = _instructions.asStateFlow()
+
     private var _mealId = MutableStateFlow<Long>(-1)
+    val mealId = _mealId.asStateFlow()
+
     private var _createdNewMealState = MutableStateFlow<MealResponse>(MealResponse.Loading)
     private var _editIngredientScreenListState =
         MutableStateFlow<IngredientResponse>(IngredientResponse.Neutral)
     private var _addIngredientScreenListState =
         MutableStateFlow<IngredientResponse>(IngredientResponse.Neutral)
-    val visibleMealList = _visibleMealList.asStateFlow()
-    val allMeals = _allMeals.asStateFlow()
-    val mealsWithIngredients = _mealsWithIngredients.asStateFlow()
-    val instructions = _instructions.asStateFlow()
-    val mealId = _mealId.asStateFlow()
     val createdNewMealState = _createdNewMealState.asStateFlow()
     val editedIngredientState = _editIngredientScreenListState.asStateFlow()
     val addedIngredientState = _addIngredientScreenListState.asStateFlow()
+
+
+    private val _viewMealId = MutableStateFlow(0L)
+    var newInstructionNumber = mutableIntStateOf(0)
+
+    val fullMeal =
+        combine(_viewMealId, _mealsWithIngredients, instructions) { mealId, mwi, instructions ->
+            val yum = mwi.firstOrNull { it.meal.mealId == mealId }
+            val directions = instructions
+                .filter { it.mealId == mealId }
+                .sortedBy { it.position }
+
+            if (directions.isNotEmpty()) {
+                newInstructionNumber.intValue = directions.last().position + 1
+            } else {
+                newInstructionNumber.intValue = 1
+            }
+            if (yum != null) {
+                FullMealSet(
+                    meal = yum.meal,
+                    ingredients = yum.ingredients,
+                    instructions = directions
+                )
+            } else {
+                FullMealSet.emptyMealSet()
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), FullMealSet.emptyMealSet())
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getAllMeals().distinctUntilChanged().collect { meals ->
                 _allMeals.value = meals
                 _visibleMealList.value = meals.filter { it.visible }
+                _filteredMealList.value = _visibleMealList.value
             }
         }
 
@@ -61,12 +104,37 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         }
     }
 
+    fun setMealId(mealId: Long) {
+        _viewMealId.update { mealId }
+    }
+
+    fun setSearchWord(searchWord: String) {
+        _searchWord.update { _ -> searchWord }
+        searchForMeal(searchWord)
+    }
+
+    private fun searchForMeal(searchWord: String) {
+        _filteredMealList.update {
+            if (searchWord != "") {
+                _visibleMealList.value.filter {
+                    it.name.contains(
+                        searchWord,
+                        ignoreCase = true
+                    )
+                }
+            } else {
+                _visibleMealList.value
+            }
+        }
+    }
+
     suspend fun getBrandNewMeal() {
         _createdNewMealState.value = MealResponse.Loading
         viewModelScope.launch {
             try {
                 val mealId = repository.insertMeal(Meal.createBlank())
-                _createdNewMealState.value = MealResponse.Success(meal = Meal.createBlank(mealId))
+                _createdNewMealState.value =
+                    MealResponse.Success(meal = Meal.createBlank(mealId))
             } catch (e: Exception) {
                 _createdNewMealState.value = MealResponse.Error(exception = e)
             }
@@ -126,12 +194,6 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         }
     }
 
-    fun insertMeal(meal: Meal) { //not used anymore. Only tests call this method
-        viewModelScope.launch {
-            _mealId.value = repository.insertMeal(meal)
-        }
-    }
-
     fun upsertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }
     fun deleteMeal(meal: Meal) = viewModelScope.launch { repository.deleteMeal(meal) }
     fun updateName(obj: MealNameUpdate) = viewModelScope.launch { repository.updateName(obj) }
@@ -139,7 +201,9 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     fun updateServingSize(obj: MealServingSizeUpdate) =
         viewModelScope.launch { repository.updateServingSize(obj) }
 
-    fun updateNotes(obj: MealNotesUpdate) = viewModelScope.launch { repository.updateNotes(obj) }
+    fun updateNotes(obj: MealNotesUpdate) =
+        viewModelScope.launch { repository.updateNotes(obj) }
+
     fun updateVisibility(obj: MealVisibilityUpdate) =
         viewModelScope.launch { repository.updateVisibility(obj) }
 
@@ -189,6 +253,46 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
 
     override suspend fun deleteGroceryByName(name: String) {
         viewModelScope.launch { repository.deleteGroceryByName(name) }
+    }
+
+    class FullMealSetFlow {
+        private val _meal = MutableStateFlow(Meal.createBlank())
+        val meal = _meal.asStateFlow()
+        private val _ingredients = MutableStateFlow<List<Food>>(emptyList())
+        val ingredients = _ingredients.asStateFlow()
+        private val _instructions = MutableStateFlow<List<Instruction>>(emptyList())
+        val instructions = _instructions.asStateFlow()
+
+        fun emptyMealSet(): FullMealSetFlow {
+            return FullMealSetFlow()
+        }
+
+        fun updateMeal(meal: Meal) {
+            _meal.update { meal }
+        }
+
+        fun updateIngredients(ingredients: List<Food>) {
+            _ingredients.update { ingredients }
+        }
+
+        fun updateInstructions(instructions: List<Instruction>) {
+            _instructions.update { instructions }
+        }
+    }
+    data class FullMealSet(
+        val meal: Meal,
+        val ingredients: List<Food>,
+        val instructions: List<Instruction>
+    ) {
+        companion object {
+            fun emptyMealSet(): FullMealSet {
+                return FullMealSet(
+                    meal = Meal.createBlank(),
+                    ingredients = emptyList(),
+                    instructions = emptyList()
+                )
+            }
+        }
     }
 
 
