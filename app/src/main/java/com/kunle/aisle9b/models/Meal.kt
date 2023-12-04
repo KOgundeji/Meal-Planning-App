@@ -13,14 +13,16 @@ data class Meal(
     val mealPic: Uri? = Uri.EMPTY,
     val notes: String,
     val apiID: Int = -1,
+    val apiImageURL: String? = null,
     val visible: Boolean = true
 ) {
-    constructor(name: String, servingSize: String, apiID: Int) :
+    constructor(name: String, servingSize: String, apiID: Int, apiImageURL: String?) :
             this(
                 name = name,
                 servingSize = servingSize,
                 notes = "",
-                apiID = apiID
+                apiID = apiID,
+                apiImageURL = apiImageURL
             )
 
     constructor(
@@ -41,13 +43,14 @@ data class Meal(
                 visible = visible
             )
 
-    constructor(mealId: Long, name: String, servingSize: String, apiID: Int) :
+    constructor(mealId: Long, name: String, servingSize: String, apiID: Int, apiImageURL: String?) :
             this(
                 mealId = mealId,
                 name = name,
                 servingSize = servingSize,
                 notes = "",
-                apiID = apiID
+                apiID = apiID,
+                apiImageURL = apiImageURL
             )
 
     companion object {
@@ -62,15 +65,7 @@ data class Meal(
         }
 
         fun makeNewMealVisible(meal: Meal): Meal {
-            return Meal(
-                mealId = meal.mealId,
-                name = meal.name,
-                servingSize = meal.servingSize,
-                mealPic = meal.mealPic,
-                notes = meal.notes,
-                visible = true
-            )
-
+            return meal.copy(visible = true)
         }
     }
 }

@@ -87,10 +87,6 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     private fun upsertSettings(settings: AppSettings) =
         viewModelScope.launch { repository.upsertSettings(settings) }
 
-    fun setNewMealToBeVisible(meal: Meal) {
-        newMealToBeSaved.value = meal
-    }
-
     fun turnNewMealVisible() {
         if (newMealToBeSaved.value != null) {
             viewModelScope.launch {
@@ -196,7 +192,6 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
                 viewModelScope.launch { insertGrocery(value[0]) }
             }
         }
-        Log.i("Test", "filtered ingredient map: $filteredIngredientMap ")
         return filteredIngredientMap
     }
 }

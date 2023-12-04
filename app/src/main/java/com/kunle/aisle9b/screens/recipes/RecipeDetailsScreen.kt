@@ -78,7 +78,7 @@ private fun DetailsScreen(
     instructions: Instructions
 ) {
     generalVM.apiMealToBeSaved.value =
-        Meal(name = recipe.title, apiID = recipe.id, servingSize = recipe.servings.toString())
+        Meal(name = recipe.title, apiID = recipe.id, servingSize = recipe.servings.toString(), apiImageURL = recipe.image)
 
     Column(modifier = modifier.fillMaxSize()) {
         Box(

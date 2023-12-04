@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.screens.meals
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,6 +25,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MealVM @Inject constructor(private val repository: MealRepository) : ViewModel(),
     BasicRepositoryFunctions {
+
+    private val _viewListOption = MutableStateFlow(MealListOptions.List)
+    val viewListOption = _viewListOption.asStateFlow()
 
     private val _visibleMealList = MutableStateFlow<List<Meal>>(emptyList())
     val visibleMealList = _visibleMealList.asStateFlow()
@@ -194,6 +198,14 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         }
     }
 
+    fun findMWI(mealId: Long): MealWithIngredients? {
+        return _mealsWithIngredients.value.firstOrNull { it.meal.mealId == mealId }
+    }
+
+    fun setViewMealListOption(option: MealListOptions) {
+        _viewListOption.update { option }
+    }
+
     fun upsertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }
     fun deleteMeal(meal: Meal) = viewModelScope.launch { repository.deleteMeal(meal) }
     fun updateName(obj: MealNameUpdate) = viewModelScope.launch { repository.updateName(obj) }
@@ -255,30 +267,6 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
         viewModelScope.launch { repository.deleteGroceryByName(name) }
     }
 
-    class FullMealSetFlow {
-        private val _meal = MutableStateFlow(Meal.createBlank())
-        val meal = _meal.asStateFlow()
-        private val _ingredients = MutableStateFlow<List<Food>>(emptyList())
-        val ingredients = _ingredients.asStateFlow()
-        private val _instructions = MutableStateFlow<List<Instruction>>(emptyList())
-        val instructions = _instructions.asStateFlow()
-
-        fun emptyMealSet(): FullMealSetFlow {
-            return FullMealSetFlow()
-        }
-
-        fun updateMeal(meal: Meal) {
-            _meal.update { meal }
-        }
-
-        fun updateIngredients(ingredients: List<Food>) {
-            _ingredients.update { ingredients }
-        }
-
-        fun updateInstructions(instructions: List<Instruction>) {
-            _instructions.update { instructions }
-        }
-    }
     data class FullMealSet(
         val meal: Meal,
         val ingredients: List<Food>,
