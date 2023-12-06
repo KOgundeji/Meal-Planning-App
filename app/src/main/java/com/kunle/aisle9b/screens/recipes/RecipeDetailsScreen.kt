@@ -1,20 +1,36 @@
 package com.kunle.aisle9b.screens.recipes
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -23,20 +39,16 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.api.apiModels.ApiResponseInstructions
 import com.kunle.aisle9b.api.apiModels.ApiResponseRecipe
-import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
 import com.kunle.aisle9b.api.apiModels.recipeModels.Recipe
 import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.models.TabItem
-import com.kunle.aisle9b.navigation.GroceryScreens
+import com.kunle.aisle9b.models.apiModels.instructionModels.Instructions
 import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.screens.utilScreens.ErrorScreen
 import com.kunle.aisle9b.screens.utilScreens.LoadingScreen
-import com.kunle.aisle9b.templates.headers.IngredientHeader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -229,6 +241,31 @@ fun InstructionsScreen(instructions: Instructions) {
             }
         }
     }
+}
+
+@Composable
+fun IngredientHeader(string: String) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RectangleShape
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 2.dp)
+                .height(35.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = string,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+
 }
 
 

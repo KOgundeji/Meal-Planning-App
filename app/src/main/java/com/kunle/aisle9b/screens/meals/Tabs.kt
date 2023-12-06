@@ -158,7 +158,7 @@ fun SummaryScreen(
                     .clickable { editSummary() },
                 imageVector = Icons.Filled.Edit,
                 contentDescription = "Edit Icon",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
         Text(
@@ -267,7 +267,7 @@ private fun IngredientsTab(
                     .clickable { addNewIngredient = true },
                 imageVector = Icons.Filled.AddCircle,
                 contentDescription = "Add Icon",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
         LazyColumn(

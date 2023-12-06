@@ -28,12 +28,12 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
     BasicRepositoryFunctions {
 
     private val _groceryList = MutableStateFlow<List<Grocery>>(emptyList())
-    private val _groupedGroceryList = MutableStateFlow<Map<String, List<Grocery>>>(emptyMap())
-    private val _namesOfAllFoods = MutableStateFlow<List<String>>(emptyList())
-    private val _suggestions = MutableStateFlow<List<String>>(emptyList())
     val groceryList = _groceryList.asStateFlow()
+    private val _groupedGroceryList = MutableStateFlow<Map<String, List<Grocery>>>(emptyMap())
     val groupedGroceryList = _groupedGroceryList.asStateFlow()
+    private val _namesOfAllFoods = MutableStateFlow<List<String>>(emptyList())
     val namesOfAllFoods = _namesOfAllFoods.asStateFlow()
+    private val _suggestions = MutableStateFlow<List<String>>(emptyList())
     val suggestions = _suggestions.asStateFlow()
 
     init {
@@ -64,7 +64,6 @@ class GroceryVM @Inject constructor(private val repository: GroceryRepository) :
     }
 
     fun updateAutoComplete(text: String) {
-            Log.i("Test", "updateAutoComplete: text $text ")
             _suggestions.update { _ ->
                 if (text != "") {
                     _namesOfAllFoods.value.filter { string ->

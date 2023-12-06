@@ -31,7 +31,7 @@ fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
                 modifier = Modifier.menuAnchor(),
                 label = { Text(text = "Select Category") },
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer),
+                    focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer),
                 shape = RectangleShape
             )
             ExposedDropdownMenu(

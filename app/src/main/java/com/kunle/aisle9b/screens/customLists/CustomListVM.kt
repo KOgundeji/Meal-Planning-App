@@ -48,6 +48,7 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
             repository.getAllLists().distinctUntilChanged().collect { lists ->
                 _allGroceryLists.value = lists
                 _visibleGroceryLists.value = lists.filter { it.visible }
+                _filteredCustomLists.value = _visibleGroceryLists.value
             }
         }
 

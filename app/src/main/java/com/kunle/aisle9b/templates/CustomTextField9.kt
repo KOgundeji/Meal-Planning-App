@@ -24,7 +24,8 @@ fun CustomTextField9(
     readOnly: Boolean = false,
     trailingIcon: @Composable () -> Unit = {},
     textStyle: TextStyle = TextStyle(),
-    keyboardOptions: KeyboardOptions = KeyboardOptions()
+    keyboardOptions: KeyboardOptions = KeyboardOptions(),
+    colors: TextFieldColors = TextFieldDefaults.colors()
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -48,14 +49,7 @@ fun CustomTextField9(
             label = { Text(text = label) },
             trailingIcon = trailingIcon,
             shape = RoundedCornerShape(3.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
+            colors = colors,
             contentPadding = PaddingValues(horizontal = 15.dp),
         )
     }

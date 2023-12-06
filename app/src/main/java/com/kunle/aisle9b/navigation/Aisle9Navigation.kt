@@ -3,6 +3,8 @@ package com.kunle.aisle9b.navigation
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Checklist
@@ -14,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -230,7 +234,7 @@ fun BottomNavigationBar9(
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        tonalElevation = 5.dp
+        tonalElevation = 0.dp,
     ) {
         screenList.forEach { item ->
             val selected = item.route == backStackEntry.value?.destination?.route
@@ -238,7 +242,7 @@ fun BottomNavigationBar9(
             NavigationBarItem(
                 selected = selected,
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                    indicatorColor = MaterialTheme.colorScheme.surface,
                     selectedIconColor = MaterialTheme.colorScheme.primary
                 ),
                 onClick = { onItemClick(item) },
@@ -253,12 +257,21 @@ fun BottomNavigationBar9(
                                     )
                                 }
                             }) {
-                                Icon(imageVector = item.icon, contentDescription = item.name)
+                                Icon(imageVector = item.icon, contentDescription = item.name, modifier = Modifier.size(30.dp))
                             }
                         } else {
-                            Icon(imageVector = item.icon, contentDescription = item.name)
+                            Icon(imageVector = item.icon, contentDescription = item.name, modifier = Modifier.size(30.dp))
                         }
-                        Text(text = item.name, textAlign = TextAlign.Center, fontSize = 11.sp)
+                        Text(
+                            text = item.name,
+                            textAlign = TextAlign.Center,
+                            fontSize = 11.sp,
+                            fontWeight = if (selected) {
+                                FontWeight.ExtraBold
+                            } else {
+                                null
+                            }
+                        )
                     }
                 })
         }
@@ -267,7 +280,7 @@ fun BottomNavigationBar9(
 
 val screenList = listOf(
     BottomNavItem(
-        name = GroceryScreens.headerTitle(GroceryScreens.GroceryListScreen),
+        name = "Groceries",
         route = GroceryScreens.GroceryListScreen.name,
         icon = Icons.Filled.Checklist
     ),
@@ -277,7 +290,7 @@ val screenList = listOf(
         icon = Icons.Filled.CalendarMonth
     ),
     BottomNavItem(
-        name = "Saved Lists",
+        name = "Lists",
         route = GroceryScreens.CustomListScreen.name,
         icon = Icons.Filled.PlaylistAdd
     ),
@@ -287,7 +300,7 @@ val screenList = listOf(
         icon = Icons.Filled.DinnerDining
     ),
     BottomNavItem(
-        name = GroceryScreens.headerTitle(GroceryScreens.RecipeScreen),
+        name = "Recipes",
         route = GroceryScreens.RecipeScreen.name,
         icon = Icons.Filled.MenuBook
     )

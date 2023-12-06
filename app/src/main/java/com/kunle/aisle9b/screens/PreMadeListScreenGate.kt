@@ -136,7 +136,8 @@ private fun PreMadeListScreen(
                     Text(
                         text = list?.listName ?: "No Name",
                         fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Icon(
                         modifier = Modifier
@@ -144,7 +145,7 @@ private fun PreMadeListScreen(
                             .clickable { showChangeName = true },
                         imageVector = Icons.Filled.Edit,
                         contentDescription = "Edit Icon",
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Row(
@@ -155,8 +156,8 @@ private fun PreMadeListScreen(
                         onClick = { showAddGroceryDialog = true },
                         modifier = Modifier.width(125.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
                         )
                     ) {
                         Icon(
@@ -172,8 +173,8 @@ private fun PreMadeListScreen(
                         },
                         modifier = Modifier.width(125.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
                         )
                     ) {
                         Icon(

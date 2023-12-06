@@ -1,10 +1,19 @@
 package com.kunle.aisle9b.screens.meals
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kunle.aisle9b.models.*
+import com.kunle.aisle9b.models.Food
+import com.kunle.aisle9b.models.Grocery
+import com.kunle.aisle9b.models.Instruction
+import com.kunle.aisle9b.models.Meal
+import com.kunle.aisle9b.models.MealFoodMap
+import com.kunle.aisle9b.models.MealNameUpdate
+import com.kunle.aisle9b.models.MealNotesUpdate
+import com.kunle.aisle9b.models.MealPicUpdate
+import com.kunle.aisle9b.models.MealServingSizeUpdate
+import com.kunle.aisle9b.models.MealVisibilityUpdate
+import com.kunle.aisle9b.models.MealWithIngredients
 import com.kunle.aisle9b.repositories.BasicRepositoryFunctions
 import com.kunle.aisle9b.repositories.meals.MealRepository
 import com.kunle.aisle9b.util.IngredientResponse
@@ -177,8 +186,6 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
                         }
                     }
                 }
-
-                else -> {}
             }
         }
     }

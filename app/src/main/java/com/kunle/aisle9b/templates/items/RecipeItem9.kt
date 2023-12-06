@@ -59,7 +59,8 @@ fun RecipeItem9(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.Medium,
-                letterSpacing = 1.sp
+                letterSpacing = 1.sp,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Text(
                 modifier = Modifier.padding(horizontal = 8.dp),
@@ -78,7 +79,8 @@ fun RecipeItem9(
                 Text(
                     text = "Ready in $readyTimeInMinutes minutes",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
         }

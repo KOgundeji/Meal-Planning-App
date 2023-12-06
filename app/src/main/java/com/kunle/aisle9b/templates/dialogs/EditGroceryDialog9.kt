@@ -33,7 +33,7 @@ fun EditGroceryDialog9(
     var groceryCategory by remember { mutableStateOf(oldGrocery.category) }
 
     Dialog(onDismissRequest = { closeDialog() }) {
-        Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.background) {
+        Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.secondaryContainer) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -42,6 +42,7 @@ fun EditGroceryDialog9(
                 ) {
                     Text(
                         text = "Modify",
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily.Default,
@@ -51,6 +52,7 @@ fun EditGroceryDialog9(
                     Icon(
                         imageVector = Icons.Filled.Close,
                         contentDescription = "Close button",
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier
                             .width(30.dp)
                             .height(30.dp)
@@ -63,7 +65,7 @@ fun EditGroceryDialog9(
                     onValueChange = { groceryName = it },
                     label = { Text(text = "Ingredient") },
                     placeholder = { Text(text = "Type food name") },
-                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.primaryContainer),
+                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     shape = RectangleShape
                 )
@@ -72,7 +74,7 @@ fun EditGroceryDialog9(
                     onValueChange = { groceryQuantity = it },
                     label = { Text(text = "How much/How many?") },
                     placeholder = { Text(text = "Type quantity") },
-                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.primaryContainer),
+                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer),
                     shape = RectangleShape
                 )
                 CategoryDropDownMenu(

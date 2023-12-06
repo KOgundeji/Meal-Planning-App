@@ -27,9 +27,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +38,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -47,15 +49,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.kunle.aisle9b.R
-import com.kunle.aisle9b.TopBarOptions
 import com.kunle.aisle9b.models.Grocery
-import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.templates.CustomAutoComplete9
 import com.kunle.aisle9b.templates.CustomTextField9
-import com.kunle.aisle9b.templates.headers.CategoryHeader
 import com.kunle.aisle9b.templates.items.GroceryListItem9
 import kotlinx.coroutines.launch
 
@@ -107,8 +105,8 @@ fun GroceryScreen(
                         .width(275.dp)
                         .height(50.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     ),
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
@@ -135,8 +133,8 @@ fun GroceryScreen(
                         .width(275.dp)
                         .height(50.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     ),
                     shape = RoundedCornerShape(30.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
@@ -218,7 +216,6 @@ fun GroceryInputTextField(viewModel: GroceryVM, onAddGrocery: (String, String) -
         Spacer(modifier = Modifier.width(10.dp))
         Card(
             modifier = Modifier.weight(.4f),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
             elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
             shape = RoundedCornerShape(3.dp)
         ) {
@@ -230,6 +227,14 @@ fun GroceryInputTextField(viewModel: GroceryVM, onAddGrocery: (String, String) -
                 text = quantity,
                 onValueChange = { quantity = it },
                 label = "#",
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
             )
         }
         Spacer(modifier = Modifier.width(10.dp))
@@ -267,6 +272,26 @@ fun GroceryInputTextField(viewModel: GroceryVM, onAddGrocery: (String, String) -
             ) {
                 Text(text = "Add", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
+        }
+    }
+}
+
+@Composable
+fun CategoryHeader(string: String) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RectangleShape
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 15.dp)
+                .height(35.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(text = string, fontWeight = FontWeight.Bold, fontSize = 18.sp)
         }
     }
 }

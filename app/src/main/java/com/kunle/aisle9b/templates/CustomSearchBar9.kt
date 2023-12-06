@@ -29,10 +29,7 @@ fun CustomSearchBar9(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-        shape = RoundedCornerShape(3.dp)
-    ) {
+    Card(shape = RoundedCornerShape(3.dp)) {
         BasicTextField(
             modifier = modifier
                 .height(45.dp)
@@ -61,15 +58,15 @@ fun CustomSearchBar9(
                 visualTransformation = VisualTransformation.None,
                 interactionSource = interactionSource,
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedLabelColor = MaterialTheme.colorScheme.primary,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer ,
-                    cursorColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer ,
+                    cursorColor = MaterialTheme.colorScheme.onSecondaryContainer
                 ),
                 contentPadding = PaddingValues(horizontal = 15.dp),
             )

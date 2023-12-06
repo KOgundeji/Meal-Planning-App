@@ -111,16 +111,14 @@ fun MealItem9(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 10.dp)
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(.9f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
-                    modifier = Modifier.size(50.dp),
+                    modifier = Modifier.size(60.dp),
                     model =
                     if (meal.apiID <= 0) {
                         meal.mealPic
@@ -135,18 +133,19 @@ fun MealItem9(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 3.dp),
+                        .padding(horizontal = 8.dp, vertical = 10.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = meal.name,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 16.sp,
+                        lineHeight = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = listedIngredients,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         fontSize = 14.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

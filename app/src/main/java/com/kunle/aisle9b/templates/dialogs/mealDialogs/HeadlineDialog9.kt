@@ -40,7 +40,7 @@ fun HeadlineDialog9(
     var newServingSize by remember { mutableStateOf(original) }
 
     Dialog(onDismissRequest = { closeDialog() }) {
-        Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.background) {
+        Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.secondaryContainer) {
             Column(
                 modifier = Modifier.padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(15.dp)
@@ -52,6 +52,7 @@ fun HeadlineDialog9(
                 ) {
                     Text(
                         text = "Modify",
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily.Default,
@@ -60,6 +61,7 @@ fun HeadlineDialog9(
                     )
                     Icon(
                         imageVector = Icons.Filled.Close,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         contentDescription = "Close button",
                         modifier = Modifier
                             .width(30.dp)

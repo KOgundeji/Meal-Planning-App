@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
@@ -42,11 +43,19 @@ fun CustomAutoComplete9(
                 },
                 textStyle = TextStyle(fontSize = 14.sp),
                 label = label,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
             )
         }
         if (value.isNotEmpty()) {
             DropdownMenu(
-                modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer),
+                modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer),
                 expanded = true,
                 onDismissRequest = { },
                 properties = PopupProperties(

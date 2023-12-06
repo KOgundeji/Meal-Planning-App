@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,15 +48,14 @@ fun MealScreen(
     var listsToAddToGroceryList by remember { mutableStateOf(emptyList<Food>()) }
 
     val context = LocalContext.current
-    val itemWidth = LocalConfiguration.current.screenWidthDp * .90
 
     val searchWord = mealVM.searchWord.collectAsState().value
     val filteredMealLists = mealVM.filteredMealList.collectAsState().value
     val viewListOption = mealVM.viewListOption.collectAsState().value
     val listSpacing = if (viewListOption == MealListOptions.List) {
-        3.dp
+        5.dp
     } else {
-        20.dp
+        30.dp
     }
 
     if (transferFoodsToGroceryList) {
@@ -121,7 +119,7 @@ fun MealScreen(
                     tint = if (viewListOption == MealListOptions.List) {
                         MaterialTheme.colorScheme.primary
                     } else {
-                        MaterialTheme.colorScheme.onPrimaryContainer
+                        MaterialTheme.colorScheme.onBackground
                     }
                 )
             }
@@ -133,7 +131,7 @@ fun MealScreen(
                     tint = if (viewListOption == MealListOptions.Images) {
                         MaterialTheme.colorScheme.primary
                     } else {
-                        MaterialTheme.colorScheme.onPrimaryContainer
+                        MaterialTheme.colorScheme.onBackground
                     }
                 )
             }
@@ -172,7 +170,6 @@ fun MealScreen(
                     MealListOptions.Images ->
                         VisualMealItem(
                             meal = meal,
-                            screenWidth = itemWidth.dp,
                             transferMeal = {
                                 val ingredientList = mealVM.findMWI(meal.mealId)?.ingredients
                                 if (ingredientList != null) {

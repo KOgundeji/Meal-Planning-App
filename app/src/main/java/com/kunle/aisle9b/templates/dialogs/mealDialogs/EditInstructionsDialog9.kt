@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +34,7 @@ fun EditInstructionsDialog9(
     Dialog(onDismissRequest = { exitDialog() }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.background,
+            color = MaterialTheme.colorScheme.secondaryContainer,
             shadowElevation = 5.dp
         ) {
             Column(
@@ -47,6 +48,7 @@ fun EditInstructionsDialog9(
                 ) {
                     Text(
                         text = "Modify",
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                         style = TextStyle(
                             fontSize = 24.sp,
                             fontFamily = FontFamily.Default,
@@ -56,6 +58,7 @@ fun EditInstructionsDialog9(
                     Icon(
                         imageVector = Icons.Filled.Close,
                         contentDescription = "Close button",
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier
                             .width(30.dp)
                             .height(30.dp)
@@ -71,7 +74,15 @@ fun EditInstructionsDialog9(
                     onValueChange = { instructionStep = it },
                     label = "Recipe Step",
                     textStyle = TextStyle(fontSize = 16.sp),
-                    singleLine = false
+                    singleLine = false,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
