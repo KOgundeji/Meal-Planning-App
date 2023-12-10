@@ -15,6 +15,7 @@ import com.kunle.aisle9b.models.Meal
 import com.kunle.aisle9b.models.SettingsEnum
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.repositories.general.GeneralRepository
+import com.kunle.aisle9b.screens.meals.MealListOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,12 +33,16 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     private var _source = MutableStateFlow(GroceryScreens.GroceryListScreen)
     val source = _source.asStateFlow()
 
+    private var _mealViewSetting = MutableStateFlow<MealListOptions?>(null)
+    val mealViewSetting = _mealViewSetting.asStateFlow()
+
     var darkModeSetting: Boolean? by mutableStateOf(false)
         private set
     var categoriesSetting by mutableStateOf(true)
         private set
     var screenOnSetting by mutableStateOf(false)
         private set
+
 
     private var newMealToBeSaved = mutableStateOf<Meal?>(null)
     var apiMealToBeSaved = mutableStateOf<Meal?>(null)
@@ -70,6 +75,7 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
                 getDarkModeSetting(listOfSettings)
                 getCategoriesOn(listOfSettings)
                 getScreenPermOn(listOfSettings)
+                checkMealViewSetting(listOfSettings)
             }
         }
     }
@@ -86,6 +92,7 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
 
     private fun upsertSettings(settings: AppSettings) =
         viewModelScope.launch { repository.upsertSettings(settings) }
+
 
     fun turnNewMealVisible() {
         if (newMealToBeSaved.value != null) {
@@ -160,6 +167,27 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
         upsertSettings(AppSettings(SettingsEnum.ScreenPermOn.name, value))
     }
 
+    private fun checkMealViewSetting(settingsList: List<AppSettings>) {
+        val mealViewSetting =
+            settingsList.find { it.settingsName == SettingsEnum.ViewMealsAsLists.name }
+
+        if (mealViewSetting == null) {
+            _mealViewSetting.value = null
+        } else if (mealViewSetting.value) {
+            _mealViewSetting.value = MealListOptions.List
+        } else {
+            _mealViewSetting.value = MealListOptions.Images
+        }
+
+    }
+
+    fun saveMealViewSettings(viewOptions: MealListOptions) {
+        if (viewOptions == MealListOptions.List) {
+            upsertSettings(AppSettings("ViewMealsAsLists", true))
+        } else {
+            upsertSettings(AppSettings(SettingsEnum.ViewMealsAsLists.name, false))
+        }
+    }
 
     fun saveAPIMealonFABClick() {
         if (apiMealToBeSaved.value != null) {

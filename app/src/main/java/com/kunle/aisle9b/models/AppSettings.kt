@@ -14,6 +14,7 @@ data class AppSettings(
 enum class SettingsEnum {
     DarkMode,
     ScreenPermOn,
-    Categories
+    Categories,
+    ViewMealsAsLists
 }
 

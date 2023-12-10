@@ -35,9 +35,6 @@ import javax.inject.Inject
 class MealVM @Inject constructor(private val repository: MealRepository) : ViewModel(),
     BasicRepositoryFunctions {
 
-    private val _viewListOption = MutableStateFlow(MealListOptions.List)
-    val viewListOption = _viewListOption.asStateFlow()
-
     private val _visibleMealList = MutableStateFlow<List<Meal>>(emptyList())
     val visibleMealList = _visibleMealList.asStateFlow()
 
@@ -207,10 +204,6 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
 
     fun findMWI(mealId: Long): MealWithIngredients? {
         return _mealsWithIngredients.value.firstOrNull { it.meal.mealId == mealId }
-    }
-
-    fun setViewMealListOption(option: MealListOptions) {
-        _viewListOption.update { option }
     }
 
     fun upsertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }

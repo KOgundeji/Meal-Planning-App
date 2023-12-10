@@ -48,12 +48,12 @@ import com.kunle.aisle9b.screens.splash.SplashScreen
 fun Aisle9Navigation(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM
+    generalVM: GeneralVM,
+    mealVM: MealVM,
+    customListVM: CustomListVM
 ) {
     val groceryVM = hiltViewModel<GroceryVM>()
-    val mealVM = hiltViewModel<MealVM>()
     val recipesVM = hiltViewModel<RecipesVM>()
-    val customListVM = hiltViewModel<CustomListVM>()
     val planningVM = hiltViewModel<PlanningVM>()
 
     NavHost(
@@ -84,7 +84,7 @@ fun Aisle9Navigation(
             )
         }
         composable(route = GroceryScreens.CustomListScreen.name) {
-            generalVM.setTopBarOption(TopBarOptions.Default)
+            generalVM.setTopBarOption(TopBarOptions.CustomLists)
             generalVM.setClickSource(GroceryScreens.CustomListScreen)
 
             CustomListScreen(
@@ -111,7 +111,7 @@ fun Aisle9Navigation(
 //            )
 //        }
         ) {
-            generalVM.setTopBarOption(TopBarOptions.Default)
+            generalVM.setTopBarOption(TopBarOptions.MealList)
             generalVM.setClickSource(GroceryScreens.MealScreen)
 
             MealScreen(

@@ -7,22 +7,33 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.kunle.aisle9b.navigation.Aisle9Navigation
 import com.kunle.aisle9b.navigation.BottomNavigationBar9
 import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.GeneralVM
+import com.kunle.aisle9b.screens.customLists.CustomListVM
+import com.kunle.aisle9b.screens.meals.MealVM
+import com.kunle.aisle9b.templates.CustomSearchBar9
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
 import com.kunle.aisle9b.util.AddFAB
 import com.kunle.aisle9b.util.BackTopAppBar
+import com.kunle.aisle9b.util.CustomListTopAppBar
 import com.kunle.aisle9b.util.DefaultTopAppBar
+import com.kunle.aisle9b.util.MealTopAppBar
 import com.kunle.aisle9b.util.SaveFAB
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,7 +44,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            ShoppingAppScaffold(navController, generalVM)
+            val mealVM: MealVM by viewModels()
+            val customListVM: CustomListVM by viewModels()
+            ShoppingAppScaffold(navController, generalVM, mealVM, customListVM)
         }
     }
 
@@ -46,10 +59,17 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ShoppingAppScaffold(
     navController: NavHostController,
-    generalVM: GeneralVM
+    generalVM: GeneralVM,
+    mealVM: MealVM,
+    customListVM: CustomListVM
 ) {
     val source = generalVM.source.collectAsState().value
     val topBarState = generalVM.topBar.collectAsState().value
+
+    val customListSearchWord = customListVM.searchWord.collectAsState().value
+    val mealSearchWord = mealVM.searchWord.collectAsState().value
+    val mealViewSetting = generalVM.mealViewSetting.collectAsState().value
+
     val numOfMeals = generalVM.numOfMeals.collectAsState().value
     val groceryCounter = generalVM.groceryBadgeCount.collectAsState().value
     val darkMode = generalVM.darkModeSetting ?: generalVM.setDarkModeSetting(isSystemInDarkTheme())
@@ -69,6 +89,28 @@ fun ShoppingAppScaffold(
                             navigate = { navController.navigate(GroceryScreens.SettingsScreen.name) },
                             source = source
                         )
+
+                    TopBarOptions.MealList -> {
+                        MealTopAppBar(
+                            searchWord = mealSearchWord,
+                            viewListOption = mealViewSetting,
+                            onSearchChange = { mealVM.setSearchWord(it) },
+                            onCancelClick = { mealVM.setSearchWord("") },
+                            setListOptions = {
+                                generalVM.saveMealViewSettings(it)
+                                generalVM.saveMealViewSettings(it)
+                            },
+                            navigate = { navController.navigate(GroceryScreens.SettingsScreen.name) }
+                        )
+                    }
+
+                    TopBarOptions.CustomLists -> {
+                        CustomListTopAppBar(
+                            searchWord = customListSearchWord,
+                            onSearchChange = { customListVM.setSearchWord(it) },
+                            onCancelClick = { customListVM.setSearchWord("") },
+                            navigate = { navController.navigate(GroceryScreens.SettingsScreen.name) })
+                    }
                 }
             },
             floatingActionButton = {
@@ -110,7 +152,9 @@ fun ShoppingAppScaffold(
                 Aisle9Navigation(
                     modifier = Modifier.padding(paddingValues),
                     navController = navController,
-                    generalVM = generalVM
+                    generalVM = generalVM,
+                    mealVM = mealVM,
+                    customListVM = customListVM
                 )
             }
         }
@@ -119,6 +163,8 @@ fun ShoppingAppScaffold(
 
 
 enum class TopBarOptions {
+    MealList,
+    CustomLists,
     Default,
     Back;
 }

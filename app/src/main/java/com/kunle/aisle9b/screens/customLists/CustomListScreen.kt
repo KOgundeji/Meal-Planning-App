@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,7 +37,6 @@ fun CustomListScreen(
     navToListDetails: (Long) -> Unit
 ) {
     val context = LocalContext.current
-    val searchWord = customListVM.searchWord.collectAsState().value
     val filteredCustomLists = customListVM.filteredCustomList.collectAsState().value
 
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
@@ -63,44 +63,26 @@ fun CustomListScreen(
         Toast.makeText(context, "Groceries added to Grocery List", Toast.LENGTH_SHORT)
             .show()
     }
-
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(15.dp)
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(vertical = 15.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        CustomSearchBar9(
-            text = searchWord,
-            onValueChange = { customListVM.setSearchWord(it) },
-            label = "Search in Custom Lists",
-            trailingIcon = {
-                if (searchWord.isNotEmpty()) {
-                    IconButton(onClick = { customListVM.setSearchWord("") }) {
-                        Icon(
-                            imageVector = Icons.Filled.Cancel,
-                            contentDescription = "Cancel button",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+        items(items = filteredCustomLists) { listItem ->
+            CustomListItem9(
+                groceryList = listItem,
+                customListVM = customListVM,
+                navToListDetails = { navToListDetails(listItem.listId) },
+                deleteList = {
+                    customListVM.deleteList(listItem)
+                    customListVM.deleteSpecificListWithGroceries(listItem.listId)
+                },
+                transferFood = { groceries ->
+                    listsToAddToGroceryList = groceries
+                    transferFoodsToGroceryList = true
                 }
-            }
-        )
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            items(items = filteredCustomLists) { listItem ->
-                CustomListItem9(
-                    groceryList = listItem,
-                    customListVM = customListVM,
-                    navToListDetails = { navToListDetails(listItem.listId) },
-                    deleteList = {
-                        customListVM.deleteList(listItem)
-                        customListVM.deleteSpecificListWithGroceries(listItem.listId)
-                    },
-                    transferFood = { groceries ->
-                        listsToAddToGroceryList = groceries
-                        transferFoodsToGroceryList = true
-                    }
-                )
-            }
+            )
         }
     }
 }
