@@ -17,14 +17,18 @@ class GroceryRepositoryImpl @Inject constructor(
     override suspend fun updateGlobalFoodCategories(foodName: String, newCategory: String) =
         groceryDao.updateGlobalFoodCategories(foodName, newCategory)
 
-    override suspend fun updateGlobalGroceryCategories(groceryName: String, newCategory: String)  =
+    override suspend fun updateGlobalGroceryCategories(groceryName: String, newCategory: String) =
         groceryDao.updateGlobalGroceryCategories(groceryName, newCategory)
 
     override fun getAllGroceries(): Flow<List<Grocery>> =
         groceryDao.getAllGroceries().flowOn(Dispatchers.IO).conflate()
 
+    override fun getAllFoods(): Flow<List<Food>> =
+        groceryDao.getAllFoods().flowOn(Dispatchers.IO).conflate()
+
     override fun getAllFoodNames(): Flow<List<String>> =
         groceryDao.getAllFoodNames().flowOn(Dispatchers.IO).conflate()
+
 
     override suspend fun insertFood(food: Food): Long = groceryDao.insertFood(food)
     override suspend fun upsertFood(food: Food) = groceryDao.upsertFood(food)

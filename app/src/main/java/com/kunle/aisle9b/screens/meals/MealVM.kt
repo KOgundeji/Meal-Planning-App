@@ -115,11 +115,11 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
     }
 
     fun setMealId(mealId: Long) {
-        _viewMealId.update { mealId }
+        _viewMealId.value = mealId
     }
 
     fun setSearchWord(searchWord: String) {
-        _searchWord.update { _ -> searchWord }
+        _searchWord.value = searchWord
         searchForMeal(searchWord)
     }
 
@@ -158,6 +158,7 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
                     _addIngredientScreenListState.value = IngredientResponse.Loading
                     viewModelScope.launch {
                         try {
+                            updateCategories(food.name, food.category)
                             val foodId = repository.insertFood(food)
                             repository.insertPair(MealFoodMap(mealId, foodId))
                             _addIngredientScreenListState.value =
@@ -204,6 +205,26 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
 
     fun findMWI(mealId: Long): MealWithIngredients? {
         return _mealsWithIngredients.value.firstOrNull { it.meal.mealId == mealId }
+    }
+
+    fun updateFood(food: Food) {
+        viewModelScope.launch {
+            updateCategories(food.name, food.category)
+            upsertFood(food)
+        }
+    }
+
+    private fun updateCategories(foodGroceryName: String, newCategory: String) {
+        viewModelScope.launch {
+            repository.updateGlobalFoodCategories(
+                foodName = foodGroceryName,
+                newCategory = newCategory
+            )
+            repository.updateGlobalGroceryCategories(
+                groceryName = foodGroceryName,
+                newCategory = newCategory
+            )
+        }
     }
 
     fun upsertMeal(meal: Meal) = viewModelScope.launch { repository.upsertMeal(meal) }

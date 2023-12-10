@@ -195,7 +195,7 @@ private fun PreMadeListScreen(
                             viewModel = customListVM,
                             checkBoxShown = false,
                             onEditFood = { newFood ->
-                                scope.launch { customListVM.upsertFood(newFood) }
+                                scope.launch { customListVM.updateFood(newFood) }
                             }
                         )
                     }

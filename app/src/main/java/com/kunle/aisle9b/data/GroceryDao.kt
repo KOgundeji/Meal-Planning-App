@@ -42,5 +42,4 @@ interface GroceryDao {
 
     @Query(value = "SELECT name FROM food_table")
     fun getAllFoodNames(): Flow<List<String>>
-
 }

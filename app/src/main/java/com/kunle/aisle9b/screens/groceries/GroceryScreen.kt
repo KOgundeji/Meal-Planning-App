@@ -63,8 +63,8 @@ fun GroceryScreen(
     modifier: Modifier = Modifier,
     generalVM: GeneralVM = hiltViewModel(),
     groceryVM: GroceryVM = hiltViewModel(),
-    navToCustomLists: ()-> Unit,
-    navToMealScreen: ()-> Unit
+    navToCustomLists: () -> Unit,
+    navToMealScreen: () -> Unit
 ) {
     val groceryList = groceryVM.groceryList.collectAsState().value
     val groupedGroceryList = groceryVM.groupedGroceryList.collectAsState().value
@@ -76,7 +76,6 @@ fun GroceryScreen(
             0
         )
     }
-    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = modifier
@@ -84,9 +83,7 @@ fun GroceryScreen(
             .semantics { contentDescription = R.string.grocery_screen.toString() }
     ) {
         GroceryInputTextField(groceryVM) { name, quantity ->
-            coroutineScope.launch {
-                groceryVM.insertGrocery(Grocery(name = name, quantity = quantity))
-            }
+            groceryVM.addGrocery(name, quantity)
         }
         if (groceryList.isEmpty()) {
             Column(
@@ -169,7 +166,7 @@ fun GroceryScreen(
                                 viewModel = groceryVM,
                                 modifier = Modifier.animateItemPlacement(),
                                 onEditGrocery = { newGrocery ->
-                                    coroutineScope.launch { groceryVM.upsertGrocery(newGrocery) }
+                                    groceryVM.updateGrocery(newGrocery)
                                 }
                             )
                         }
@@ -181,7 +178,7 @@ fun GroceryScreen(
                             viewModel = groceryVM,
                             modifier = Modifier.animateItemPlacement(),
                             onEditGrocery = { newGrocery ->
-                                coroutineScope.launch { groceryVM.upsertGrocery(newGrocery) }
+                                groceryVM.updateGrocery(newGrocery)
                             }
                         )
                     }

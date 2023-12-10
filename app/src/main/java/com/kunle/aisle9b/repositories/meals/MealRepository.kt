@@ -25,7 +25,7 @@ interface MealRepository {
     suspend fun upsertGrocery(grocery: Grocery)
     suspend fun deleteGrocery(grocery: Grocery)
     suspend fun deleteGroceryByName(name: String)
-    suspend fun insertFood(food: Food) : Long
+    suspend fun insertFood(food: Food): Long
     suspend fun upsertFood(food: Food)
     suspend fun deleteFood(food: Food)
     suspend fun insertPair(crossRef: MealFoodMap)
@@ -35,6 +35,9 @@ interface MealRepository {
 
     suspend fun upsertInstruction(instruction: Instruction)
     suspend fun deleteInstruction(instruction: Instruction)
+
+    suspend fun updateGlobalFoodCategories(foodName: String, newCategory: String)
+    suspend fun updateGlobalGroceryCategories(groceryName: String, newCategory: String)
 
     //Get All
     fun getAllMeals(): Flow<List<Meal>>

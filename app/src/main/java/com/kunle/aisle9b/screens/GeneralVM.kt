@@ -183,7 +183,7 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
 
     fun saveMealViewSettings(viewOptions: MealListOptions) {
         if (viewOptions == MealListOptions.List) {
-            upsertSettings(AppSettings("ViewMealsAsLists", true))
+            upsertSettings(AppSettings(SettingsEnum.ViewMealsAsLists.name, true))
         } else {
             upsertSettings(AppSettings(SettingsEnum.ViewMealsAsLists.name, false))
         }

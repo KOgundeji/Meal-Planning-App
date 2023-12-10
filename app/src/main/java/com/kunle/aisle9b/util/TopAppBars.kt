@@ -1,8 +1,10 @@
 package com.kunle.aisle9b.util
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -60,31 +62,34 @@ fun CustomListTopAppBar(
     onCancelClick: () -> Unit,
     navigate: () -> Unit
 ) {
-    TopAppBar(title = {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            CustomSearchBar9(
-                text = searchWord,
-                onValueChange = { onSearchChange(it) },
-                label = "Search Saved Grocery Lists",
-                trailingIcon = {
-                    if (searchWord.isNotEmpty()) {
-                        IconButton(onClick = { onCancelClick() }) {
-                            Icon(
-                                imageVector = Icons.Filled.Cancel,
-                                contentDescription = "Cancel button",
-                                modifier = Modifier.size(24.dp)
-                            )
+    TopAppBar(
+        modifier = Modifier.padding(vertical = 5.dp),
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                CustomSearchBar9(
+                    text = searchWord,
+                    onValueChange = { onSearchChange(it) },
+                    label = "Search Saved Grocery Lists",
+                    trailingIcon = {
+                        if (searchWord.isNotEmpty()) {
+                            IconButton(onClick = { onCancelClick() }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Cancel,
+                                    contentDescription = "Cancel button",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         }
                     }
-                }
-            )
-            AdditionalScreenOptions { navigate() }
-        }
-    })
+                )
+                AdditionalScreenOptions { navigate() }
+            }
+        })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,58 +102,61 @@ fun MealTopAppBar(
     setListOptions: (MealListOptions) -> Unit,
     navigate: () -> Unit
 ) {
-    TopAppBar(title = {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CustomSearchBar9(
-                modifier = Modifier.fillMaxWidth(.65f),
-                text = searchWord,
-                onValueChange = { string -> onSearchChange(string) },
-                label = "Search in Meals",
-                trailingIcon = {
-                    if (searchWord.isNotEmpty()) {
-                        IconButton(onClick = {
-                            onCancelClick()
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Cancel,
-                                contentDescription = "Cancel button",
-                                modifier = Modifier.size(24.dp)
-                            )
+    TopAppBar(
+        modifier = Modifier.padding(vertical = 5.dp),
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CustomSearchBar9(
+                    modifier = Modifier.fillMaxWidth(.65f),
+                    text = searchWord,
+                    onValueChange = { string -> onSearchChange(string) },
+                    label = "Search in Meals",
+                    trailingIcon = {
+                        if (searchWord.isNotEmpty()) {
+                            IconButton(onClick = {
+                                onCancelClick()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Cancel,
+                                    contentDescription = "Cancel button",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         }
-                    }
-                },
-            )
-            IconButton(onClick = { setListOptions(MealListOptions.List) }) {
-                Icon(
-                    modifier = Modifier.size(30.dp),
-                    imageVector = Icons.Filled.FormatListBulleted,
-                    contentDescription = "List Option",
-                    tint = if (viewListOption == MealListOptions.Images) {
-                        MaterialTheme.colorScheme.onBackground
-                    } else {
-                        MaterialTheme.colorScheme.primary
-                    }
+                    },
                 )
+                IconButton(onClick = { setListOptions(MealListOptions.List) }) {
+                    Icon(
+                        modifier = Modifier.size(30.dp),
+                        imageVector = Icons.Filled.FormatListBulleted,
+                        contentDescription = "List Option",
+                        tint = if (viewListOption == MealListOptions.Images) {
+                            MaterialTheme.colorScheme.onBackground
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
+                    )
+                }
+                IconButton(onClick = { setListOptions(MealListOptions.Images) }) {
+                    Icon(
+                        modifier = Modifier.size(30.dp),
+                        imageVector = Icons.Filled.Image,
+                        contentDescription = "Image Option",
+                        tint = if (viewListOption == MealListOptions.Images) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onBackground
+                        }
+                    )
+                }
+                AdditionalScreenOptions { navigate() }
             }
-            IconButton(onClick = { setListOptions(MealListOptions.Images) }) {
-                Icon(
-                    modifier = Modifier.size(30.dp),
-                    imageVector = Icons.Filled.Image,
-                    contentDescription = "Image Option",
-                    tint = if (viewListOption == MealListOptions.Images) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
-                    }
-                )
-            }
-            AdditionalScreenOptions { navigate() }
-        }
-    })
+        })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

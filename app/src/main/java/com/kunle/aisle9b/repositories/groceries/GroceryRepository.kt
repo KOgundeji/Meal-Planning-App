@@ -19,5 +19,6 @@ interface GroceryRepository {
 
     //Get all
     fun getAllGroceries(): Flow<List<Grocery>>
+    fun getAllFoods(): Flow<List<Food>>
     fun getAllFoodNames(): Flow<List<String>>
 }

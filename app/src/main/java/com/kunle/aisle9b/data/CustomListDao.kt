@@ -26,4 +26,10 @@ interface CustomListDao {
 
     @Query("SELECT * FROM list_table")
     fun getAllLists(): Flow<List<GroceryList>>
+
+    @Query("UPDATE food_table SET category = :newCategory WHERE name = :foodName")
+    suspend fun updateGlobalFoodCategories(foodName: String, newCategory: String)
+
+    @Query("UPDATE grocery_table SET category = :newCategory WHERE name = :groceryName")
+    suspend fun updateGlobalGroceryCategories(groceryName: String, newCategory: String)
 }

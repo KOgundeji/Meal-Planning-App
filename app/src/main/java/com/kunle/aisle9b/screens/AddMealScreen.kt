@@ -211,11 +211,7 @@ fun AddMealScreen(
                         mealVM.deleteFood(it)
                     }
                 },
-                updateIngredient = {
-                    scope.launch {
-                        mealVM.upsertFood(it)
-                    }
-                },
+                updateIngredient = { mealVM.updateFood(it) },
                 updateServingSize = { modifyServingSize = true },
                 addInstruction = { addNewInstruction = true },
                 deleteInstruction = {

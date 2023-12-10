@@ -37,6 +37,12 @@ class CustomListRepositoryImpl @Inject constructor(
 
     override suspend fun deleteGroceryByName(name: String) = groceryDao.deleteGroceryByName(name)
 
+    override suspend fun updateGlobalFoodCategories(foodName: String, newCategory: String) =
+        groceryDao.updateGlobalFoodCategories(foodName, newCategory)
+
+    override suspend fun updateGlobalGroceryCategories(groceryName: String, newCategory: String) =
+        groceryDao.updateGlobalGroceryCategories(groceryName, newCategory)
+
     //Partial Room entries
     override suspend fun updateName(obj: GroceryListNameUpdate) = customListDao.updateName(obj)
     override suspend fun updateVisibility(obj: GroceryListVisibilityUpdate) =

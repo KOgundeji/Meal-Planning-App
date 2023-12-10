@@ -67,6 +67,7 @@ fun CustomListScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(vertical = 15.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(items = filteredCustomLists) { listItem ->

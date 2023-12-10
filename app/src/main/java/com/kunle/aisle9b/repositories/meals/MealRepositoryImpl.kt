@@ -62,6 +62,12 @@ class MealRepositoryImpl @Inject constructor(
     override suspend fun deleteInstruction(instruction: Instruction) =
         instructionDao.deleteInstruction(instruction)
 
+    override suspend fun updateGlobalFoodCategories(foodName: String, newCategory: String) =
+        groceryDao.updateGlobalFoodCategories(foodName, newCategory)
+
+    override suspend fun updateGlobalGroceryCategories(groceryName: String, newCategory: String) =
+        groceryDao.updateGlobalGroceryCategories(groceryName, newCategory)
+
 
     //Get All
     override fun getAllMeals(): Flow<List<Meal>> =

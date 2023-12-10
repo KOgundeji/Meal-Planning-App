@@ -100,6 +100,7 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
             _ingredientState.value = IngredientResponse.Loading
             viewModelScope.launch {
                 try {
+                    updateCategories(food.name, food.category)
                     val foodId = repository.insertFood(food)
                     repository.insertPair(ListFoodMap(listId, foodId))
                     _ingredientState.value = IngredientResponse.Success(foodId = foodId)
@@ -107,6 +108,26 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
                     _ingredientState.value = IngredientResponse.Error(exception = e)
                 }
             }
+        }
+    }
+
+    fun updateFood(food: Food) {
+        viewModelScope.launch {
+            updateCategories(food.name, food.category)
+            upsertFood(food)
+        }
+    }
+
+    private fun updateCategories(foodGroceryName: String, newCategory: String) {
+        viewModelScope.launch {
+            repository.updateGlobalFoodCategories(
+                foodName = foodGroceryName,
+                newCategory = newCategory
+            )
+            repository.updateGlobalGroceryCategories(
+                groceryName = foodGroceryName,
+                newCategory = newCategory
+            )
         }
     }
 
