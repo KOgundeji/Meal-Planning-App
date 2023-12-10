@@ -23,6 +23,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -63,7 +64,12 @@ fun AdditionalScreenOptions(navigate: () -> Unit) {
             expanded = expanded,
             onDismissRequest = { expanded = false }) {
             DropdownMenuItem(
-                text = { Text(text = GroceryScreens.headerTitle(GroceryScreens.SettingsScreen)) },
+                text = {
+                    Text(
+                        text = GroceryScreens.headerTitle(GroceryScreens.SettingsScreen),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                },
                 onClick = {
                     navigate()
                     expanded = false

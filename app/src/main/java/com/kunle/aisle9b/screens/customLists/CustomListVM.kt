@@ -71,6 +71,10 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
         }
     }
 
+    fun findLWG(listId: Long): ListWithGroceries? {
+        return _groceriesOfCustomLists.value.firstOrNull { it.list.listId == listId }
+    }
+
     fun setGateStateToSuccess(groceryList: GroceryList) {
         _gateState.value = CustomListGateState.Success(groceryList = groceryList)
     }

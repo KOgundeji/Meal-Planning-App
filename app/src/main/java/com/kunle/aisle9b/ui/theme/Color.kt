@@ -3,7 +3,7 @@ package com.kunle.aisle9b.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val BaseOrange = Color(0xFFEDA33B)
-//val oldBaseOrange = Color(0xFFF27405)
+val oldBaseOrange = Color(0xFFF27405)
 val BackgroundGray = Color(0xFFF2F2F2)
 
 //Dark Mode Colors
@@ -11,6 +11,7 @@ val DM_BaseOrange = Color(0xFFBF5C04)
 val DM_DarkGray = Color(0xFF14161A)
 val DM_DarkishGray = Color(0xFF292C33)
 val DM_MediumGray = Color(0xFF3C424D)
+val DM_MediumToLightGray = Color(0xFF828A99)
 val DM_LightGray = Color(0xFFE6E6E6)
 
 
@@ -37,7 +38,7 @@ val OnErrorContainerLight = Color(0xFF410002)
 val BackgroundLight = BackgroundGray
 val OnBackgroundLight = DM_DarkishGray
 val SurfaceLight = BaseOrange
-val onSurfaceLight = DM_LightGray
+val onSurfaceLight = Color.White
 
 // Dark
 val PrimaryDark = DM_BaseOrange

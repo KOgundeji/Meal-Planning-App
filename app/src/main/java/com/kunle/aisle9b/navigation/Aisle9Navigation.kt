@@ -1,22 +1,17 @@
 package com.kunle.aisle9b.navigation
 
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.DinnerDining
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -117,9 +112,9 @@ fun Aisle9Navigation(
             MealScreen(
                 mealVM = mealVM,
                 generalVM = generalVM,
-                navToDetailsScreen = {
+                navToEditDetails = {
                     navController.navigate(
-                        GroceryScreens.MealDetailsScreen.name + "/${it}"
+                        GroceryScreens.MealEditDetailsScreen.name + "/${it}"
                     )
                 },
                 navToViewDetails = {
@@ -187,14 +182,14 @@ fun Aisle9Navigation(
             )
         }
         composable(
-            route = GroceryScreens.MealDetailsScreen.name + "/{mealIndex}",
+            route = GroceryScreens.MealEditDetailsScreen.name + "/{mealIndex}",
             arguments = listOf(
                 navArgument(name = "mealIndex") {
                     type = NavType.LongType
                 })
         ) { backStackEntry ->
             generalVM.setTopBarOption(TopBarOptions.Back)
-            generalVM.setClickSource(GroceryScreens.MealDetailsScreen)
+            generalVM.setClickSource(GroceryScreens.MealEditDetailsScreen)
 
             EditMealDetailsScreen(
                 mealId = backStackEntry.arguments?.getLong("mealIndex"),
@@ -229,7 +224,7 @@ fun BottomNavigationBar9(
 ) {
     val backStackEntry = navController.currentBackStackEntryAsState()
 
-    screenList[3].name = mealsName
+    screenList[2].name = mealsName
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -242,8 +237,7 @@ fun BottomNavigationBar9(
             NavigationBarItem(
                 selected = selected,
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = MaterialTheme.colorScheme.surface,
-                    selectedIconColor = MaterialTheme.colorScheme.primary
+                    indicatorColor = MaterialTheme.colorScheme.tertiary
                 ),
                 onClick = { onItemClick(item) },
                 icon = {
@@ -283,11 +277,6 @@ val screenList = listOf(
         name = "Groceries",
         route = GroceryScreens.GroceryListScreen.name,
         icon = Icons.Filled.Checklist
-    ),
-    BottomNavItem(
-        name = "Planning",
-        route = GroceryScreens.Planning.name,
-        icon = Icons.Filled.CalendarMonth
     ),
     BottomNavItem(
         name = "Lists",

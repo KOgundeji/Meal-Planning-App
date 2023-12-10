@@ -7,18 +7,12 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.kunle.aisle9b.navigation.Aisle9Navigation
@@ -27,7 +21,6 @@ import com.kunle.aisle9b.navigation.GroceryScreens
 import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.screens.customLists.CustomListVM
 import com.kunle.aisle9b.screens.meals.MealVM
-import com.kunle.aisle9b.templates.CustomSearchBar9
 import com.kunle.aisle9b.ui.theme.Aisle9bTheme
 import com.kunle.aisle9b.util.AddFAB
 import com.kunle.aisle9b.util.BackTopAppBar

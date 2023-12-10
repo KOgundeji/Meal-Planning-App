@@ -160,7 +160,7 @@ fun GroceryScreen(
                         stickyHeader {
                             CategoryHeader(string = category)
                         }
-                        items(items = groceries) { grocery ->
+                        items(items = groceries, key = { it.groceryId }) { grocery ->
                             GroceryListItem9(
                                 grocery = grocery,
                                 viewModel = groceryVM,
@@ -172,7 +172,7 @@ fun GroceryScreen(
                         }
                     }
                 } else {
-                    items(items = groceryList) { grocery ->
+                    items(items = groceryList, key = { it.groceryId }) { grocery ->
                         GroceryListItem9(
                             grocery = grocery,
                             viewModel = groceryVM,

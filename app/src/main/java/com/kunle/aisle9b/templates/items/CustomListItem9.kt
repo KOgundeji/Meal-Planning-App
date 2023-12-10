@@ -1,7 +1,5 @@
 package com.kunle.aisle9b.templates.items
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,95 +10,35 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ListAlt
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kunle.aisle9b.models.Food
-import com.kunle.aisle9b.models.GroceryList
-import com.kunle.aisle9b.screens.customLists.CustomListVM
-import com.kunle.aisle9b.templates.dialogs.ModifyGroceriesDialog9
-import com.kunle.aisle9b.util.ActionDropdown
-import com.kunle.aisle9b.util.DropActions
+import com.kunle.aisle9b.models.ListWithGroceries
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CustomListItem9(
-    groceryList: GroceryList,
-    customListVM: CustomListVM,
-    deleteList: () -> Unit,
-    navToListDetails: () -> Unit,
-    transferFood: (List<Food>) -> Unit
+    lwg: ListWithGroceries?,
+    showBottomSheet: () -> Unit
 ) {
-    var longPress by remember { mutableStateOf(false) }
-    val haptics = LocalHapticFeedback.current
-
-    var showEditMealDialog by remember { mutableStateOf(false) }
-    val lwg = customListVM.groceriesOfCustomLists.collectAsState().value.find { LWG ->
-        LWG.list.listId == groceryList.listId
-    }
     val listedGroceries: String = lwg?.groceries
         ?.joinToString(separator = ", ") { it.name }
         ?: ""  //its the default separator, but wanted to include anyway
 
-    if (showEditMealDialog) {
-        ModifyGroceriesDialog9(
-            groceryList = groceryList,
-            customListVM = customListVM,
-            setShowDialog = { showEditMealDialog = false }
-        )
-    }
-
-    if (longPress) {
-        ActionDropdown(expanded = { longPress = it }) { dropActions ->
-            longPress = when (dropActions) {
-                DropActions.Edit -> {
-                    showEditMealDialog = true
-                    false
-                }
-                DropActions.Transfer -> {
-                    if (lwg?.groceries?.isNotEmpty() == true) {
-                        transferFood(lwg.groceries)
-                    }
-                    false
-                }
-                DropActions.Delete -> {
-                    deleteList()
-                    false
-                }
-                else -> { false }
-            }
-        }
-    }
-
     Card(
         modifier = Modifier
             .padding(horizontal = 6.dp)
-            .fillMaxWidth()
-            .combinedClickable(
-                enabled = true, onLongClick = {
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    longPress = true
-                },
-                onLongClickLabel = "Action Dropdown"
-            ) {
-              navToListDetails()
-            },
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         shape = RoundedCornerShape(corner = CornerSize(6.dp))
     ) {
@@ -126,7 +64,7 @@ fun CustomListItem9(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = groceryList.listName,
+                        text = lwg?.list?.listName ?: "Not found",
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
@@ -139,6 +77,13 @@ fun CustomListItem9(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
+            }
+            IconButton(onClick = { showBottomSheet() }) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "Additional screen options",
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                )
             }
         }
     }
