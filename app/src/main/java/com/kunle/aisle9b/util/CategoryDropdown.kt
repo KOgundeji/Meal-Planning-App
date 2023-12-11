@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.util
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*
@@ -31,22 +32,31 @@ fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
                 modifier = Modifier.menuAnchor(),
                 label = { Text(text = "Select Category") },
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    focusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                    focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                ),
                 shape = RectangleShape
             )
             ExposedDropdownMenu(
+                modifier = Modifier.background(MaterialTheme.colorScheme.tertiary),
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
                 categories.forEach { category ->
                     DropdownMenuItem(
                         text = { Text(text = category) },
+                        colors = MenuDefaults.itemColors(),
                         onClick = {
                             selectedText = category
                             newCategory(selectedText)
                             expanded = false
                         }
                     )
+                    Divider()
                 }
             }
         }

@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -18,8 +19,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.models.Grocery
+import com.kunle.aisle9b.ui.theme.LightYellow
 import com.kunle.aisle9b.util.CategoryDropDownMenu
 
 @Composable
@@ -33,7 +34,11 @@ fun EditGroceryDialog9(
     var groceryCategory by remember { mutableStateOf(oldGrocery.category) }
 
     Dialog(onDismissRequest = { closeDialog() }) {
-        Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.secondaryContainer) {
+        Surface(
+            modifier = Modifier.padding(bottom = 20.dp),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.secondaryContainer
+        ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -65,7 +70,14 @@ fun EditGroceryDialog9(
                     onValueChange = { groceryName = it },
                     label = { Text(text = "Ingredient") },
                     placeholder = { Text(text = "Type food name") },
-                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                    ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     shape = RectangleShape
                 )
@@ -74,7 +86,14 @@ fun EditGroceryDialog9(
                     onValueChange = { groceryQuantity = it },
                     label = { Text(text = "How much/How many?") },
                     placeholder = { Text(text = "Type quantity") },
-                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                    ),
                     shape = RectangleShape
                 )
                 CategoryDropDownMenu(

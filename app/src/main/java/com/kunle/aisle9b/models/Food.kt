@@ -18,25 +18,18 @@ data class Food(
 
         val categories = arrayOf(
             "Uncategorized",
-            "Baby Items",
-            "Baking",
             "Beverages",
-            "Bread & Bakery",
-            "Canned Goods",
+            "Breads and Grains",
+            "Canned/Jarred Goods",
             "Condiments & Spices",
-            "Dairy",
-            "Deli",
-            "Fish & Seafood",
+            "Dairy/Eggs",
             "Frozen Foods",
-            "Fruits",
-            "Health Care",
             "Household & Cleaning Supplies",
-            "Meat",
-            "Pasta, Rice & Cereal",
+            "Meat/Poultry/Fish",
             "Personal Care",
-            "Pet Care",
+            "Produce (Fruits & Veggies)",
             "Snacks",
-            "Vegetables"
+            "Other"
         )
     }
 

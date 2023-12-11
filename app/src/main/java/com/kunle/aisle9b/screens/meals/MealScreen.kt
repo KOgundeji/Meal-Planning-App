@@ -12,13 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material.icons.twotone.Cancel
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -30,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -43,9 +37,8 @@ import com.kunle.aisle9b.models.Food
 import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.templates.items.MealItem9
 import com.kunle.aisle9b.templates.items.VisualMealItem
-import com.kunle.aisle9b.ui.theme.DM_LightGray
-import com.kunle.aisle9b.ui.theme.DM_MediumGray
 import com.kunle.aisle9b.ui.theme.DM_MediumToLightGray
+import com.kunle.aisle9b.util.Constants
 import com.kunle.aisle9b.util.CustomBottomSheet9
 import com.kunle.aisle9b.util.ReconciliationDialog
 
@@ -136,20 +129,20 @@ fun MealScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(15.dp)
                         ) {
-                            if (mealWithIngredients.meal.mealPic != Uri.EMPTY || mealWithIngredients.meal.apiImageURL != null) {
-                                AsyncImage(
-                                    modifier = Modifier.size(60.dp),
-                                    model =
-                                    if (mealWithIngredients.meal.apiID <= 0) {
-                                        mealWithIngredients.meal.mealPic
-                                    } else {
-                                        mealWithIngredients.meal.apiImageURL
-                                    },
-                                    contentDescription = null,
-                                    contentScale = ContentScale.FillHeight,
-                                    alignment = Alignment.Center
-                                )
-                            }
+                            AsyncImage(
+                                modifier = Modifier.size(60.dp),
+                                model =
+                                if (mealWithIngredients.meal.apiID > 0) {
+                                    mealWithIngredients.meal.apiImageURL
+                                } else if (mealWithIngredients.meal.apiID < 0 && mealWithIngredients.meal.mealPic != Uri.EMPTY) {
+                                    mealWithIngredients.meal.mealPic
+                                } else {
+                                    Constants.GENERIC_IMG
+                                },
+                                contentDescription = null,
+                                contentScale = ContentScale.FillHeight,
+                                alignment = Alignment.Center
+                            )
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()

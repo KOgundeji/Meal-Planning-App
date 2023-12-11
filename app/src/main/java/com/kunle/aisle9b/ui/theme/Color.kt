@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 val BaseOrange = Color(0xFFEDA33B)
 val oldBaseOrange = Color(0xFFF27405)
 val BackgroundGray = Color(0xFFF2F2F2)
+val LightYellow = Color(0xFFFFF3BF)
 
 //Dark Mode Colors
 val DM_BaseOrange = Color(0xFFBF5C04)
@@ -39,6 +40,8 @@ val BackgroundLight = BackgroundGray
 val OnBackgroundLight = DM_DarkishGray
 val SurfaceLight = BaseOrange
 val onSurfaceLight = Color.White
+val inverseSurfaceLight = LightYellow
+val inverseOnSurfaceLight = DM_DarkishGray
 
 // Dark
 val PrimaryDark = DM_BaseOrange
@@ -65,3 +68,5 @@ val BackgroundDark = Color.Black
 val OnBackgroundDark = DM_LightGray
 val SurfaceDark = DM_MediumGray
 val onSurfaceDark = DM_LightGray
+val inverseSurfaceDark = DM_DarkGray
+val inverseOnSurfaceDark = DM_LightGray

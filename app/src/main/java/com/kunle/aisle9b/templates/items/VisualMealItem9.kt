@@ -1,5 +1,6 @@
 package com.kunle.aisle9b.templates.items
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.kunle.aisle9b.models.Meal
+import com.kunle.aisle9b.util.Constants
 
 @Preview
 @Composable
@@ -62,10 +64,12 @@ fun VisualMealItem(
             AsyncImage(
                 modifier = Modifier.fillMaxWidth(),
                 model =
-                if (meal.apiID <= 0) {
+                if (meal.apiID > 0) {
+                    meal.apiImageURL
+                } else if (meal.apiID < 0 && meal.mealPic != Uri.EMPTY) {
                     meal.mealPic
                 } else {
-                    meal.apiImageURL
+                    Constants.GENERIC_IMG
                 },
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
