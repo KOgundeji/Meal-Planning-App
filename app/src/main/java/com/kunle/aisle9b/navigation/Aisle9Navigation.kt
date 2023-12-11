@@ -145,8 +145,7 @@ fun Aisle9Navigation(
             generalVM.setClickSource(GroceryScreens.AddNewMealScreen)
 
             AddMealScreenGate(
-                mealVM = mealVM,
-                generalVM = generalVM
+                mealVM = mealVM
             )
         }
         composable(

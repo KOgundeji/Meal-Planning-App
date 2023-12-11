@@ -40,8 +40,9 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
         private set
     var categoriesSetting by mutableStateOf(true)
         private set
-    var screenOnSetting by mutableStateOf(false)
-        private set
+
+    private var _keepScreenOn = MutableStateFlow(false)
+    var keepScreenOn = _keepScreenOn.asStateFlow()
 
 
     private var newMealToBeSaved = mutableStateOf<Meal?>(null)
@@ -155,7 +156,7 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
             it.settingsName == SettingsEnum.ScreenPermOn.name
         }?.value
 
-        screenOnSetting = if (screen == null) {
+        _keepScreenOn.value = if (screen == null) {
             upsertSettings(AppSettings(SettingsEnum.ScreenPermOn.name, false))
             false
         } else {

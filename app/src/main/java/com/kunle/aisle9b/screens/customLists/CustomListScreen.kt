@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import com.kunle.aisle9b.screens.GeneralVM
 import com.kunle.aisle9b.templates.items.CustomListItem9
 import com.kunle.aisle9b.util.CustomBottomSheet9
 import com.kunle.aisle9b.util.ReconciliationDialog
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,6 +47,7 @@ fun CustomListScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
     var bottomSheetListId by remember { mutableLongStateOf(0L) }
     val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
 
     var transferFoodsToGroceryList by remember { mutableStateOf(false) }
     var listsToAddToGroceryList by remember { mutableStateOf(emptyList<Food>()) }
@@ -64,20 +67,29 @@ fun CustomListScreen(
                 if (listWithGroceries != null) {
                     navToListDetails(listWithGroceries.list.listId)
                 }
-                showBottomSheet = false
+                scope.launch {
+                    sheetState.hide()
+                    showBottomSheet = false
+                }
             },
             transferFood = {
                 if (listWithGroceries != null) {
                     listsToAddToGroceryList = listWithGroceries.groceries
                     transferFoodsToGroceryList = true
                 }
-                showBottomSheet = false
+                scope.launch {
+                    sheetState.hide()
+                    showBottomSheet = false
+                }
             },
             edit = {
                 if (listWithGroceries != null) {
                     navToListDetails(listWithGroceries.list.listId)
                 }
-                showBottomSheet = false
+                scope.launch {
+                    sheetState.hide()
+                    showBottomSheet = false
+                }
             },
             delete = {
                 if (listWithGroceries != null) {
@@ -89,7 +101,10 @@ fun CustomListScreen(
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                showBottomSheet = false
+                scope.launch {
+                    sheetState.hide()
+                    showBottomSheet = false
+                }
             },
             headerContent = {
                 if (listWithGroceries != null) {
@@ -99,9 +114,9 @@ fun CustomListScreen(
                             .padding(horizontal = 5.dp),
                         text = listWithGroceries.list.listName,
                         fontWeight = FontWeight.ExtraBold,
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
                         textAlign = TextAlign.Start,
-                        lineHeight = 22.sp
+                        lineHeight = 24.sp
                     )
                 }
             }

@@ -37,8 +37,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddMealScreenGate(
     modifier: Modifier = Modifier,
-    mealVM: MealVM = hiltViewModel(),
-    generalVM: GeneralVM = hiltViewModel()
+    mealVM: MealVM = hiltViewModel()
 ) {
     LaunchedEffect(key1 = Unit) {
         mealVM.getBrandNewMeal()
@@ -69,7 +68,10 @@ fun AddMealScreen(
         val fullMealSet = mealVM.fullMeal.collectAsState().value
         val mealId = fullMealSet.meal.mealId
 
-        mealVM.upsertMeal(fullMealSet.meal.copy(visible = true))
+        LaunchedEffect(key1 = Unit) {
+            mealVM.upsertMeal(fullMealSet.meal.copy(visible = true))
+        }
+
         val newInstructionPosition = mealVM.newInstructionNumber.intValue
 
         val scope = rememberCoroutineScope()

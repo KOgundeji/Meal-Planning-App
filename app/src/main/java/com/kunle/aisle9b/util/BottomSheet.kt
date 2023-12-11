@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowCircleLeft
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditNote
-import androidx.compose.material.icons.outlined.FileOpen
 import androidx.compose.material.icons.outlined.LocalGroceryStore
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -107,9 +106,9 @@ fun BottomSheetItems9(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            modifier = Modifier.size(30.dp),
+            modifier = Modifier.size(26.dp),
             imageVector = icon, contentDescription = contentDescription
         )
-        Text(text = text, fontSize = 18.sp)
+        Text(text = text, fontSize = 16.sp)
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +55,7 @@ fun CustomSearchBar9(
                     )
                 },
                 trailingIcon = trailingIcon,
-                label = { Text(text = label) },
+                label = { Text(text = label, fontSize = 14.sp) },
                 visualTransformation = VisualTransformation.None,
                 interactionSource = interactionSource,
                 colors = TextFieldDefaults.colors(

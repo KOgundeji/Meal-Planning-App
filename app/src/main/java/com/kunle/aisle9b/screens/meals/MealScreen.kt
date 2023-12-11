@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +42,7 @@ import com.kunle.aisle9b.ui.theme.DM_MediumToLightGray
 import com.kunle.aisle9b.util.Constants
 import com.kunle.aisle9b.util.CustomBottomSheet9
 import com.kunle.aisle9b.util.ReconciliationDialog
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +62,7 @@ fun MealScreen(
     val sheetState = rememberModalBottomSheetState()
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val filteredMealLists = mealVM.filteredMealList.collectAsState().value
     val mealViewSetting = generalVM.mealViewSetting.collectAsState().value
@@ -80,7 +83,12 @@ fun MealScreen(
                 "Delete Meal"
             ),
             apiSourced = mealWithIngredients != null && mealWithIngredients.meal.apiID > 0,
-            closeBottomSheet = { showBottomSheet = false },
+            closeBottomSheet = {
+                scope.launch {
+                    sheetState.hide()
+                    showBottomSheet = false
+                }
+            },
             viewList = {
                 if (mealWithIngredients != null) {
                     if (mealWithIngredients.meal.apiID > 0) {
@@ -89,19 +97,24 @@ fun MealScreen(
                         navToViewDetails(bottomSheetMealId)
                     }
                 }
+                scope.launch {
+                    sheetState.hide()
+                }
             },
             transferFood = {
-                if (mealWithIngredients != null && mealWithIngredients.meal.apiID > 0) {
-                    listsToAddToGroceryList = mealWithIngredients.ingredients
-                    transferFoodsToGroceryList = true
+                listsToAddToGroceryList = mealWithIngredients?.ingredients ?: emptyList()
+                transferFoodsToGroceryList = true
+                scope.launch {
+                    sheetState.hide()
+                    showBottomSheet = false
                 }
-                showBottomSheet = false
             },
             edit = {
-                if (mealWithIngredients != null && mealWithIngredients.meal.apiID > 0) {
-                    navToEditDetails(bottomSheetMealId)
+                navToEditDetails(bottomSheetMealId)
+                scope.launch {
+                    sheetState.hide()
+                    showBottomSheet = false
                 }
-                showBottomSheet = false
             },
             delete = {
                 if (mealWithIngredients != null) {
@@ -113,7 +126,10 @@ fun MealScreen(
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                showBottomSheet = false
+                scope.launch {
+                    sheetState.hide()
+                    showBottomSheet = false
+                }
             },
             headerContent = {
                 if (mealWithIngredients != null) {
@@ -149,9 +165,9 @@ fun MealScreen(
                                     .padding(horizontal = 5.dp),
                                 text = mealWithIngredients.meal.name,
                                 fontWeight = FontWeight.ExtraBold,
-                                fontSize = 22.sp,
+                                fontSize = 20.sp,
                                 textAlign = TextAlign.Start,
-                                lineHeight = 22.sp
+                                lineHeight = 24.sp
                             )
                         }
                         Icon(

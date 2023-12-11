@@ -65,8 +65,9 @@ fun CustomListItem9(
                 ) {
                     Text(
                         text = lwg?.list?.listName ?: "Not found",
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.inversePrimary,
+                        fontSize = 18.sp,
+                        lineHeight = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(

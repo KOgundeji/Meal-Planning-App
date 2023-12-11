@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -63,7 +64,7 @@ fun MealItem9(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AsyncImage(
-                        modifier = Modifier.size(60.dp),
+                        modifier = Modifier.size(60.dp).fillMaxHeight(),
                         model =
                         if (meal.apiID > 0) {
                             meal.apiImageURL
@@ -73,7 +74,7 @@ fun MealItem9(
                             Constants.GENERIC_IMG
                         },
                         contentDescription = null,
-                        contentScale = ContentScale.FillHeight,
+                        contentScale = ContentScale.Crop,
                         alignment = Alignment.Center
                     )
                     Spacer(modifier = Modifier.width(5.dp))
@@ -85,9 +86,9 @@ fun MealItem9(
                     ) {
                         Text(
                             text = meal.name,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontSize = 16.sp,
-                            lineHeight = 18.sp,
+                            color = MaterialTheme.colorScheme.inversePrimary,
+                            fontSize = 18.sp,
+                            lineHeight = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(

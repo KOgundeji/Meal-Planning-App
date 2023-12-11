@@ -31,17 +31,13 @@ val onTertiaryLight = DM_DarkishGray
 val TertiaryContainerLight = Color.White
 val onTertiaryContainerLight = DM_DarkishGray
 
-val ErrorLight = Color(0xFFba1a1a)
-val OnErrorLight = Color(0xFFffffff)
-val ErrorContainerLight = Color(0xFFffdad6)
-val OnErrorContainerLight = Color(0xFF410002)
-
 val BackgroundLight = BackgroundGray
 val OnBackgroundLight = DM_DarkishGray
 val SurfaceLight = BaseOrange
 val onSurfaceLight = Color.White
 val inverseSurfaceLight = LightYellow
 val inverseOnSurfaceLight = DM_DarkishGray
+val surfaceVariantLight = DM_DarkGray
 
 // Dark
 val PrimaryDark = DM_BaseOrange
@@ -59,14 +55,10 @@ val onTertiaryDark = DM_LightGray
 val TertiaryContainerDark = DM_MediumGray
 val onTertiaryContainerDark = DM_LightGray
 
-val ErrorDark = Color(0xFFffb4ab)
-val OnErrorDark = Color(0xFF690005)
-val ErrorContainerDark = Color(0xFF93000a)
-val OnErrorContainerDark = Color(0xFFffdad6)
-
 val BackgroundDark = Color.Black
 val OnBackgroundDark = DM_LightGray
 val SurfaceDark = DM_MediumGray
 val onSurfaceDark = DM_LightGray
 val inverseSurfaceDark = DM_DarkGray
 val inverseOnSurfaceDark = DM_LightGray
+val surfaceVariantDark = DM_BaseOrange

@@ -64,7 +64,14 @@ fun EditFoodDialog9(
                     onValueChange = { ingredientName = it },
                     label = { Text(text = "Ingredient") },
                     placeholder = { Text(text = "Type food name") },
-                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                    ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     shape = RectangleShape
                 )
@@ -73,7 +80,14 @@ fun EditFoodDialog9(
                     onValueChange = { ingredientQuantity = it },
                     label = { Text(text = "How much/How many?") },
                     placeholder = { Text(text = "Type quantity") },
-                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                    ),
                     shape = RectangleShape
                 )
                 CategoryDropDownMenu(

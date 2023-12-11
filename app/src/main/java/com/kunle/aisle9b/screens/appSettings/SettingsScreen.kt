@@ -13,6 +13,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -26,15 +27,11 @@ import com.kunle.aisle9b.screens.GeneralVM
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    generalVM: GeneralVM = hiltViewModel()
+    generalVM: GeneralVM
 ) {
-    val screenPermOn = generalVM.screenOnSetting
+    val screenPermOn = generalVM.keepScreenOn.collectAsState().value
     val categoriesOn = generalVM.categoriesSetting
     val darkMode = generalVM.darkModeSetting ?: generalVM.setDarkModeSetting(isSystemInDarkTheme())
-
-    if (screenPermOn) {
-        KeepScreenOn()
-    }
 
     Column(modifier = modifier) {
         Text(
@@ -71,14 +68,14 @@ fun SettingsScreen(
                 modifier = Modifier.padding(start = 15.dp, bottom = 1.dp)
             )
             Text(
-                text = "Sun Forged Studios",
+                text = "Sun King Studios",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(start = 15.dp, bottom = 1.dp)
             )
             Text(
-                text = "Version 2.0.0",
+                text = "Version 2.2.0",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 14.sp,
@@ -116,9 +113,6 @@ private fun SettingsRow(
         )
     }
 }
-
-@Composable
-fun KeepScreenOn() = AndroidView({ View(it).apply { keepScreenOn = true } })
 
 @Composable
 @Preview

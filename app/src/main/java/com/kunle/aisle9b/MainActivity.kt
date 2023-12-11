@@ -1,6 +1,7 @@
 package com.kunle.aisle9b
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -36,10 +37,21 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            ScreenOnFlag()
             val navController = rememberNavController()
             val mealVM: MealVM by viewModels()
             val customListVM: CustomListVM by viewModels()
             ShoppingAppScaffold(navController, generalVM, mealVM, customListVM)
+        }
+    }
+
+    @Composable
+    private fun ScreenOnFlag() {
+        val screen = generalVM.keepScreenOn.collectAsState().value
+        if (screen) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 
