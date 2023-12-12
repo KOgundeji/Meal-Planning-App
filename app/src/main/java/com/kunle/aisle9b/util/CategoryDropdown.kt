@@ -12,7 +12,6 @@ import com.kunle.aisle9b.models.Food.Companion.categories
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
-
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(category) }
 
@@ -34,11 +33,10 @@ fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
                     unfocusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
-                    focusedLabelColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                ),
+                    focusedLabelColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    focusedTextColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.inverseOnSurface),
                 shape = RectangleShape
             )
             ExposedDropdownMenu(
@@ -49,7 +47,9 @@ fun CategoryDropDownMenu(category: String, newCategory: (String) -> Unit) {
                 categories.forEach { category ->
                     DropdownMenuItem(
                         text = { Text(text = category) },
-                        colors = MenuDefaults.itemColors(),
+                        colors = MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.onTertiary
+                        ),
                         onClick = {
                             selectedText = category
                             newCategory(selectedText)

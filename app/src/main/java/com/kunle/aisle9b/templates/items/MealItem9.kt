@@ -41,6 +41,7 @@ fun MealItem9(
         val ingredientsList = mealWithIngredients.ingredients
         val meal = mealWithIngredients.meal
 
+        
         val listedIngredients: String =
             when {
                 ingredientsList.isNotEmpty() -> ingredientsList.joinToString { it.name }

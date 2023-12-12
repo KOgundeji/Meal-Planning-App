@@ -1,6 +1,7 @@
 package com.kunle.aisle9b.screens.meals
 
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.AddAPhoto
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,10 +24,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
@@ -37,7 +40,6 @@ import com.kunle.aisle9b.models.MealServingSizeUpdate
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditInstructionsDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.HeadlineDialog9
-import com.kunle.aisle9b.util.CameraXMode
 import com.kunle.aisle9b.util.PhotoOptionsDialog9
 import kotlinx.coroutines.launch
 
@@ -49,6 +51,9 @@ fun EditMealDetailsScreen(
 ) {
     if (mealId != null) {
         val scope = rememberCoroutineScope()
+        val primaryColor = MaterialTheme.colorScheme.primary
+
+        val localDensity = LocalDensity.current
         val ingredientState by mealVM.editedIngredientState.collectAsState()
 
         mealVM.setMealId(mealId)
@@ -59,7 +64,6 @@ fun EditMealDetailsScreen(
         var modifyServingSize by remember { mutableStateOf(false) }
         var addNewInstruction by remember { mutableStateOf(false) }
         var editPicture by remember { mutableStateOf(false) }
-        var shouldShowCamera by remember { mutableStateOf(false) }
 
         if (addNewInstruction) {
             val brandNewInstruction =
@@ -109,16 +113,15 @@ fun EditMealDetailsScreen(
 
         if (editPicture) {
             PhotoOptionsDialog9(
-                onImageCaptured = { Uri ->
+                onImageCaptured = { uri ->
                     mealVM.updatePic(
                         MealPicUpdate(
                             mealId = mealId,
-                            mealPic = Uri
+                            mealPic = uri
                         )
                     )
                     editPicture = false
                 },
-                toggleCamera = { shouldShowCamera = it },
                 deletePic = {
                     mealVM.updatePic(
                         MealPicUpdate(
@@ -133,28 +136,22 @@ fun EditMealDetailsScreen(
             }
         }
 
-        if (shouldShowCamera) {
-            CameraXMode(
-                onImageCaptured = { uri ->
-                    mealVM.updatePic(MealPicUpdate(mealId = mealId, mealPic = uri))
-                    editPicture = false
-                },
-                toggleCamera = { shouldShowCamera = it })
-        }
-
         Column(modifier = modifier.fillMaxSize()) {
-            if (fullMealSet.meal.mealPic == null) {
+            if (fullMealSet.meal.mealPic == Uri.EMPTY) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(.42f)
+                        .onGloballyPositioned {
+                        }
                         .padding(5.dp)
+                        .background(primaryColor.copy(alpha = 0.1f))
                         .clickable {
                             editPicture = true
                         }
                         .drawBehind {
                             drawRoundRect(
-                                color = Color.Gray, style = Stroke(
+                                color = primaryColor, style = Stroke(
                                     width = 5f, pathEffect = PathEffect.dashPathEffect(
                                         intervals =
                                         floatArrayOf(10f, 10f)

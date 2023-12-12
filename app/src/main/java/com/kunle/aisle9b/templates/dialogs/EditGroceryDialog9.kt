@@ -73,10 +73,10 @@ fun EditGroceryDialog9(
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
-                        focusedLabelColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                        focusedLabelColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        focusedTextColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.inverseOnSurface
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     shape = RectangleShape
@@ -89,10 +89,10 @@ fun EditGroceryDialog9(
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
-                        focusedLabelColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                        focusedLabelColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        focusedTextColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.inverseOnSurface
                     ),
                     shape = RectangleShape
                 )

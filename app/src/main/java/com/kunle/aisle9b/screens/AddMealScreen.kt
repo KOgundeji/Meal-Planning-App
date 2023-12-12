@@ -1,13 +1,25 @@
 package com.kunle.aisle9b.screens
 
-import android.graphics.Bitmap
 import android.net.Uri
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.AddAPhoto
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -18,9 +30,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.kunle.aisle9b.TopBarOptions
-import com.kunle.aisle9b.models.*
-import com.kunle.aisle9b.navigation.GroceryScreens
+import com.kunle.aisle9b.models.Instruction
+import com.kunle.aisle9b.models.Meal
+import com.kunle.aisle9b.models.MealNameUpdate
+import com.kunle.aisle9b.models.MealNotesUpdate
+import com.kunle.aisle9b.models.MealPicUpdate
+import com.kunle.aisle9b.models.MealServingSizeUpdate
 import com.kunle.aisle9b.screens.meals.MealScreens
 import com.kunle.aisle9b.screens.meals.MealVM
 import com.kunle.aisle9b.screens.meals.Tabs
@@ -29,7 +44,6 @@ import com.kunle.aisle9b.screens.utilScreens.LoadingScreen
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditInstructionsDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.EditSummaryDialog9
 import com.kunle.aisle9b.templates.dialogs.mealDialogs.HeadlineDialog9
-import com.kunle.aisle9b.util.CameraXMode
 import com.kunle.aisle9b.util.MealResponse
 import com.kunle.aisle9b.util.PhotoOptionsDialog9
 import kotlinx.coroutines.launch
@@ -83,8 +97,6 @@ fun AddMealScreen(
         var modifyServingSize by remember { mutableStateOf(false) }
         var addNewInstruction by remember { mutableStateOf(false) }
         var editPicture by remember { mutableStateOf(false) }
-        var shouldShowCamera by remember { mutableStateOf(false) }
-        var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
 
         if (addNewInstruction) {
@@ -133,10 +145,6 @@ fun AddMealScreen(
                     mealVM.updatePic(MealPicUpdate(mealId = mealId, mealPic = uri))
                     editPicture = false
                 },
-                toggleCamera = {
-                    editPicture = false
-                    shouldShowCamera = it
-                },
                 deletePic = {
                     mealVM.updatePic(MealPicUpdate(mealId = mealId, mealPic = Uri.EMPTY))
                     editPicture = false
@@ -146,13 +154,6 @@ fun AddMealScreen(
             }
         }
 
-        if (shouldShowCamera) {
-            CameraXMode(
-                toggleCamera = { shouldShowCamera = it },
-                onImageCaptured = { uri ->
-                    mealVM.updatePic(MealPicUpdate(mealId = mealId, mealPic = uri))
-                })
-        }
 
         Column(modifier = modifier.fillMaxSize()) {
             if (fullMealSet.meal.mealPic == null) {

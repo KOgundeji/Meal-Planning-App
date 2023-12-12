@@ -83,7 +83,13 @@ fun EditIngredientDialog9(
                     onValueChange = { ingredientName = it },
                     label = { Text(text = "Ingredient") },
                     placeholder = { Text(text = "Type food name") },
-                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        focusedTextColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.inverseOnSurface),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     shape = RectangleShape
                 )
@@ -92,7 +98,13 @@ fun EditIngredientDialog9(
                     onValueChange = { ingredientQuantity = it },
                     label = { Text(text = "How much/How many?") },
                     placeholder = { Text(text = "Type quantity") },
-                    colors = TextFieldDefaults.colors(focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.inverseSurface,
+                        focusedLabelColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        focusedTextColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.inverseOnSurface),
                     shape = RectangleShape
                 )
                 CategoryDropDownMenu(
