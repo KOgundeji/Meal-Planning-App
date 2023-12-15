@@ -1,7 +1,9 @@
 package com.kunle.aisle9b.navigation
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
@@ -12,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -222,12 +225,11 @@ fun BottomNavigationBar9(
     onItemClick: (BottomNavItem) -> Unit
 ) {
     val backStackEntry = navController.currentBackStackEntryAsState()
-
     screenList[2].name = mealsName
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+//        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         tonalElevation = 0.dp,
     ) {
         screenList.forEach { item ->
@@ -236,12 +238,14 @@ fun BottomNavigationBar9(
             NavigationBarItem(
                 selected = selected,
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = MaterialTheme.colorScheme.tertiary
+                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    selectedIconColor = MaterialTheme.colorScheme.primary
                 ),
                 onClick = { onItemClick(item) },
                 icon = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (item.name == GroceryScreens.headerTitle(GroceryScreens.GroceryListScreen)) {
+                        if (item.name == "Groceries") {
                             BadgedBox(badge = {
                                 Badge(containerColor = MaterialTheme.colorScheme.primary) {
                                     Text(

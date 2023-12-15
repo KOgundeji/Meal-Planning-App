@@ -303,6 +303,4 @@ class MealVM @Inject constructor(private val repository: MealRepository) : ViewM
             }
         }
     }
-
-
 }

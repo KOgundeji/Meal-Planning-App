@@ -49,7 +49,7 @@ class GeneralVM @Inject constructor(private val repository: GeneralRepository) :
     var apiMealToBeSaved = mutableStateOf<Meal?>(null)
 
     private var _groceryList = MutableStateFlow<List<Grocery>>(emptyList())
-    private val _groceryBadgeCount = MutableStateFlow(0) //not sure where this comes from
+    private val _groceryBadgeCount = MutableStateFlow(0)
     private val _numOfMeals = MutableStateFlow(0)
     private val _allMeals = MutableStateFlow<List<Meal>>(emptyList())
     val groceryList = _groceryList.asStateFlow()

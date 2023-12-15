@@ -135,6 +135,16 @@ class CustomListVM @Inject constructor(private val repository: CustomListReposit
         }
     }
 
+    fun cleanListsInDatabase() {
+        viewModelScope.launch {
+            _allGroceryLists.value
+                .filter { !it.visible }
+                .forEach { dirtyList ->
+                    repository.deleteList(dirtyList)
+                }
+        }
+    }
+
     fun insertList(list: GroceryList) {
         viewModelScope.launch { repository.insertList(list) }
     }
